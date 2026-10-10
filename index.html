@@ -63,9 +63,9 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-between xl:justify-end">
-                    <!-- TRẠNG THÁI SYNC ONLINE -->
-                    <div id="cloud-status" class="text-[11px] font-bold text-gray-400 flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-900 rounded-lg border border-gray-800">
-                        <i class="fa-solid fa-circle-notch fa-spin text-amber-400"></i> ĐANG KẾT NỐI...
+                    <!-- BIỂU TƯỢNG ĐÁM MÂY XANH ĐỒNG BỘ ONLINE -->
+                    <div id="cloud-status" class="w-10 h-10 bg-gray-900 rounded-xl border border-gray-800 flex items-center justify-center" title="Đang kết nối...">
+                        <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-base"></i>
                     </div>
 
                     <div class="relative flex-1 sm:w-64">
@@ -222,6 +222,7 @@
     </div>
 
     <script>
+        // CẤU HÌNH FIREBASE CHÍNH XÁC
         const firebaseConfig = {
             apiKey: "AIzaSyBLC4dPLEP84yj6vkvf--DM8u_dN9YPJEs",
             authDomain: "bao-gia-sua-chua.firebaseapp.com",
@@ -249,7 +250,8 @@
 
         function syncFromCloud() {
             const statusEl = document.getElementById('cloud-status');
-            statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> ĐANG ĐỒNG BỘ...`;
+            statusEl.setAttribute('title', 'Đang đồng bộ...');
+            statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-base"></i>`;
 
             db.collection("store_data").doc("main").onSnapshot((doc) => {
                 if (doc.exists) {
@@ -262,14 +264,16 @@
                 } else {
                     saveAllToCloud();
                 }
-                statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400"></i> ONLINE REALTIME`;
+                statusEl.setAttribute('title', 'Online Realtime');
+                statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-base"></i>`;
                 if (!currentBrand && brands.length) currentBrand = brands[0];
                 if (!currentCategory && categories.length) currentCategory = categories[0];
                 initTabs();
                 renderTable();
             }, (err) => {
                 console.error("Lỗi Firestore:", err);
-                statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400"></i> LỖI FIREBASE`;
+                statusEl.setAttribute('title', 'Lỗi quyền Firebase');
+                statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-base"></i>`;
             });
         }
 
