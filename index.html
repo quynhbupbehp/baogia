@@ -6,6 +6,11 @@
     <title>BÁO GIÁ SỬA CHỮA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FIREBASE COMPAT SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
         .card-dark { background-color: #111827; border: 1px solid #1f2937; }
@@ -44,14 +49,12 @@
                             </div>
                         </div>
 
-                        <!-- NÚT LỌC KIỂU VỚI CHỮ MÀU ĐỎ & MŨI TÊN XUỐNG -->
+                        <!-- NÚT LỌC KIỂU -->
                         <div class="relative">
                             <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center gap-2" title="LỌC KIỂU">
                                 <span id="label-current-type" class="text-red-500 font-bold">KIỂU</span>
                                 <i class="fa-solid fa-chevron-down text-white text-xs transition-transform duration-200" id="type-chevron"></i>
                             </button>
-                            
-                            <!-- MENU DROPDOWN CHỌN KIỂU -->
                             <div id="dropdown-types" class="hidden absolute left-0 mt-2 w-44 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1">
                                 <div id="type-menu-list" class="flex flex-col gap-1"></div>
                             </div>
@@ -60,7 +63,12 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-between xl:justify-end">
-                    <div class="relative flex-1 sm:w-72">
+                    <!-- TRẠNG THÁI SYNC ONLINE -->
+                    <div id="cloud-status" class="text-[11px] font-bold text-gray-400 flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-900 rounded-lg border border-gray-800">
+                        <i class="fa-solid fa-circle-notch fa-spin text-amber-400"></i> ĐANG KẾT NỐI...
+                    </div>
+
+                    <div class="relative flex-1 sm:w-64">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </span>
@@ -123,13 +131,11 @@
             <form id="device-form" onsubmit="saveDevice(event)" class="space-y-4">
                 <input type="hidden" id="device-id">
 
-                <!-- 1. CHỌN HÃNG (VỪA CHỌN VỪA NHẬP) -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">HÃNG</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-brand" required list="brand-suggestions" placeholder="" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-brand" required list="brand-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
                         <datalist id="brand-suggestions"></datalist>
-                        
                         <div class="flex items-center gap-1">
                             <button type="button" onclick="handleEntity('brands', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition text-xs font-bold" title="THÊM HÃNG"><i class="fa-solid fa-plus"></i></button>
                             <button type="button" onclick="handleEntity('brands', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition text-xs font-bold" title="SỬA HÃNG"><i class="fa-solid fa-pen"></i></button>
@@ -138,11 +144,10 @@
                     </div>
                 </div>
 
-                <!-- 2. TÊN MÁY -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">TÊN MÁY</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-name" required list="name-suggestions" placeholder="" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-name" required list="name-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
                         <div class="flex items-center gap-1">
                             <button type="button" onclick="handleEntity('names', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition text-xs font-bold" title="THÊM TÊN MÁY"><i class="fa-solid fa-plus"></i></button>
                             <button type="button" onclick="handleEntity('names', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition text-xs font-bold" title="SỬA TÊN MÁY"><i class="fa-solid fa-pen"></i></button>
@@ -152,9 +157,7 @@
                     <datalist id="name-suggestions"></datalist>
                 </div>
 
-                <!-- 3. LINH KIỆN + KIỂU + GIÁ BÁN + GIÁ NHẬP -->
                 <div class="flex gap-2 items-end">
-                    <!-- LINH KIỆN -->
                     <div class="flex-[5] min-w-0">
                         <div class="flex justify-center items-center gap-1.5 mb-1">
                             <label class="block text-[11px] font-bold text-amber-400 uppercase">LINH KIỆN</label>
@@ -168,7 +171,6 @@
                         <datalist id="part-suggestions"></datalist>
                     </div>
 
-                    <!-- KIỂU -->
                     <div class="flex-[4] min-w-0">
                         <div class="flex justify-center items-center gap-1.5 mb-1">
                             <label class="block text-[11px] font-bold text-amber-400 uppercase">KIỂU</label>
@@ -182,20 +184,17 @@
                         <datalist id="type-suggestions"></datalist>
                     </div>
 
-                    <!-- GIÁ BÁN -->
                     <div class="w-16 shrink-0">
                         <label class="block text-[11px] font-bold text-amber-400 uppercase mb-1 text-center whitespace-nowrap">GIÁ BÁN</label>
                         <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-1 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
 
-                    <!-- GIÁ NHẬP -->
                     <div class="w-16 shrink-0">
                         <label class="block text-[11px] font-bold text-amber-400 uppercase mb-1 text-center whitespace-nowrap">GIÁ NHẬP</label>
                         <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-1 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
-                <!-- 4. SỐ LƯỢNG + LÃI + NÚT BẤM -->
                 <div class="flex items-end gap-3 pt-1">
                     <div class="flex flex-col items-center shrink-0">
                         <label class="block text-xs font-semibold text-gray-400 uppercase mb-1 text-center w-full">SỐ LƯỢNG</label>
@@ -223,45 +222,82 @@
     </div>
 
     <script>
-        const store = {
-            get: (k, def) => JSON.parse(localStorage.getItem('kimchi_' + k)) || def,
-            set: (k, val) => localStorage.setItem('kimchi_' + k, JSON.stringify(val))
+        const firebaseConfig = {
+            apiKey: "AIzaSyBLC4dPLEP84yj6vkvf--DM8u_dN9YPJEs",
+            authDomain: "bao-gia-sua-chua.firebaseapp.com",
+            projectId: "bao-gia-sua-chua",
+            storageBucket: "bao-gia-sua-chua.firebasestorage.app",
+            messagingSenderId: "775400571262",
+            appId: "1:775400571262:web:b264070746f5fbb6fbf32f"
         };
 
-        let devices = store.get('devices', [
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let devices = [
             { id: 1, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'ZIN', name: '14 PRO MAX', price: 1200, cost: 800, qty: 5 },
             { id: 2, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'GX', name: '12 PRO MAX', price: 1400, cost: 950, qty: 2 },
             { id: 3, brand: 'SAMSUNG', part: 'PIN', type: 'ZIN HÃNG', name: 'S22 ULTRA - S23 ULTRA', price: 650, cost: 420, qty: 8 },
             { id: 4, brand: 'OPPO - REALME', part: 'KÍNH - C.ỨNG', type: 'ZIN', name: 'A17 - A57 - A18 - A58 - C1 - C12 - A54', price: 950, cost: 700, qty: 3 }
-        ]);
-        let brands = store.get('brands', ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'KHÁC']);
-        let categories = store.get('categories', ['MÀN HÌNH', 'PIN', 'KÍNH - C.ỨNG', 'CÁP/BO SẠC']);
-        let types = store.get('types', ['ZIN', 'GX', 'ZIN BÓC MÁY', 'ZIN HÃNG', 'OLED', 'LINH KIỆN']);
-        
-        let defaultNames = ['14 PRO MAX', '12 PRO MAX', 'S22 ULTRA - S23 ULTRA', 'A17 - A57 - A18 - A58 - C1 - C12 - A54'];
-        let names = store.get('names', defaultNames);
+        ];
+        let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'KHÁC'];
+        let categories = ['MÀN HÌNH', 'PIN', 'KÍNH - C.ỨNG', 'CÁP/BO SẠC'];
+        let types = ['ZIN', 'GX', 'ZIN BÓC MÁY', 'ZIN HÃNG', 'OLED', 'LINH KIỆN'];
+        let names = ['14 PRO MAX', '12 PRO MAX', 'S22 ULTRA - S23 ULTRA', 'A17 - A57 - A18 - A58 - C1 - C12 - A54'];
 
         let currentBrand = brands[0] || '', currentCategory = categories[0] || '', currentType = '', isPrivacyMode = false;
 
+        function syncFromCloud() {
+            const statusEl = document.getElementById('cloud-status');
+            statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> ĐANG ĐỒNG BỘ...`;
+
+            db.collection("store_data").doc("main").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.devices) devices = data.devices;
+                    if (data.brands) brands = data.brands;
+                    if (data.categories) categories = data.categories;
+                    if (data.types) types = data.types;
+                    if (data.names) names = data.names;
+                } else {
+                    saveAllToCloud();
+                }
+                statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400"></i> ONLINE REALTIME`;
+                if (!currentBrand && brands.length) currentBrand = brands[0];
+                if (!currentCategory && categories.length) currentCategory = categories[0];
+                initTabs();
+                renderTable();
+            }, (err) => {
+                console.error("Lỗi Firestore:", err);
+                statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400"></i> LỖI FIREBASE`;
+            });
+        }
+
+        async function saveAllToCloud() {
+            try {
+                await db.collection("store_data").doc("main").set({
+                    devices, brands, categories, types, names
+                });
+            } catch (e) {
+                console.error("Lỗi lưu Cloud:", e);
+            }
+        }
+
         function initTabs() {
-            // 1. Tabs Hãng
             document.getElementById('brand-tabs').innerHTML = brands.map(b => 
                 `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-4 py-2 rounded-xl text-sm font-semibold transition uppercase ${b === currentBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`
             ).join('');
 
-            // 2. Tabs Linh kiện cố định
             const fixedCats = ['MÀN HÌNH', 'PIN'];
             document.getElementById('main-cat-tabs').innerHTML = fixedCats.map(c => 
                 `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
             ).join('');
 
-            // 3. Dropdown danh sách linh kiện khác
             const subCats = categories.filter(c => !fixedCats.includes(c));
             document.getElementById('sub-cat-list').innerHTML = subCats.length ? subCats.map(c => 
                 `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event);" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">${c}</button>`
             ).join('') : '<div class="px-3 py-1 text-xs text-gray-500 italic">Chưa có mục khác</div>';
 
-            // 4. Render Menu Dropdown Lọc Kiểu (CHỮ MÀU ĐỎ)
             const btnType = document.getElementById('btn-type-filter');
             const lblType = document.getElementById('label-current-type');
             if (currentType) {
@@ -280,19 +316,16 @@
             ).join('');
             document.getElementById('type-menu-list').innerHTML = allTypeOption + typeOptions;
 
-            // ĐỔ DỮ LIỆU GỢI Ý (BAO GỒM CẢ HÃNG - VỪA CHỌN VỪA NHẬP)
             document.getElementById('brand-suggestions').innerHTML = brands.map(b => `<option value="${b}">`).join('');
             document.getElementById('part-suggestions').innerHTML = categories.map(c => `<option value="${c}">`).join('');
             document.getElementById('type-suggestions').innerHTML = types.map(t => `<option value="${t}">`).join('');
             document.getElementById('name-suggestions').innerHTML = names.map(n => `<option value="${n}">`).join('');
         }
 
-        // BẬT / TẮT DROPDOWN KIỂU
         function toggleTypeFilter(e) {
             e.stopPropagation();
             document.getElementById('dropdown-more-cats')?.classList.add('hidden');
-            const dd = document.getElementById('dropdown-types');
-            dd.classList.toggle('hidden');
+            document.getElementById('dropdown-types').classList.toggle('hidden');
         }
 
         function selectType(t) {
@@ -336,7 +369,7 @@
             document.getElementById('modal-profit-preview').innerText = fmtVal((p - c) * q);
         }
 
-        function handleEntity(type, act) {
+        async function handleEntity(type, act) {
             const map = {
                 brands: { list: brands, el: 'device-brand', name: 'HÃNG', devKey: 'brand' },
                 names: { list: names, el: 'device-name', name: 'TÊN MÁY', devKey: 'name' },
@@ -352,7 +385,7 @@
                     const up = res.trim().toUpperCase();
                     if (!meta.list.includes(up)) {
                         meta.list.push(up);
-                        store.set(type, meta.list);
+                        await saveAllToCloud();
                     }
                     document.getElementById(meta.el).value = up;
                     initTabs();
@@ -368,8 +401,7 @@
                     else meta.list.push(up);
                     
                     devices.forEach(d => { if ((d[meta.devKey] || '').toUpperCase() === val) d[meta.devKey] = up; });
-                    store.set(type, meta.list);
-                    store.set('devices', devices);
+                    await saveAllToCloud();
                     document.getElementById(meta.el).value = up;
                     initTabs();
                     renderTable();
@@ -382,7 +414,7 @@
                     else if (type === 'names') names = updated;
                     else if (type === 'categories') categories = updated;
                     else if (type === 'types') types = updated;
-                    store.set(type, updated);
+                    await saveAllToCloud();
                     document.getElementById(meta.el).value = '';
                     initTabs();
                     renderTable();
@@ -470,7 +502,7 @@
 
         function closeModal() { document.getElementById('device-modal').classList.add('hidden'); }
 
-        function saveDevice(e) {
+        async function saveDevice(e) {
             e.preventDefault();
             const id = document.getElementById('device-id').value;
             const brandVal = document.getElementById('device-brand').value.trim().toUpperCase();
@@ -480,20 +512,10 @@
 
             if (!brandVal) return alert('VUI LÒNG CHỌN HOẶC NHẬP HÃNG!');
             
-            // TỰ ĐỘNG LƯU HÃNG VÀO DANH SÁCH NẾU LÀ HÃNG MỚI
-            if (brandVal && !brands.includes(brandVal)) {
-                brands.push(brandVal);
-                store.set('brands', brands);
-            }
-
-            // TỰ ĐỘNG LƯU TÊN MÁY VÀO DANH SÁCH GỢI Ý NẾU LÀ TÊN MỚI
-            if (nameVal && !names.includes(nameVal)) {
-                names.push(nameVal);
-                store.set('names', names);
-            }
-            if (!categories.includes(partVal)) { categories.push(partVal); store.set('categories', categories); }
-            if (typeVal && !types.includes(typeVal)) { types.push(typeVal); store.set('types', types); }
-            initTabs();
+            if (brandVal && !brands.includes(brandVal)) brands.push(brandVal);
+            if (nameVal && !names.includes(nameVal)) names.push(nameVal);
+            if (!categories.includes(partVal)) categories.push(partVal);
+            if (typeVal && !types.includes(typeVal)) types.push(typeVal);
 
             const data = {
                 id: id ? Number(id) : (Math.max(...devices.map(d => d.id), 0) + 1),
@@ -509,21 +531,21 @@
             const idx = devices.findIndex(d => d.id == id);
             if (idx !== -1) devices[idx] = data; else devices.push(data);
 
-            store.set('devices', devices);
+            await saveAllToCloud();
             closeModal();
+            initTabs();
             renderTable();
         }
 
-        function deleteDevice(id) {
+        async function deleteDevice(id) {
             if (confirm("BẠN CÓ CHẮC CHẮN MUỐN XÓA THIẾT BỊ NÀY KHÔNG?")) {
                 devices = devices.filter(d => d.id !== id);
-                store.set('devices', devices);
+                await saveAllToCloud();
                 renderTable();
             }
         }
 
-        initTabs();
-        renderTable();
+        syncFromCloud();
     </script>
 </body>
 </html>
