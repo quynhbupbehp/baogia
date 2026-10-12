@@ -61,7 +61,7 @@
                         </div>
                     </div>
 
-                    <!-- DÒNG LỌC LINH KIỆN DÀNH RIÊNG CHO MOBILE (KHÔNG CÓ NÚT KIỂU Ở ĐÂY) -->
+                    <!-- DÒNG LỌC LINH KIỆN DÀNH RIÊNG CHO MOBILE -->
                     <div class="flex md:hidden flex-wrap items-center gap-1.5 pt-1 border-t border-gray-800/80 relative">
                         <span class="text-[11px] font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
                         <div id="main-cat-tabs-mobile" class="flex flex-wrap items-center gap-1.5"></div>
@@ -92,7 +92,7 @@
                             class="w-full pl-9 pr-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
                     </div>
 
-                    <!-- NÚT LỌC KIỂU TRÊN MOBILE (ĐẶT Ở VỊ TRÍ ĐÁM MÂY VỪA ẨN) -->
+                    <!-- NÚT LỌC KIỂU TRÊN MOBILE -->
                     <div class="relative md:hidden">
                         <button id="btn-type-filter-mobile" onclick="toggleTypeFilterMobile(event)" class="px-3 py-2 rounded-xl text-xs font-bold bg-gray-900 border border-gray-700 hover:bg-gray-800 text-white transition flex items-center gap-1.5" title="LỌC KIỂU">
                             <span id="label-current-type-mobile" class="text-red-500 font-bold">KIỂU</span>
@@ -126,7 +126,6 @@
 
         <!-- BẢNG DỮ LIỆU -->
         <div class="card-dark rounded-2xl overflow-hidden shadow-xl">
-            <!-- Giao diện Bảng cho màn hình lớn (MD trở lên) -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
                     <thead>
@@ -146,7 +145,6 @@
                 </table>
             </div>
 
-            <!-- Giao diện Danh sách Card cho Mobile -->
             <div class="md:hidden divide-y divide-gray-800/60" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -192,32 +190,32 @@
                     <datalist id="name-suggestions"></datalist>
                 </div>
 
-                <!-- DÒNG LINH KIỆN VÀ KIỂU -->
+                <!-- DÒNG LINH KIỆN VÀ KIỂU ĐÃ ĐƯỢC ĐIỀU CHỈNH ĐÚNG THEO MẪU YÊU CẦU -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <label class="block text-[11px] font-semibold text-gray-400 uppercase">LINH KIỆN</label>
-                            <div class="flex items-center gap-1.5">
-                                <button type="button" onclick="handleEntity('categories', 'add')" class="text-emerald-400 text-xs hover:text-emerald-300 transition" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'edit')" class="text-blue-400 text-xs hover:text-blue-300 transition" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'delete')" class="text-red-400 text-xs hover:text-red-300 transition" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase mb-1">LINH KIỆN</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="device-part" required list="part-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                            <datalist id="part-suggestions"></datalist>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="handleEntity('categories', 'add')" class="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-xs font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'edit')" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-xs font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'delete')" class="p-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-xs font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
-                        <input type="text" id="device-part" required list="part-suggestions" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
-                        <datalist id="part-suggestions"></datalist>
                     </div>
 
                     <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <label class="block text-[11px] font-semibold text-gray-400 uppercase">KIỂU</label>
-                            <div class="flex items-center gap-1.5">
-                                <button type="button" onclick="handleEntity('types', 'add')" class="text-emerald-400 text-xs hover:text-emerald-300 transition" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'edit')" class="text-blue-400 text-xs hover:text-blue-300 transition" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'delete')" class="text-red-400 text-xs hover:text-red-300 transition" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase mb-1">KIỂU</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="device-type" list="type-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                            <datalist id="type-suggestions"></datalist>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="handleEntity('types', 'add')" class="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-xs font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'edit')" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-xs font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'delete')" class="p-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-xs font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
-                        <input type="text" id="device-type" list="type-suggestions" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
-                        <datalist id="type-suggestions"></datalist>
                     </div>
                 </div>
 
@@ -286,8 +284,10 @@
 
         function syncFromCloud() {
             const statusEl = document.getElementById('cloud-status');
-            statusEl.setAttribute('title', 'Đang đồng bộ...');
-            statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-xs"></i>`;
+            if(statusEl) {
+                statusEl.setAttribute('title', 'Đang đồng bộ...');
+                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-xs"></i>`;
+            }
 
             db.collection("store_data").doc("main").onSnapshot((doc) => {
                 if (doc.exists) {
@@ -300,16 +300,20 @@
                 } else {
                     saveAllToCloud();
                 }
-                statusEl.setAttribute('title', 'Online Realtime');
-                statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-xs"></i>`;
+                if(statusEl) {
+                    statusEl.setAttribute('title', 'Online Realtime');
+                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-xs"></i>`;
+                }
                 if (!currentBrand && brands.length) currentBrand = brands[0];
                 if (!currentCategory && categories.length) currentCategory = categories[0];
                 initTabs();
                 renderTable();
             }, (err) => {
                 console.error("Lỗi Firestore:", err);
-                statusEl.setAttribute('title', 'Lỗi quyền Firebase');
-                statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>`;
+                if(statusEl) {
+                    statusEl.setAttribute('title', 'Lỗi quyền Firebase');
+                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>`;
+                }
             });
         }
 
@@ -324,7 +328,6 @@
         }
 
         function initTabs() {
-            // Desktop Brand Tabs
             document.getElementById('brand-tabs').innerHTML = brands.map(b => 
                 `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${b === currentBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`
             ).join('');
@@ -345,24 +348,26 @@
             document.getElementById('sub-cat-list').innerHTML = subCatHtml;
             document.getElementById('sub-cat-list-mobile').innerHTML = subCatHtml;
 
-            // Type filter label desktop
             const lblType = document.getElementById('label-current-type');
-            if (currentType) {
-                lblType.innerText = currentType;
-                lblType.className = "text-amber-400 font-bold";
-            } else {
-                lblType.innerText = "KIỂU";
-                lblType.className = "text-red-500 font-bold";
+            if (lblType) {
+                if (currentType) {
+                    lblType.innerText = currentType;
+                    lblType.className = "text-amber-400 font-bold";
+                } else {
+                    lblType.innerText = "KIỂU";
+                    lblType.className = "text-red-500 font-bold";
+                }
             }
 
-            // Type filter label mobile
             const lblTypeMobile = document.getElementById('label-current-type-mobile');
-            if (currentType) {
-                lblTypeMobile.innerText = currentType;
-                lblTypeMobile.className = "text-amber-400 font-bold";
-            } else {
-                lblTypeMobile.innerText = "KIỂU";
-                lblTypeMobile.className = "text-red-500 font-bold";
+            if (lblTypeMobile) {
+                if (currentType) {
+                    lblTypeMobile.innerText = currentType;
+                    lblTypeMobile.className = "text-amber-400 font-bold";
+                } else {
+                    lblTypeMobile.innerText = "KIỂU";
+                    lblTypeMobile.className = "text-red-500 font-bold";
+                }
             }
 
             const allTypeOption = `<button onclick="selectType('');" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${currentType === '' ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">-- TẤT CẢ --</button>`;
@@ -595,7 +600,8 @@
 
             let total = 0;
             devices.forEach(d => total += d.cost * d.qty);
-            document.getElementById('total-cost').innerText = fmtSecret(total);
+            const totalCostEl = document.getElementById('total-cost');
+            if(totalCostEl) totalCostEl.innerText = fmtSecret(total);
 
             const filtered = devices.filter(d => 
                 d.brand === currentBrand && 
