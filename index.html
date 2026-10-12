@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BÁO GIÁ SỬA CHỮA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,8 +29,8 @@
                     <!-- TABS HÃNG -->
                     <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0" id="brand-tabs"></div>
                     
-                    <!-- DÒNG LỌC LINH KIỆN & DROPDOWN KIỂU -->
-                    <div class="flex flex-wrap items-center gap-1.5 pt-1 border-t border-gray-800/80 relative">
+                    <!-- DÒNG LỌC LINH KIỆN & DROPDOWN KIỂU (CHỈ HIỆN TRÊN DESKTOP) -->
+                    <div class="hidden md:flex flex-wrap items-center gap-1.5 pt-1 border-t border-gray-800/80 relative">
                         <span class="text-[11px] font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
                         <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1.5"></div>
                         
@@ -60,11 +60,27 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- DÒNG LỌC LINH KIỆN DÀNH RIÊNG CHO MOBILE (KHÔNG CÓ NÚT KIỂU Ở ĐÂY) -->
+                    <div class="flex md:hidden flex-wrap items-center gap-1.5 pt-1 border-t border-gray-800/80 relative">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
+                        <div id="main-cat-tabs-mobile" class="flex flex-wrap items-center gap-1.5"></div>
+                        
+                        <!-- NÚT MŨI TÊN SANG PHẢI (XEM THÊM LINH KIỆN MOBILE) -->
+                        <div class="relative">
+                            <button onclick="toggleMoreCatsMobile(event)" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center justify-center" title="XEM THÊM LINH KIỆN">
+                                <i class="fa-solid fa-chevron-right text-white text-xs"></i>
+                            </button>
+                            <div id="dropdown-more-cats-mobile" class="hidden absolute left-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1.5">
+                                <div id="sub-cat-list-mobile" class="flex flex-col gap-1"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 w-full xl:w-auto justify-between xl:justify-end">
-                    <!-- BIỂU TƯỢNG ĐÁM MÂY XANH ĐỒNG BỘ ONLINE -->
-                    <div id="cloud-status" class="w-9 h-9 bg-gray-900 rounded-xl border border-gray-800 flex items-center justify-center" title="Đang kết nối...">
+                    <!-- BIỂU TƯỢNG ĐÁM MÂY XANH: ẨN TRÊN MOBILE, HIỆN TỪ MD TRỞ LÊN -->
+                    <div id="cloud-status" class="hidden md:flex w-9 h-9 bg-gray-900 rounded-xl border border-gray-800 items-center justify-center" title="Đang kết nối...">
                         <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-sm"></i>
                     </div>
 
@@ -75,13 +91,24 @@
                         <input type="text" id="search-input" oninput="renderTable()" placeholder="TÌM KIẾM..." 
                             class="w-full pl-9 pr-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
                     </div>
+
+                    <!-- NÚT LỌC KIỂU TRÊN MOBILE (ĐẶT Ở VỊ TRÍ ĐÁM MÂY VỪA ẨN) -->
+                    <div class="relative md:hidden">
+                        <button id="btn-type-filter-mobile" onclick="toggleTypeFilterMobile(event)" class="px-3 py-2 rounded-xl text-xs font-bold bg-gray-900 border border-gray-700 hover:bg-gray-800 text-white transition flex items-center gap-1.5" title="LỌC KIỂU">
+                            <span id="label-current-type-mobile" class="text-red-500 font-bold">KIỂU</span>
+                            <i class="fa-solid fa-chevron-down text-white text-xs transition-transform duration-200"></i>
+                        </button>
+                        <div id="dropdown-types-mobile" class="hidden absolute right-0 mt-2 w-44 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1">
+                            <div id="type-menu-list-mobile" class="flex flex-col gap-1"></div>
+                        </div>
+                    </div>
                     
-                    <!-- NÚT THÊM MỚI: ẨN TRÊN MOBILE (HIỆN TỪ MÀN HÌNH MD TRỞ LÊN) -->
+                    <!-- NÚT THÊM MỚI: ẨN TRÊN MOBILE -->
                     <button onclick="openModal()" class="hidden md:flex bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-medium transition items-center gap-1.5 whitespace-nowrap shadow-lg shadow-indigo-600/30">
                         <i class="fa-solid fa-plus"></i> THÊM MỚI
                     </button>
 
-                    <!-- VỐN & THỐNG KÊ: ẨN TRÊN MOBILE (HIỆN TỪ MÀN HÌNH MD TRỞ LÊN) -->
+                    <!-- VỐN & THỐNG KÊ: ẨN TRÊN MOBILE -->
                     <div class="hidden md:flex items-center gap-2 bg-gray-900/80 px-3 py-1.5 rounded-xl border border-gray-800">
                         <div>
                             <div class="text-[9px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
@@ -89,7 +116,7 @@
                         </div>
                     </div>
 
-                    <!-- NÚT ẨN/HIỆN: ẨN TRÊN MOBILE (HIỆN TỪ MÀN HÌNH MD TRỞ LÊN) -->
+                    <!-- NÚT ẨN/HIỆN: ẨN TRÊN MOBILE -->
                     <button onclick="togglePrivacyMode()" class="hidden md:flex bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-xl text-xs font-medium border border-gray-700 transition items-center justify-center w-9 h-9" title="ẨN / HIỆN VỐN & LÃI">
                         <i class="fa-solid fa-eye text-sm" id="privacy-icon"></i>
                     </button>
@@ -297,21 +324,28 @@
         }
 
         function initTabs() {
+            // Desktop Brand Tabs
             document.getElementById('brand-tabs').innerHTML = brands.map(b => 
                 `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${b === currentBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`
             ).join('');
 
             const fixedCats = ['MÀN HÌNH', 'PIN'];
-            document.getElementById('main-cat-tabs').innerHTML = fixedCats.map(c => 
+            const catHtml = fixedCats.map(c => 
                 `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
             ).join('');
 
+            document.getElementById('main-cat-tabs').innerHTML = catHtml;
+            document.getElementById('main-cat-tabs-mobile').innerHTML = catHtml;
+
             const subCats = categories.filter(c => !fixedCats.includes(c));
-            document.getElementById('sub-cat-list').innerHTML = subCats.length ? subCats.map(c => 
-                `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event);" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">${c}</button>`
+            const subCatHtml = subCats.length ? subCats.map(c => 
+                `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event); toggleMoreCatsMobile(event);" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">${c}</button>`
             ).join('') : '<div class="px-3 py-1 text-xs text-gray-500 italic">Chưa có mục khác</div>';
 
-            const btnType = document.getElementById('btn-type-filter');
+            document.getElementById('sub-cat-list').innerHTML = subCatHtml;
+            document.getElementById('sub-cat-list-mobile').innerHTML = subCatHtml;
+
+            // Type filter label desktop
             const lblType = document.getElementById('label-current-type');
             if (currentType) {
                 lblType.innerText = currentType;
@@ -321,11 +355,23 @@
                 lblType.className = "text-red-500 font-bold";
             }
 
+            // Type filter label mobile
+            const lblTypeMobile = document.getElementById('label-current-type-mobile');
+            if (currentType) {
+                lblTypeMobile.innerText = currentType;
+                lblTypeMobile.className = "text-amber-400 font-bold";
+            } else {
+                lblTypeMobile.innerText = "KIỂU";
+                lblTypeMobile.className = "text-red-500 font-bold";
+            }
+
             const allTypeOption = `<button onclick="selectType('');" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${currentType === '' ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">-- TẤT CẢ --</button>`;
             const typeOptions = types.map(t => 
                 `<button onclick="selectType('${t}');" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${t === currentType ? 'bg-amber-400/20 text-amber-400' : 'text-gray-300 hover:bg-gray-800'}">${t}</button>`
             ).join('');
+            
             document.getElementById('type-menu-list').innerHTML = allTypeOption + typeOptions;
+            document.getElementById('type-menu-list-mobile').innerHTML = allTypeOption + typeOptions;
 
             document.getElementById('brand-suggestions').innerHTML = brands.map(b => `<option value="${b}">`).join('');
             document.getElementById('part-suggestions').innerHTML = categories.map(c => `<option value="${c}">`).join('');
@@ -339,9 +385,16 @@
             document.getElementById('dropdown-types').classList.toggle('hidden');
         }
 
+        function toggleTypeFilterMobile(e) {
+            e.stopPropagation();
+            document.getElementById('dropdown-more-cats-mobile')?.classList.add('hidden');
+            document.getElementById('dropdown-types-mobile').classList.toggle('hidden');
+        }
+
         function selectType(t) {
             currentType = t;
             document.getElementById('dropdown-types').classList.add('hidden');
+            document.getElementById('dropdown-types-mobile').classList.add('hidden');
             initTabs();
             renderTable();
         }
@@ -352,9 +405,17 @@
             document.getElementById('dropdown-more-cats').classList.toggle('hidden'); 
         }
 
+        function toggleMoreCatsMobile(e) { 
+            e.stopPropagation(); 
+            document.getElementById('dropdown-types-mobile')?.classList.add('hidden');
+            document.getElementById('dropdown-more-cats-mobile').classList.toggle('hidden'); 
+        }
+
         window.onclick = () => {
             document.getElementById('dropdown-more-cats')?.classList.add('hidden');
             document.getElementById('dropdown-types')?.classList.add('hidden');
+            document.getElementById('dropdown-more-cats-mobile')?.classList.add('hidden');
+            document.getElementById('dropdown-types-mobile')?.classList.add('hidden');
         };
 
         function adjustQty(val) {
