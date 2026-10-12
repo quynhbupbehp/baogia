@@ -536,12 +536,14 @@
             devices.forEach(d => total += d.cost * d.qty);
             document.getElementById('total-cost').innerText = fmtSecret(total);
 
+            // Lọc và sắp xếp theo tên máy từ thấp đến cao (A-Z)
             const filtered = devices.filter(d => 
                 d.brand === currentBrand && 
                 (!currentCategory || (d.part || '').toLowerCase().includes(currentCategory.toLowerCase())) &&
                 (!currentType || (d.type || '').toUpperCase() === currentType.toUpperCase()) &&
                 `${d.part || ''} ${d.type || ''} ${d.name}`.toLowerCase().includes(kw)
-            );
+            ).sort((a, b) => a.name.localeCompare(b.name, 'vi', { numeric: true }));
+
             document.getElementById('empty-state').classList.toggle('hidden', filtered.length > 0);
 
             filtered.forEach(item => {
@@ -550,7 +552,7 @@
                 const sub = (clean.includes('-') || clean.includes(',')) ? clean.split(/[-|,]/).map(p => p.trim()).filter(Boolean) : [clean];
                 const tags = sub.map((m, idx) => `<span class="px-2 py-0.5 bg-gray-800 ${idx % 2 === 0 ? 'text-amber-400' : 'text-white'} border border-gray-700 text-xs md:text-sm font-bold rounded uppercase">${m}</span>`).join(' ');
 
-                // Desktop Table Row (Có thêm biểu tượng tạo bản sao ngay trước nút sửa)
+                // Desktop Table Row
                 tbody.innerHTML += `
                     <tr class="row-hover transition border-b border-gray-800/40">
                         <td class="py-3 px-4 text-center"><span class="px-2 py-1 bg-gray-800 text-indigo-400 border border-gray-700 text-xs font-bold rounded-lg uppercase">${item.brand}</span></td>
@@ -571,7 +573,7 @@
                     </tr>
                 `;
 
-                // Mobile Card List (Giữ nguyên gọn gàng theo yêu cầu trước)
+                // Mobile Card List
                 mobileList.innerHTML += `
                     <div class="p-3 flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2 shrink-0">
