@@ -252,14 +252,22 @@
 
         let currentBrand = brands[0] || '', currentCategory = categories[0] || '', currentType = '', isPrivacyMode = false;
 
-        // Hàm tách chuỗi theo dấu "-" và tạo các badge xen kẽ màu Vàng / Trắng (Tăng size 30% với text-sm/base và padding lớn hơn)
+        // Hàm rút gọn tên linh kiện (Ví dụ: MÀN HÌNH -> MÀN)
+        function getShortCategory(partName) {
+            if (!partName) return '';
+            const upper = partName.toUpperCase();
+            if (upper.includes('MÀN HÌNH')) return 'MÀN';
+            return partName;
+        }
+
+        // Hàm tách chuỗi theo dấu "-" và tạo các badge xen kẽ màu Vàng / Trắng
         function renderDeviceNames(nameStr) {
             if (!nameStr) return '';
             const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
             
             return parts.map((part, index) => {
                 const textColor = index % 2 === 0 ? 'text-amber-400' : 'text-white';
-                return `<span class="px-3 py-1.5 rounded-xl bg-gray-800/90 border border-gray-700/60 ${textColor} font-bold whitespace-nowrap text-sm inline-block m-1 shadow-sm">${part}</span>`;
+                return `<span class="px-2.5 py-1 rounded-xl bg-gray-800/90 border border-gray-700/60 ${textColor} font-bold whitespace-nowrap text-xs inline-block m-0.5 shadow-sm">${part}</span>`;
             }).join('');
         }
 
@@ -642,30 +650,28 @@
                 // Mobile card
                 const colorDotMobile = getColorCircle(d.color);
                 const card = document.createElement('div');
-                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-3 mb-2 grid items-center text-sm gap-1";
+                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 flex items-center justify-between text-sm gap-2";
                 card.onclick = () => editDevice(d.id);
 
                 const namesHtmlMobile = `
-                    <div class="flex flex-wrap items-center gap-2 py-0.5">
+                    <div class="flex flex-wrap items-center gap-1.5 py-0.5 max-w-[55%] overflow-hidden">
                         ${renderDeviceNames(d.name)}
                         ${colorDotMobile}
                     </div>
                 `;
 
                 if (isIphone) {
-                    card.classList.add('grid-cols-4');
                     card.innerHTML = `
-                        <div class="col-span-1">${namesHtmlMobile}</div>
-                        <div class="col-span-1 text-center text-gray-300 font-medium px-1 truncate">${d.part}</div>
-                        <div class="col-span-1 text-center text-amber-400 font-bold px-1 truncate">${d.type || '-'}</div>
-                        <div class="col-span-1 text-right text-emerald-400 font-bold text-base pr-1">${fmtVal(d.price)}</div>
+                        ${namesHtmlMobile}
+                        <div class="text-center text-indigo-400 font-medium truncate">${getShortCategory(d.part)}</div>
+                        <div class="text-center text-amber-400 font-bold truncate">${d.type || '-'}</div>
+                        <div class="text-right text-emerald-400 font-bold text-base shrink-0">${fmtVal(d.price)}</div>
                     `;
                 } else {
-                    card.classList.add('grid-cols-3');
                     card.innerHTML = `
-                        <div class="col-span-1">${namesHtmlMobile}</div>
-                        <div class="col-span-1 text-center text-gray-300 font-medium px-1 truncate">${d.part}</div>
-                        <div class="col-span-1 text-right text-emerald-400 font-bold text-base pr-1">${fmtVal(d.price)}</div>
+                        ${namesHtmlMobile}
+                        <div class="text-center text-indigo-400 font-medium truncate">${getShortCategory(d.part)}</div>
+                        <div class="text-right text-emerald-400 font-bold text-base shrink-0">${fmtVal(d.price)}</div>
                     `;
                 }
                 mobileList.appendChild(card);
