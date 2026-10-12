@@ -372,8 +372,8 @@
         function updateModalStats() {
             const p = parseNum(document.getElementById('device-price').value);
             const c = parseNum(document.getElementById('device-cost').value);
-            const q = Number(document.getElementById('device-qty').value) || 0;
-            document.getElementById('modal-profit-preview').innerText = fmtVal((p - c) * q);
+            // Phần xem trước lãi trong Modal chỉ tính cho số lượng 1
+            document.getElementById('modal-profit-preview').innerText = fmtVal(p - c);
         }
 
         function openModal() {
@@ -410,9 +410,8 @@
         function duplicateDevice(id) {
             const item = devices.find(d => d.id === id);
             if (!item) return;
-            // Mở modal dạng thêm mới nhưng nạp sẵn dữ liệu của bản ghi được chọn
             document.getElementById('modal-title').innerText = "TẠO BẢN SAO THIẾT BỊ";
-            document.getElementById('device-id').value = ''; // Để trống ID để khi bấm lưu sẽ hiểu là tạo bản ghi mới
+            document.getElementById('device-id').value = '';
             document.getElementById('device-brand').value = item.brand;
             document.getElementById('device-name').value = item.name;
             document.getElementById('device-part').value = item.part;
@@ -544,7 +543,8 @@
             document.getElementById('empty-state').classList.toggle('hidden', filtered.length > 0);
 
             filtered.forEach(item => {
-                const profit = (item.price - item.cost) * item.qty;
+                // Lãi tính cho số lượng 1: Giá bán - Giá nhập
+                const profit = item.price - item.cost;
                 const clean = item.brand.toLowerCase() === 'iphone' ? item.name.replace(/iphone\s*/gi, '').trim() : item.name;
                 const sub = (clean.includes('-') || clean.includes(',')) ? clean.split(/[-|,]/).map(p => p.trim()).filter(Boolean) : [clean];
                 const tags = sub.map((m, idx) => `<span class="px-2 py-0.5 bg-gray-800 ${idx % 2 === 0 ? 'text-amber-400' : 'text-white'} border border-gray-700 text-xs md:text-sm font-bold rounded uppercase">${m}</span>`).join(' ');
@@ -561,7 +561,7 @@
                         <td class="py-3 px-3 text-center font-bold text-white text-xs">${item.qty}</td>
                         <td class="py-3 px-4 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <button onclick="duplicateDevice(${item.id})" class="p-1.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white rounded-lg transition" title="TẠO BẢN SAO"><i class="fa-solid fa-copy text-xs"></i></button>
+                                <button onclick="duplicateDevice(${item.id})" class="p-1.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 text-white rounded-lg transition" title="TẠO BẢN SAO"><i class="fa-solid fa-copy text-xs"></i></button>
                                 <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                 <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
