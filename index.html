@@ -407,23 +407,21 @@
             updateModalStats();
         }
 
-        async function duplicateDevice(id) {
+        function duplicateDevice(id) {
             const item = devices.find(d => d.id === id);
             if (!item) return;
-            const newId = devices.length ? Math.max(...devices.map(d => d.id)) + 1 : 1;
-            const duplicated = {
-                id: newId,
-                brand: item.brand,
-                name: item.name,
-                part: item.part,
-                type: item.type,
-                price: item.price,
-                cost: item.cost,
-                qty: item.qty
-            };
-            devices.push(duplicated);
-            await saveAllToCloud();
-            renderTable();
+            // Mở modal dạng thêm mới nhưng nạp sẵn dữ liệu của bản ghi được chọn
+            document.getElementById('modal-title').innerText = "TẠO BẢN SAO THIẾT BỊ";
+            document.getElementById('device-id').value = ''; // Để trống ID để khi bấm lưu sẽ hiểu là tạo bản ghi mới
+            document.getElementById('device-brand').value = item.brand;
+            document.getElementById('device-name').value = item.name;
+            document.getElementById('device-part').value = item.part;
+            document.getElementById('device-type').value = item.type || '';
+            document.getElementById('device-price').value = fmtVal(item.price);
+            document.getElementById('device-cost').value = fmtVal(item.cost);
+            document.getElementById('device-qty').value = item.qty;
+            document.getElementById('device-modal').classList.remove('hidden');
+            updateModalStats();
         }
 
         async function saveDevice(e) {
@@ -536,7 +534,6 @@
             devices.forEach(d => total += d.cost * d.qty);
             document.getElementById('total-cost').innerText = fmtSecret(total);
 
-            // Lọc và sắp xếp theo tên máy từ thấp đến cao (A-Z)
             const filtered = devices.filter(d => 
                 d.brand === currentBrand && 
                 (!currentCategory || (d.part || '').toLowerCase().includes(currentCategory.toLowerCase())) &&
