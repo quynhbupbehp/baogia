@@ -73,7 +73,7 @@
                     </div>
                 </div>
 
-                <!-- CÁC NÚT QUẢN LÝ CHỈ HIỆN TRÊN DESKTOP (ẨN HOÀN TOÀN TRÊN MOBILE) -->
+                <!-- CÁC NÚT QUẢN LÝ CHỈ HIỆN TRÊN DESKTOP -->
                 <div class="hidden xl:flex flex-wrap items-center gap-2 justify-end">
                     <div id="cloud-status" class="flex w-9 h-9 bg-gray-900 rounded-xl border border-gray-800 items-center justify-center" title="Đang kết nối...">
                         <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-sm"></i>
@@ -96,11 +96,11 @@
 
         <!-- BẢNG DỮ LIỆU -->
         <div class="card-dark rounded-2xl overflow-hidden shadow-xl">
+            <!-- BẢNG DESKTOP (ĐÃ BỎ CỘT HÃNG) -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
                     <thead>
                         <tr class="bg-indigo-600 text-white text-xs uppercase tracking-wider shadow-sm">
-                            <th class="py-3 px-4 font-bold text-center">HÃNG</th>
                             <th class="py-3 px-4 font-bold text-center">TÊN MÁY</th>
                             <th class="py-3 px-4 font-bold text-center">LINH KIỆN</th>
                             <th class="py-3 px-3 font-bold text-center">KIỂU</th>
@@ -115,7 +115,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN (ĐÃ BỎ HÃNG) -->
             <div class="md:hidden divide-y divide-gray-800/60 p-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -302,7 +302,6 @@
                 `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${b === currentBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`
             ).join('');
 
-            // Chỉ hiển thị cố định MÀN HÌNH và PIN trực tiếp bên ngoài trên mobile
             const fixedMainCats = ['MÀN HÌNH', 'PIN'];
             const catHtml = fixedMainCats.map(c => 
                 `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
@@ -310,7 +309,6 @@
 
             document.getElementById('main-cat-tabs').innerHTML = catHtml;
 
-            // Danh sách bên trong dropdown (KÍNH - C.ỨNG, CÁP/BO SẠC và các mục khác nếu có)
             const subCats = categories.filter(c => !fixedMainCats.includes(c));
             const subCatHtml = subCats.length ? subCats.map(c => 
                 `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event);" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">${c}</button>`
@@ -513,11 +511,10 @@
             filtered.forEach(d => {
                 const profit = (d.price - d.cost) * d.qty;
                 
-                // Desktop row
+                // Desktop row (Đã bỏ cột Hãng)
                 const tr = document.createElement('tr');
                 tr.className = "row-hover transition text-xs";
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-semibold text-gray-300">${d.brand}</td>
                     <td class="py-3 px-4 font-bold text-white">${d.name}</td>
                     <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
                     <td class="py-3 px-3 text-amber-400 font-semibold">${d.type || '-'}</td>
@@ -534,14 +531,13 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile card dạng dòng đơn chuẩn xác theo mẫu
+                // Mobile card dạng dòng đơn (Đã bỏ hãng, chỉ giữ tên máy, linh kiện, kiểu, giá)
                 const card = document.createElement('div');
                 card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 flex items-center justify-between text-xs";
                 card.onclick = () => editDevice(d.id);
                 card.innerHTML = `
                     <div class="flex items-center gap-2 overflow-hidden">
-                        <span class="px-2.5 py-1 rounded-lg bg-gray-800/90 border border-gray-700/60 text-indigo-400 font-bold shrink-0">${d.brand}</span>
-                        <span class="px-2.5 py-1 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold shrink-0 max-w-[120px] truncate">${d.name}</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold shrink-0 max-w-[140px] truncate">${d.name}</span>
                         <span class="text-gray-600 font-bold">|</span>
                         <span class="text-gray-300 font-medium shrink-0">${d.part}</span>
                         <span class="text-gray-600 font-bold">|</span>
