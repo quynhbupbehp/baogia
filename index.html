@@ -115,7 +115,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN (CÂN ĐỐI KHÔNG CÓ DẤU |) -->
             <div class="md:hidden divide-y divide-gray-800/60 p-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -210,7 +210,6 @@
                         </div>
                     </div>
 
-                    <!-- Ô NHẬP MÀU (ĐÃ THÊM VÀO ĐÚNG VỊ TRÍ) -->
                     <div class="flex flex-col items-center">
                         <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
                         <input type="text" id="device-color" placeholder="VD: ĐỎ" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
@@ -521,7 +520,6 @@
             filtered.forEach(d => {
                 const profit = (d.price - d.cost) * d.qty;
                 
-                // Hàm tạo HTML chấm màu kèm chữ (chỉ hiện khi có nhập màu)
                 const getColorDisplay = (colorStr) => {
                     if (!colorStr) return '';
                     return `<span class="inline-flex items-center gap-1.5 ml-2 px-2 py-0.5 rounded-md bg-gray-800 border border-gray-700 text-[11px] text-gray-200"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block shadow-[0_0_6px_#fbbf24]"></span>${colorStr}</span>`;
@@ -552,22 +550,18 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile card dạng dòng đơn
+                // Mobile card căn chỉnh cân đối dạng lưới (grid) theo mẫu, không có dấu |
                 const card = document.createElement('div');
-                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 flex items-center justify-between text-xs";
+                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 grid grid-cols-4 items-center text-xs";
                 card.onclick = () => editDevice(d.id);
                 card.innerHTML = `
-                    <div class="flex items-center gap-2 overflow-hidden">
-                        <span class="px-2.5 py-1 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold shrink-0 max-w-[120px] truncate">${d.name}</span>
+                    <div class="col-span-1 flex items-center gap-1.5">
+                        <span class="px-2.5 py-1.5 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold truncate">${d.name}</span>
                         ${d.color ? `<span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0 shadow-[0_0_6px_#fbbf24]" title="${d.color}"></span>` : ''}
-                        <span class="text-gray-600 font-bold">|</span>
-                        <span class="text-gray-300 font-medium shrink-0">${d.part}</span>
-                        <span class="text-gray-600 font-bold">|</span>
-                        <span class="text-emerald-400 font-bold shrink-0">${d.type || '-'}</span>
                     </div>
-                    <div class="text-red-500 font-bold text-sm shrink-0 pl-2">
-                        ${fmtVal(d.price)}
-                    </div>
+                    <div class="col-span-1 text-center text-gray-300 font-medium truncate px-1">${d.part}</div>
+                    <div class="col-span-1 text-center text-emerald-400 font-bold truncate px-1">${d.type || '-'}</div>
+                    <div class="col-span-1 text-right text-red-500 font-bold text-sm pr-1">${fmtVal(d.price)}</div>
                 `;
                 mobileList.appendChild(card);
             });
