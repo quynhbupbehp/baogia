@@ -376,6 +376,77 @@
             document.getElementById('modal-profit-preview').innerText = fmtVal((p - c) * q);
         }
 
+        function openModal() {
+            document.getElementById('modal-title').innerText = "THÊM THIẾT BỊ MỚI";
+            document.getElementById('device-id').value = '';
+            document.getElementById('device-form').reset();
+            document.getElementById('device-qty').value = '1';
+            document.getElementById('device-brand').value = currentBrand;
+            document.getElementById('device-part').value = currentCategory;
+            document.getElementById('device-modal').classList.remove('hidden');
+            updateModalStats();
+        }
+
+        function closeModal() {
+            document.getElementById('device-modal').classList.add('hidden');
+        }
+
+        function editDevice(id) {
+            const item = devices.find(d => d.id === id);
+            if (!item) return;
+            document.getElementById('modal-title').innerText = "CHỈNH SỬA THIẾT BỊ";
+            document.getElementById('device-id').value = item.id;
+            document.getElementById('device-brand').value = item.brand;
+            document.getElementById('device-name').value = item.name;
+            document.getElementById('device-part').value = item.part;
+            document.getElementById('device-type').value = item.type || '';
+            document.getElementById('device-price').value = fmtVal(item.price);
+            document.getElementById('device-cost').value = fmtVal(item.cost);
+            document.getElementById('device-qty').value = item.qty;
+            document.getElementById('device-modal').classList.remove('hidden');
+            updateModalStats();
+        }
+
+        async function saveDevice(e) {
+            e.preventDefault();
+            const id = document.getElementById('device-id').value;
+            const brand = document.getElementById('device-brand').value.trim().toUpperCase();
+            const name = document.getElementById('device-name').value.trim().toUpperCase();
+            const part = document.getElementById('device-part').value.trim().toUpperCase();
+            const type = document.getElementById('device-type').value.trim().toUpperCase();
+            const price = parseNum(document.getElementById('device-price').value);
+            const cost = parseNum(document.getElementById('device-cost').value);
+            const qty = Number(document.getElementById('device-qty').value) || 0;
+
+            if (!brands.includes(brand)) brands.push(brand);
+            if (!categories.includes(part)) categories.push(part);
+            if (type && !types.includes(type)) types.push(type);
+            if (!names.includes(name)) names.push(name);
+
+            if (id) {
+                const idx = devices.findIndex(d => d.id == id);
+                if (idx !== -1) {
+                    devices[idx] = { id: Number(id), brand, name, part, type, price, cost, qty };
+                }
+            } else {
+                const newId = devices.length ? Math.max(...devices.map(d => d.id)) + 1 : 1;
+                devices.push({ id: newId, brand, name, part, type, price, cost, qty });
+            }
+
+            await saveAllToCloud();
+            closeModal();
+            initTabs();
+            renderTable();
+        }
+
+        async function deleteDevice(id) {
+            if (confirm("BẠN CÓ CHẮC MUỐN XÓA THIẾT BỊ NÀY?")) {
+                devices = devices.filter(d => d.id !== id);
+                await saveAllToCloud();
+                renderTable();
+            }
+        }
+
         async function handleEntity(type, act) {
             const map = {
                 brands: { list: brands, el: 'device-brand', name: 'HÃNG', devKey: 'brand' },
@@ -460,49 +531,60 @@
                 const sub = (clean.includes('-') || clean.includes(',')) ? clean.split(/[-|,]/).map(p => p.trim()).filter(Boolean) : [clean];
                 const tags = sub.map((m, idx) => `<span class="px-2 py-0.5 bg-gray-800 ${idx % 2 === 0 ? 'text-amber-400' : 'text-white'} border border-gray-700 text-xs md:text-sm font-bold rounded uppercase">${m}</span>`).join(' ');
 
-                // Desktop Table Row
+                // Desktop Table Row (GIÁ BÁN: màu đỏ, kích thước lớn hơn 50% - text-lg font-extrabold)
                 tbody.innerHTML += `
                     <tr class="row-hover transition border-b border-gray-800/40">
                         <td class="py-3 px-4 text-center"><span class="px-2 py-1 bg-gray-800 text-indigo-400 border border-gray-700 text-xs font-bold rounded-lg uppercase">${item.brand}</span></td>
                         <td class="py-3 px-4 text-center"><div class="flex flex-wrap gap-1.5 items-center justify-center">${tags}</div></td>
                         <td class="py-3 px-4 text-center font-medium text-white uppercase text-xs">${(item.part || 'LINH KIỆN').toUpperCase()}</td>
                         <td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded-md text-xs font-bold bg-black border border-gray-800 text-amber-400 uppercase tracking-wide inline-block">${(item.type || '').toUpperCase()}</span></td>
-                        <td class="py-3 px-4 text-center font-bold text-emerald-400 text-xs">${fmtVal(item.price)}K</td>
+                        <td class="py-3 px-4 text-center font-extrabold text-red-500 text-lg">${fmtVal(item.price)}K</td>
                         <td class="py-3 px-4 text-center font-bold text-amber-400 text-xs">${fmtSecret(item.cost)}K</td>
                         <td class="py-3 px-3 text-center font-bold text-white text-xs">${item.qty}</td>
                         <td class="py-3 px-4 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition text-xs" title="Sửa"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition text-xs" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
+                                <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
                         </td>
                         <td class="py-3 px-4 text-center font-bold text-emerald-400 text-xs">${fmtSecret(profit)}K</td>
                     </tr>
                 `;
 
-                // Mobile Card View
+                // Mobile Card List (GIÁ BÁN: màu đỏ, kích thước lớn hơn - text-base font-extrabold)
                 mobileList.innerHTML += `
-                    <div class="p-3 flex flex-col gap-2 bg-gray-900/40">
-                        <div class="flex justify-between items-center">
-                            <span class="px-2 py-0.5 bg-gray-800 text-indigo-400 border border-gray-700 text-[10px] font-bold rounded uppercase">${item.brand}</span>
-                            <div class="flex items-center gap-1">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-black border border-gray-800 text-amber-400 uppercase">${(item.type || 'ZIN').toUpperCase()}</span>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-300">SL: ${item.qty}</span>
+                    <div class="p-3.5 flex flex-col gap-2.5">
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col gap-1">
+                                <span class="px-2 py-0.5 bg-gray-800 text-indigo-400 border border-gray-700 text-[10px] font-bold rounded uppercase w-max">${item.brand}</span>
+                                <div class="flex flex-wrap gap-1 items-center mt-0.5">${tags}</div>
                             </div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-black border border-gray-800 text-amber-400 uppercase">${(item.type || 'ZIN')}</span>
                         </div>
-                        <div class="flex flex-wrap gap-1 items-center">
-                            <span class="text-xs font-bold text-gray-400 uppercase">${(item.part || 'LINH KIỆN')}:</span>
-                            ${tags}
-                        </div>
-                        <div class="flex justify-between items-center pt-1 border-t border-gray-800/80 text-xs">
+                        <div class="flex justify-between items-center text-xs pt-1 border-t border-gray-800/60">
                             <div>
-                                <span class="text-gray-400">BÁN:</span> <b class="text-emerald-400">${fmtVal(item.price)}K</b> | 
-                                <span class="text-gray-400">NHẬP:</span> <b class="text-amber-400">${fmtSecret(item.cost)}K</b> | 
-                                <span class="text-gray-400">LÃI:</span> <b class="text-emerald-400">${fmtSecret(profit)}K</b>
+                                <span class="text-gray-400 text-[10px]">LK:</span> <span class="font-semibold text-white uppercase">${item.part}</span>
                             </div>
-                            <div class="flex items-center gap-1">
-                                <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 text-blue-400 rounded-lg text-xs"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 text-red-400 rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button>
+                            <div>
+                                <span class="text-gray-400 text-[10px]">SL:</span> <span class="font-bold text-white">${item.qty}</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-900/60 p-2 rounded-xl border border-gray-800/80">
+                            <div>
+                                <div class="text-[9px] text-gray-400">GIÁ BÁN</div>
+                                <div class="font-extrabold text-red-500 text-base">${fmtVal(item.price)}K</div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] text-gray-400">GIÁ NHẬP</div>
+                                <div class="font-bold text-amber-400 text-xs">${fmtSecret(item.cost)}K</div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] text-gray-400">LÃI</div>
+                                <div class="font-bold text-emerald-400 text-xs">${fmtSecret(profit)}K</div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 text-blue-400 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
+                                <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 text-red-400 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -510,77 +592,7 @@
             });
         }
 
-        function openModal(isEdit = false) {
-            document.getElementById('device-modal').classList.remove('hidden');
-            if (!isEdit) {
-                document.getElementById('modal-title').innerText = "THÊM THIẾT BỊ MỚI";
-                document.getElementById('device-id').value = '';
-                document.getElementById('device-brand').value = currentBrand;
-                document.getElementById('device-name').value = '';
-                document.getElementById('device-part').value = currentCategory;
-                document.getElementById('device-type').value = currentType;
-                document.getElementById('device-price').value = '';
-                document.getElementById('device-cost').value = '';
-                document.getElementById('device-qty').value = '1';
-                updateModalStats();
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('device-modal').classList.add('hidden');
-        }
-
-        function editDevice(id) {
-            const item = devices.find(d => d.id === id);
-            if (!item) return;
-            openModal(true);
-            document.getElementById('modal-title').innerText = "SỬA THÔNG TIN THIẾT BỊ";
-            document.getElementById('device-id').value = item.id;
-            document.getElementById('device-brand').value = item.brand;
-            document.getElementById('device-name').value = item.name;
-            document.getElementById('device-part').value = item.part;
-            document.getElementById('device-type').value = item.type || '';
-            document.getElementById('device-price').value = fmtVal(item.price);
-            document.getElementById('device-cost').value = fmtVal(item.cost);
-            document.getElementById('device-qty').value = item.qty;
-            updateModalStats();
-        }
-
-        async function saveDevice(e) {
-            e.preventDefault();
-            const id = document.getElementById('device-id').value;
-            const data = {
-                id: id ? Number(id) : Date.now(),
-                brand: document.getElementById('device-brand').value.trim().toUpperCase(),
-                name: document.getElementById('device-name').value.trim().toUpperCase(),
-                part: document.getElementById('device-part').value.trim().toUpperCase(),
-                type: document.getElementById('device-type').value.trim().toUpperCase(),
-                price: parseNum(document.getElementById('device-price').value),
-                cost: parseNum(document.getElementById('device-cost').value),
-                qty: Number(document.getElementById('device-qty').value) || 0
-            };
-
-            if (id) {
-                const idx = devices.findIndex(d => d.id === Number(id));
-                if (idx !== -1) devices[idx] = data;
-            } else {
-                devices.unshift(data);
-            }
-
-            await saveAllToCloud();
-            closeModal();
-            renderTable();
-        }
-
-        async function deleteDevice(id) {
-            if (confirm("BẠN CÓ CHẮC MUỐN XÓA THIẾT BỊ NÀY?")) {
-                devices = devices.filter(d => d.id !== id);
-                await saveAllToCloud();
-                renderTable();
-            }
-        }
-
-        // Khởi động ứng dụng
+        // Khởi chạy đồng bộ
         syncFromCloud();
     </script>
 </body>
