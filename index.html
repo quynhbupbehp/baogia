@@ -116,7 +116,7 @@
                 </table>
             </div>
 
-            <!-- Giao diện Danh sách Card cho Mobile (Tối ưu theo mẫu ảnh) -->
+            <!-- Giao diện Danh sách Card cho Mobile -->
             <div class="md:hidden divide-y divide-gray-800/60" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -551,14 +551,14 @@
                     </tr>
                 `;
 
-                // Mobile Card List (Gọn gàng trên một hàng ngang theo đúng mẫu yêu cầu)
+                // Mobile Card List (Đã bỏ khung nền và viền ở phần Kiểu)
                 mobileList.innerHTML += `
                     <div class="p-3 flex items-center justify-between gap-2 overflow-x-auto">
                         <div class="flex items-center gap-2 shrink-0">
                             <span class="px-2 py-1 bg-gray-800 text-indigo-400 border border-gray-700 text-[11px] font-bold rounded-lg uppercase">${item.brand}</span>
                             <div class="flex gap-1 items-center">${tags}</div>
                             <span class="font-medium text-white text-xs uppercase">${(item.part || '').toUpperCase()}</span>
-                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-black border border-gray-800 text-amber-400 uppercase">${(item.type || '')}</span>
+                            <span class="text-[11px] font-bold text-amber-400 uppercase">${(item.type || '')}</span>
                         </div>
                         <div class="font-black text-red-500 text-lg shrink-0 ml-auto">${fmtVal(item.price)}</div>
                     </div>
