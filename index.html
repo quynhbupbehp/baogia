@@ -407,6 +407,25 @@
             updateModalStats();
         }
 
+        async function duplicateDevice(id) {
+            const item = devices.find(d => d.id === id);
+            if (!item) return;
+            const newId = devices.length ? Math.max(...devices.map(d => d.id)) + 1 : 1;
+            const duplicated = {
+                id: newId,
+                brand: item.brand,
+                name: item.name,
+                part: item.part,
+                type: item.type,
+                price: item.price,
+                cost: item.cost,
+                qty: item.qty
+            };
+            devices.push(duplicated);
+            await saveAllToCloud();
+            renderTable();
+        }
+
         async function saveDevice(e) {
             e.preventDefault();
             const id = document.getElementById('device-id').value;
@@ -531,7 +550,7 @@
                 const sub = (clean.includes('-') || clean.includes(',')) ? clean.split(/[-|,]/).map(p => p.trim()).filter(Boolean) : [clean];
                 const tags = sub.map((m, idx) => `<span class="px-2 py-0.5 bg-gray-800 ${idx % 2 === 0 ? 'text-amber-400' : 'text-white'} border border-gray-700 text-xs md:text-sm font-bold rounded uppercase">${m}</span>`).join(' ');
 
-                // Desktop Table Row (Phần Kiểu hiển thị màu xanh lá)
+                // Desktop Table Row (Có thêm biểu tượng tạo bản sao ngay trước nút sửa)
                 tbody.innerHTML += `
                     <tr class="row-hover transition border-b border-gray-800/40">
                         <td class="py-3 px-4 text-center"><span class="px-2 py-1 bg-gray-800 text-indigo-400 border border-gray-700 text-xs font-bold rounded-lg uppercase">${item.brand}</span></td>
@@ -543,6 +562,7 @@
                         <td class="py-3 px-3 text-center font-bold text-white text-xs">${item.qty}</td>
                         <td class="py-3 px-4 text-center">
                             <div class="flex items-center justify-center gap-2">
+                                <button onclick="duplicateDevice(${item.id})" class="p-1.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white rounded-lg transition" title="TẠO BẢN SAO"><i class="fa-solid fa-copy text-xs"></i></button>
                                 <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                 <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
@@ -551,7 +571,7 @@
                     </tr>
                 `;
 
-                // Mobile Card List (Đẩy kiểu sang giữa màn hình, hiển thị màu xanh lá)
+                // Mobile Card List (Giữ nguyên gọn gàng theo yêu cầu trước)
                 mobileList.innerHTML += `
                     <div class="p-3 flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2 shrink-0">
