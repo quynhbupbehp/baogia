@@ -116,7 +116,7 @@
                 </table>
             </div>
 
-            <!-- Giao diện Danh sách Card cho Mobile -->
+            <!-- Giao diện Danh sách Card cho Mobile (Đã ẩn giá nhập, lãi, số lượng) -->
             <div class="md:hidden divide-y divide-gray-800/60" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -531,7 +531,7 @@
                 const sub = (clean.includes('-') || clean.includes(',')) ? clean.split(/[-|,]/).map(p => p.trim()).filter(Boolean) : [clean];
                 const tags = sub.map((m, idx) => `<span class="px-2 py-0.5 bg-gray-800 ${idx % 2 === 0 ? 'text-amber-400' : 'text-white'} border border-gray-700 text-xs md:text-sm font-bold rounded uppercase">${m}</span>`).join(' ');
 
-                // Desktop Table Row (Đã bỏ chữ K, tăng giá bán, giảm giá nhập và lãi)
+                // Desktop Table Row (Giữ nguyên đầy đủ cột cho màn hình lớn)
                 tbody.innerHTML += `
                     <tr class="row-hover transition border-b border-gray-800/40">
                         <td class="py-3 px-4 text-center"><span class="px-2 py-1 bg-gray-800 text-indigo-400 border border-gray-700 text-xs font-bold rounded-lg uppercase">${item.brand}</span></td>
@@ -551,7 +551,7 @@
                     </tr>
                 `;
 
-                // Mobile Card List (Đã bỏ chữ K, tăng giá bán, giảm giá nhập và lãi)
+                // Mobile Card List (Đã ẩn hoàn toàn giá nhập, lãi và số lượng, chỉ hiển thị linh kiện, kiểu, tên máy và giá bán nổi bật)
                 mobileList.innerHTML += `
                     <div class="p-3.5 flex flex-col gap-2.5">
                         <div class="flex justify-between items-start">
@@ -565,26 +565,15 @@
                             <div>
                                 <span class="text-gray-400 text-[10px]">LK:</span> <span class="font-semibold text-white uppercase">${item.part}</span>
                             </div>
-                            <div>
-                                <span class="text-gray-400 text-[10px]">SL:</span> <span class="font-bold text-white">${item.qty}</span>
-                            </div>
                         </div>
-                        <div class="flex justify-between items-center bg-gray-900/60 p-2 rounded-xl border border-gray-800/80">
+                        <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded-xl border border-gray-800/80">
                             <div>
-                                <div class="text-[9px] text-gray-400">GIÁ BÁN</div>
-                                <div class="font-black text-red-500 text-lg">${fmtVal(item.price)}</div>
-                            </div>
-                            <div>
-                                <div class="text-[9px] text-gray-400">GIÁ NHẬP</div>
-                                <div class="font-semibold text-amber-400 text-[11px]">${fmtSecret(item.cost)}</div>
-                            </div>
-                            <div>
-                                <div class="text-[9px] text-gray-400">LÃI</div>
-                                <div class="font-semibold text-emerald-400 text-[11px]">${fmtSecret(profit)}</div>
+                                <div class="text-[9px] text-gray-400 mb-0.5">GIÁ BÁN</div>
+                                <div class="font-black text-red-500 text-xl">${fmtVal(item.price)}</div>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 text-blue-400 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
-                                <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 text-red-400 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>
+                                <button onclick="editDevice(${item.id})" class="p-2 bg-blue-600/20 text-blue-400 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
+                                <button onclick="deleteDevice(${item.id})" class="p-2 bg-red-600/20 text-red-400 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
                         </div>
                     </div>
