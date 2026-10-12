@@ -76,18 +76,21 @@
                             class="w-full pl-9 pr-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
                     </div>
                     
-                    <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 whitespace-nowrap shadow-lg shadow-indigo-600/30">
+                    <!-- NÚT THÊM MỚI: ẨN TRÊN MOBILE (HIỆN TỪ MÀN HÌNH MD TRỞ LÊN) -->
+                    <button onclick="openModal()" class="hidden md:flex bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-medium transition items-center gap-1.5 whitespace-nowrap shadow-lg shadow-indigo-600/30">
                         <i class="fa-solid fa-plus"></i> THÊM MỚI
                     </button>
 
-                    <div class="flex items-center gap-2 bg-gray-900/80 px-3 py-1.5 rounded-xl border border-gray-800">
+                    <!-- VỐN & THỐNG KÊ: ẨN TRÊN MOBILE (HIỆN TỪ MÀN HÌNH MD TRỞ LÊN) -->
+                    <div class="hidden md:flex items-center gap-2 bg-gray-900/80 px-3 py-1.5 rounded-xl border border-gray-800">
                         <div>
                             <div class="text-[9px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
                             <div id="total-cost" class="text-xs font-bold text-amber-400 text-center">0</div>
                         </div>
                     </div>
 
-                    <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-xl text-xs font-medium border border-gray-700 transition flex items-center justify-center w-9 h-9" title="ẨN / HIỆN VỐN & LÃI">
+                    <!-- NÚT ẨN/HIỆN: ẨN TRÊN MOBILE (HIỆN TỪ MÀN HÌNH MD TRỞ LÊN) -->
+                    <button onclick="togglePrivacyMode()" class="hidden md:flex bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-xl text-xs font-medium border border-gray-700 transition items-center justify-center w-9 h-9" title="ẨN / HIỆN VỐN & LÃI">
                         <i class="fa-solid fa-eye text-sm" id="privacy-icon"></i>
                     </button>
                 </div>
@@ -162,7 +165,7 @@
                     <datalist id="name-suggestions"></datalist>
                 </div>
 
-                <!-- DÒNG LINH KIỆN VÀ KIỂU (ĐÃ ĐỒNG BỘ CỠ CHỮ VỚI CÁC NHÃN KHÁC) -->
+                <!-- DÒNG LINH KIỆN VÀ KIỂU -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <div class="flex justify-between items-center mb-1">
