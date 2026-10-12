@@ -638,16 +638,14 @@
                     </tr>
                 `;
 
-                // Mobile Card List (Được căn chỉnh cân đối, canh giữa các phần tử và cố định chiều rộng vùng giá)
+                // Mobile Card List (Đã bỏ dấu gạch 2 bên linh kiện, căn chỉnh khoảng cách hài hòa và cân đối)
                 mobileList.innerHTML += `
                     <div class="p-3.5 flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2 min-w-0 flex-1">
                             <span class="px-2 py-1 bg-gray-800 text-indigo-400 border border-gray-700 text-[10px] font-bold rounded-lg uppercase shrink-0">${item.brand}</span>
                             <div class="flex gap-1 items-center flex-wrap">${tags}</div>
-                            <span class="text-gray-500 font-bold shrink-0">|</span>
-                            <span class="font-medium text-white text-[11px] uppercase truncate">${(item.part || '').toUpperCase()}</span>
-                            <span class="text-gray-500 font-bold shrink-0">|</span>
-                            <span class="text-[11px] font-bold text-emerald-400 uppercase shrink-0">${(item.type || '')}</span>
+                            <span class="font-medium text-white text-[11px] uppercase truncate ml-1">${(item.part || '').toUpperCase()}</span>
+                            <span class="text-[11px] font-bold text-emerald-400 uppercase shrink-0 ml-1">${(item.type || '')}</span>
                         </div>
                         <div class="font-black text-red-500 text-base md:text-lg shrink-0 w-[85px] text-right">${fmtVal(item.price)}</div>
                     </div>
