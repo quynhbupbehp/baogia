@@ -115,7 +115,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN (CÂN ĐỐI KHÔNG CÓ DẤU |) -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN -->
             <div class="md:hidden divide-y divide-gray-800/60 p-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -212,7 +212,11 @@
 
                     <div class="flex flex-col items-center">
                         <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
-                        <input type="text" id="device-color" placeholder="VD: ĐỎ" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-color" list="color-suggestions" placeholder="ĐEN / TRẮNG" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <datalist id="color-suggestions">
+                            <option value="ĐEN">
+                            <option value="TRẮNG">
+                        </datalist>
                     </div>
 
                     <div class="flex-1 flex flex-col items-center min-w-0">
@@ -248,7 +252,7 @@
             { id: 1, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'ZIN', name: '14 PRO MAX', price: 1200, cost: 800, qty: 5, color: 'ĐEN' },
             { id: 2, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'GX', name: '12 PRO MAX', price: 1400, cost: 950, qty: 2, color: 'TRẮNG' },
             { id: 3, brand: 'SAMSUNG', part: 'PIN', type: 'ZIN HÃNG', name: 'S22 ULTRA - S23 ULTRA', price: 650, cost: 420, qty: 8, color: '' },
-            { id: 4, brand: 'OPPO - REALME', part: 'KÍNH - C.ỨNG', type: 'ZIN', name: 'A17 - A57 - A18 - A58 - C1 - C12 - A54', price: 950, cost: 700, qty: 3, color: 'XANH' }
+            { id: 4, brand: 'OPPO - REALME', part: 'KÍNH - C.ỨNG', type: 'ZIN', name: 'A17 - A57 - A18 - A58 - C1 - C12 - A54', price: 950, cost: 700, qty: 3, color: 'ĐEN' }
         ];
         let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'KHÁC'];
         let categories = ['MÀN HÌNH', 'PIN', 'KÍNH - C.ỨNG', 'CÁP/BO SẠC'];
@@ -520,20 +524,31 @@
             filtered.forEach(d => {
                 const profit = (d.price - d.cost) * d.qty;
                 
-                const getColorDisplay = (colorStr) => {
+                // Hàm trả về màu nền chấm tròn dựa vào giá trị color (ĐEN -> #111 hoặc #000, TRẮNG -> #fff)
+                const getColorCircle = (colorStr) => {
                     if (!colorStr) return '';
-                    return `<span class="inline-flex items-center gap-1.5 ml-2 px-2 py-0.5 rounded-md bg-gray-800 border border-gray-700 text-[11px] text-gray-200"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block shadow-[0_0_6px_#fbbf24]"></span>${colorStr}</span>`;
+                    let bg = '#111827';
+                    let border = 'border-gray-500';
+                    const c = colorStr.toUpperCase();
+                    if (c.includes('ĐEN')) {
+                        bg = '#000000';
+                        border = 'border-gray-600';
+                    } else if (c.includes('TRẮNG')) {
+                        bg = '#ffffff';
+                        border = 'border-gray-300';
+                    }
+                    return `<span class="w-3 h-3 rounded-full inline-block shrink-0 border ${border}" style="background-color: ${bg};"></span>`;
                 };
                 
-                const colorHtml = getColorDisplay(d.color);
+                const colorDotDesktop = getColorCircle(d.color);
 
                 // Desktop row
                 const tr = document.createElement('tr');
                 tr.className = "row-hover transition text-xs";
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-bold text-white text-left pl-6 flex items-center justify-between">
+                    <td class="py-3 px-4 font-bold text-white text-left pl-6 flex items-center gap-2">
                         <span>${d.name}</span>
-                        ${colorHtml}
+                        ${colorDotDesktop}
                     </td>
                     <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
                     <td class="py-3 px-3 text-amber-400 font-semibold">${d.type || '-'}</td>
@@ -550,14 +565,15 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile card căn chỉnh cân đối dạng lưới (grid) theo mẫu, không có dấu |
+                // Mobile card dạng lưới cân đối, chấm màu chuẩn theo Đen / Trắng và không có chữ
+                const colorDotMobile = getColorCircle(d.color);
                 const card = document.createElement('div');
                 card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 grid grid-cols-4 items-center text-xs";
                 card.onclick = () => editDevice(d.id);
                 card.innerHTML = `
                     <div class="col-span-1 flex items-center gap-1.5">
                         <span class="px-2.5 py-1.5 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold truncate">${d.name}</span>
-                        ${d.color ? `<span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0 shadow-[0_0_6px_#fbbf24]" title="${d.color}"></span>` : ''}
+                        ${colorDotMobile}
                     </div>
                     <div class="col-span-1 text-center text-gray-300 font-medium truncate px-1">${d.part}</div>
                     <div class="col-span-1 text-center text-emerald-400 font-bold truncate px-1">${d.type || '-'}</div>
