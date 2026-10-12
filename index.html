@@ -162,48 +162,49 @@
                     <datalist id="name-suggestions"></datalist>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
+                <!-- DÒNG LINH KIỆN VÀ KIỂU (ĐÃ ĐỒNG BỘ CỠ CHỮ VỚI CÁC NHÃN KHÁC) -->
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <label class="block text-[10px] font-bold text-amber-400 uppercase">LINH KIỆN</label>
-                            <div class="flex items-center gap-1">
-                                <button type="button" onclick="handleEntity('categories', 'add')" class="text-emerald-400 text-xs" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'edit')" class="text-blue-400 text-xs" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'delete')" class="text-red-400 text-xs" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                            <label class="block text-[11px] font-semibold text-gray-400 uppercase">LINH KIỆN</label>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="handleEntity('categories', 'add')" class="text-emerald-400 text-xs hover:text-emerald-300 transition" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'edit')" class="text-blue-400 text-xs hover:text-blue-300 transition" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'delete')" class="text-red-400 text-xs hover:text-red-300 transition" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
-                        <input type="text" id="device-part" required list="part-suggestions" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-part" required list="part-suggestions" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                         <datalist id="part-suggestions"></datalist>
                     </div>
 
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <label class="block text-[10px] font-bold text-amber-400 uppercase">KIỂU</label>
-                            <div class="flex items-center gap-1">
-                                <button type="button" onclick="handleEntity('types', 'add')" class="text-emerald-400 text-xs" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'edit')" class="text-blue-400 text-xs" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'delete')" class="text-red-400 text-xs" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                            <label class="block text-[11px] font-semibold text-gray-400 uppercase">KIỂU</label>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="handleEntity('types', 'add')" class="text-emerald-400 text-xs hover:text-emerald-300 transition" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'edit')" class="text-blue-400 text-xs hover:text-blue-300 transition" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'delete')" class="text-red-400 text-xs hover:text-red-300 transition" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
-                        <input type="text" id="device-type" list="type-suggestions" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-type" list="type-suggestions" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                         <datalist id="type-suggestions"></datalist>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-[10px] font-bold text-amber-400 uppercase mb-1 text-center">GIÁ BÁN</label>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase mb-1 text-center">GIÁ BÁN</label>
                         <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-amber-400 uppercase mb-1 text-center">GIÁ NHẬP</label>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase mb-1 text-center">GIÁ NHẬP</label>
                         <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div class="flex items-end gap-2 pt-1">
                     <div class="flex flex-col items-center">
-                        <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1 text-center w-full">SL</label>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase mb-1 text-center w-full">SL</label>
                         <div class="flex items-center bg-gray-900 border border-gray-700 rounded-xl overflow-hidden p-0.5">
                             <button type="button" onclick="adjustQty(-1)" class="w-8 h-8 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-minus text-[10px]"></i></button>
                             <input type="number" id="device-qty" required value="1" min="0" oninput="updateModalStats()" class="w-10 bg-transparent text-xs font-bold text-white text-center focus:outline-none">
@@ -212,7 +213,7 @@
                     </div>
 
                     <div class="flex-1 flex flex-col items-center min-w-0">
-                        <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1 text-center w-full">LÃI</label>
+                        <label class="block text-[11px] font-semibold text-gray-400 uppercase mb-1 text-center w-full">LÃI</label>
                         <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-9 flex items-center justify-center">
                             <div id="modal-profit-preview" class="text-xs font-bold text-emerald-400 leading-none truncate text-center w-full">0</div>
                         </div>
@@ -372,7 +373,6 @@
         function updateModalStats() {
             const p = parseNum(document.getElementById('device-price').value);
             const c = parseNum(document.getElementById('device-cost').value);
-            // Phần xem trước lãi trong Modal chỉ tính cho số lượng 1
             document.getElementById('modal-profit-preview').innerText = fmtVal(p - c);
         }
 
@@ -543,7 +543,6 @@
             document.getElementById('empty-state').classList.toggle('hidden', filtered.length > 0);
 
             filtered.forEach(item => {
-                // Lãi tính cho số lượng 1: Giá bán - Giá nhập
                 const profit = item.price - item.cost;
                 const clean = item.brand.toLowerCase() === 'iphone' ? item.name.replace(/iphone\s*/gi, '').trim() : item.name;
                 const sub = (clean.includes('-') || clean.includes(',')) ? clean.split(/[-|,]/).map(p => p.trim()).filter(Boolean) : [clean];
@@ -561,7 +560,7 @@
                         <td class="py-3 px-3 text-center font-bold text-white text-xs">${item.qty}</td>
                         <td class="py-3 px-4 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <button onclick="duplicateDevice(${item.id})" class="p-1.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 text-white rounded-lg transition" title="TẠO BẢN SAO"><i class="fa-solid fa-copy text-xs"></i></button>
+                                <button onclick="duplicateDevice(${item.id})" class="p-1.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white rounded-lg transition" title="TẠO BẢN SAO"><i class="fa-solid fa-copy text-xs"></i></button>
                                 <button onclick="editDevice(${item.id})" class="p-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                 <button onclick="deleteDevice(${item.id})" class="p-1.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
