@@ -252,6 +252,17 @@
 
         let currentBrand = brands[0] || '', currentCategory = categories[0] || '', currentType = '', isPrivacyMode = false;
 
+        // Hàm tách chuỗi theo dấu "-" và tạo các badge xen kẽ màu Vàng / Trắng (Tăng size 30% với text-sm/base và padding lớn hơn)
+        function renderDeviceNames(nameStr) {
+            if (!nameStr) return '';
+            const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
+            
+            return parts.map((part, index) => {
+                const textColor = index % 2 === 0 ? 'text-amber-400' : 'text-white';
+                return `<span class="px-3 py-1.5 rounded-xl bg-gray-800/90 border border-gray-700/60 ${textColor} font-bold whitespace-nowrap text-sm inline-block m-1 shadow-sm">${part}</span>`;
+            }).join('');
+        }
+
         function syncFromCloud() {
             const statusEl = document.getElementById('cloud-status');
             if(statusEl) {
@@ -316,13 +327,12 @@
 
             document.getElementById('sub-cat-list').innerHTML = subCatHtml;
 
-            // Ẩn/hiện nút lọc kiểu tùy theo hãng đang chọn (Chỉ hiện khi là IPHONE)
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
             const filterTypeContainer = document.getElementById('filter-type-container');
             if (filterTypeContainer) {
                 filterTypeContainer.style.display = isIphone ? 'block' : 'none';
             }
-            if (!isIphone) currentType = ''; // Reset lọc kiểu nếu đổi sang hãng khác
+            if (!isIphone) currentType = '';
 
             const lblType = document.getElementById('label-current-type');
             if (lblType) {
@@ -517,7 +527,6 @@
                 return matchBrand && matchCat && matchType && matchKeyword;
             });
 
-            // Cập nhật Header bảng Desktop (Ẩn hoàn toàn cột KIỂU nếu không phải IPHONE)
             const desktopHeader = document.getElementById('desktop-table-header');
             if (isIphone) {
                 desktopHeader.innerHTML = `
@@ -578,21 +587,25 @@
                         bg = '#ffffff';
                         border = 'border-gray-300';
                     }
-                    return `<span class="w-3 h-3 rounded-full inline-block shrink-0 border ${border}" style="background-color: ${bg};"></span>`;
+                    return `<span class="w-3.5 h-3.5 rounded-full inline-block shrink-0 border ${border}" style="background-color: ${bg};"></span>`;
                 };
                 
                 const colorDotDesktop = getColorCircle(d.color);
 
                 // Desktop row
                 const tr = document.createElement('tr');
-                tr.className = "row-hover transition text-xs";
+                tr.className = "row-hover transition text-sm";
                 
+                const namesHtmlDesktop = `
+                    <div class="flex flex-wrap items-center gap-2 justify-start py-1">
+                        ${renderDeviceNames(d.name)}
+                        ${colorDotDesktop}
+                    </div>
+                `;
+
                 if (isIphone) {
                     tr.innerHTML = `
-                        <td class="py-3 px-4 font-bold text-white text-left pl-6 flex items-center gap-2">
-                            <span>${d.name}</span>
-                            ${colorDotDesktop}
-                        </td>
+                        <td class="py-3 px-4 text-left pl-6">${namesHtmlDesktop}</td>
                         <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
                         <td class="py-3 px-3 text-amber-400 font-semibold">${d.type || '-'}</td>
                         <td class="py-3 px-4 font-bold text-emerald-400">${fmtVal(d.price)}</td>
@@ -609,10 +622,7 @@
                     `;
                 } else {
                     tr.innerHTML = `
-                        <td class="py-3 px-4 font-bold text-white text-left pl-6 flex items-center gap-2">
-                            <span>${d.name}</span>
-                            ${colorDotDesktop}
-                        </td>
+                        <td class="py-3 px-4 text-left pl-6">${namesHtmlDesktop}</td>
                         <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
                         <td class="py-3 px-4 font-bold text-emerald-400">${fmtVal(d.price)}</td>
                         <td class="py-3 px-4 font-semibold text-gray-400">${fmtSecret(d.cost)}</td>
@@ -632,29 +642,30 @@
                 // Mobile card
                 const colorDotMobile = getColorCircle(d.color);
                 const card = document.createElement('div');
-                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 grid items-center text-xs gap-1";
+                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-3 mb-2 grid items-center text-sm gap-1";
                 card.onclick = () => editDevice(d.id);
+
+                const namesHtmlMobile = `
+                    <div class="flex flex-wrap items-center gap-2 py-0.5">
+                        ${renderDeviceNames(d.name)}
+                        ${colorDotMobile}
+                    </div>
+                `;
 
                 if (isIphone) {
                     card.classList.add('grid-cols-4');
                     card.innerHTML = `
-                        <div class="col-span-1 flex items-center gap-1.5">
-                            <span class="px-2.5 py-1.5 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold whitespace-nowrap">${d.name}</span>
-                            ${colorDotMobile}
-                        </div>
+                        <div class="col-span-1">${namesHtmlMobile}</div>
                         <div class="col-span-1 text-center text-gray-300 font-medium px-1 truncate">${d.part}</div>
-                        <div class="col-span-1 text-center text-emerald-400 font-bold px-1 truncate">${d.type || '-'}</div>
-                        <div class="col-span-1 text-right text-red-500 font-bold text-sm pr-1">${fmtVal(d.price)}</div>
+                        <div class="col-span-1 text-center text-amber-400 font-bold px-1 truncate">${d.type || '-'}</div>
+                        <div class="col-span-1 text-right text-emerald-400 font-bold text-base pr-1">${fmtVal(d.price)}</div>
                     `;
                 } else {
                     card.classList.add('grid-cols-3');
                     card.innerHTML = `
-                        <div class="col-span-1 flex items-center gap-1.5">
-                            <span class="px-2.5 py-1.5 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold whitespace-nowrap">${d.name}</span>
-                            ${colorDotMobile}
-                        </div>
+                        <div class="col-span-1">${namesHtmlMobile}</div>
                         <div class="col-span-1 text-center text-gray-300 font-medium px-1 truncate">${d.part}</div>
-                        <div class="col-span-1 text-right text-red-500 font-bold text-sm pr-1">${fmtVal(d.price)}</div>
+                        <div class="col-span-1 text-right text-emerald-400 font-bold text-base pr-1">${fmtVal(d.price)}</div>
                     `;
                 }
                 mobileList.appendChild(card);
