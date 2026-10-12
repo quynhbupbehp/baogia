@@ -30,14 +30,13 @@
                     <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0" id="brand-tabs"></div>
                     
                     <!-- DÒNG LỌC LINH KIỆN & DROPDOWN KIỂU (CHỈ HIỆN TRÊN DESKTOP) -->
-                    <div class="hidden md:flex flex-nowrap items-center gap-1 pt-1 border-t border-gray-800/80 relative whitespace-nowrap overflow-x-auto">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase mr-0.5">LINH KIỆN:</span>
-                        <!-- TĂNG KHÔNG GIAN CHO LINH KIỆN -->
-                        <div id="main-cat-tabs" class="flex items-center gap-1"></div>
+                    <div class="hidden md:flex flex-wrap items-center gap-1.5 pt-1 border-t border-gray-800/80 relative">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
+                        <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1.5"></div>
                         
                         <!-- NÚT MŨI TÊN SANG PHẢI (XEM THÊM LINH KIỆN) -->
-                        <div class="relative shrink-0">
-                            <button onclick="toggleMoreCats(event)" class="px-2 py-1.5 rounded-lg text-xs font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center justify-center" title="XEM THÊM LINH KIỆN">
+                        <div class="relative">
+                            <button onclick="toggleMoreCats(event)" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center justify-center" title="XEM THÊM LINH KIỆN">
                                 <i class="fa-solid fa-chevron-right text-white text-xs"></i>
                             </button>
                             <div id="dropdown-more-cats" class="hidden absolute left-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1.5">
@@ -50,11 +49,11 @@
                             </div>
                         </div>
 
-                        <!-- NÚT LỌC KIỂU (GIẢM ĐỘ RỘNG 30%) -->
-                        <div class="relative shrink-0 ml-1">
-                            <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-1.5 py-1.5 rounded-lg text-xs font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center gap-1" title="LỌC KIỂU">
-                                <span id="label-current-type" class="text-red-500 font-bold truncate max-w-[50px] inline-block">KIỂU</span>
-                                <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200" id="type-chevron"></i>
+                        <!-- NÚT LỌC KIỂU -->
+                        <div class="relative">
+                            <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center gap-1.5" title="LỌC KIỂU">
+                                <span id="label-current-type" class="text-red-500 font-bold">KIỂU</span>
+                                <i class="fa-solid fa-chevron-down text-white text-xs transition-transform duration-200" id="type-chevron"></i>
                             </button>
                             <div id="dropdown-types" class="hidden absolute left-0 mt-2 w-44 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1">
                                 <div id="type-menu-list" class="flex flex-col gap-1"></div>
@@ -334,7 +333,7 @@
 
             const fixedCats = ['MÀN HÌNH', 'PIN'];
             const catHtml = fixedCats.map(c => 
-                `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-[10px] font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
+                `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
             ).join('');
 
             document.getElementById('main-cat-tabs').innerHTML = catHtml;
@@ -352,10 +351,10 @@
             if (lblType) {
                 if (currentType) {
                     lblType.innerText = currentType;
-                    lblType.className = "text-amber-400 font-bold truncate max-w-[50px] inline-block";
+                    lblType.className = "text-amber-400 font-bold";
                 } else {
                     lblType.innerText = "KIỂU";
-                    lblType.className = "text-red-500 font-bold truncate max-w-[50px] inline-block";
+                    lblType.className = "text-red-500 font-bold";
                 }
             }
 
@@ -465,8 +464,209 @@
             if (!item) return;
             document.getElementById('modal-title').innerText = "CHỈNH SỬA THIẾT BỊ";
             document.getElementById('device-id').value = item.id;
-            // Tiếp tục các hàm xử lý bên dưới của bạn...
+            document.getElementById('device-brand').value = item.brand;
+            document.getElementById('device-name').value = item.name;
+            document.getElementById('device-part').value = item.part;
+            document.getElementById('device-type').value = item.type;
+            document.getElementById('device-price').value = fmtVal(item.price);
+            document.getElementById('device-cost').value = fmtVal(item.cost);
+            document.getElementById('device-qty').value = item.qty;
+            document.getElementById('device-modal').classList.remove('hidden');
+            updateModalStats();
         }
+
+        function saveDevice(e) {
+            e.preventDefault();
+            const id = document.getElementById('device-id').value;
+            const brand = document.getElementById('device-brand').value.trim().toUpperCase();
+            const name = document.getElementById('device-name').value.trim().toUpperCase();
+            const part = document.getElementById('device-part').value.trim().toUpperCase();
+            const type = document.getElementById('device-type').value.trim().toUpperCase();
+            const price = parseNum(document.getElementById('device-price').value);
+            const cost = parseNum(document.getElementById('device-cost').value);
+            const qty = Number(document.getElementById('device-qty').value) || 0;
+
+            if (!brands.includes(brand)) brands.push(brand);
+            if (!categories.includes(part)) categories.push(part);
+            if (type && !types.includes(type)) types.push(type);
+            if (!names.includes(name)) names.push(name);
+
+            if (id) {
+                const index = devices.findIndex(d => d.id === Number(id));
+                if (index !== -1) {
+                    devices[index] = { id: Number(id), brand, name, part, type, price, cost, qty };
+                }
+            } else {
+                const newId = devices.length ? Math.max(...devices.map(d => d.id)) + 1 : 1;
+                devices.push({ id: newId, brand, name, part, type, price, cost, qty });
+            }
+
+            saveAllToCloud();
+            closeModal();
+            initTabs();
+            renderTable();
+        }
+
+        function deleteDevice(id) {
+            if (confirm("BẠN CÓ CHẮC MUỐN XÓA THIẾT BỊ NÀY?")) {
+                devices = devices.filter(d => d.id !== id);
+                saveAllToCloud();
+                renderTable();
+            }
+        }
+
+        function togglePrivacyMode() {
+            isPrivacyMode = !isPrivacyMode;
+            const icon = document.getElementById('privacy-icon');
+            if (isPrivacyMode) {
+                icon.className = "fa-solid fa-eye-slash text-sm text-red-400";
+            } else {
+                icon.className = "fa-solid fa-eye text-sm";
+            }
+            renderTable();
+        }
+
+        function renderTable() {
+            const keyword = document.getElementById('search-input').value.trim().toUpperCase();
+            
+            const filtered = devices.filter(d => {
+                const matchBrand = d.brand === currentBrand;
+                const matchCat = d.part === currentCategory;
+                const matchType = currentType === '' || d.type === currentType;
+                
+                const matchKeyword = !keyword || 
+                    d.name.toUpperCase().includes(keyword) || 
+                    d.brand.toUpperCase().includes(keyword) || 
+                    d.part.toUpperCase().includes(keyword) || 
+                    (d.type && d.type.toUpperCase().includes(keyword));
+
+                return matchBrand && matchCat && matchType && matchKeyword;
+            });
+
+            const tbody = document.getElementById('device-table-body');
+            const mobileList = document.getElementById('device-mobile-list');
+            const emptyState = document.getElementById('empty-state');
+
+            tbody.innerHTML = '';
+            mobileList.innerHTML = '';
+
+            let totalCostSum = 0;
+            devices.forEach(d => {
+                totalCostSum += (d.cost * d.qty);
+            });
+            document.getElementById('total-cost').innerText = fmtSecret(totalCostSum);
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(d => {
+                const profit = (d.price - d.cost) * d.qty;
+                
+                // Desktop row
+                const tr = document.createElement('tr');
+                tr.className = "row-hover transition text-xs";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-gray-300">${d.brand}</td>
+                    <td class="py-3 px-4 font-bold text-white">${d.name}</td>
+                    <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
+                    <td class="py-3 px-3 text-amber-400 font-semibold">${d.type || '-'}</td>
+                    <td class="py-3 px-4 font-bold text-emerald-400">${fmtVal(d.price)}</td>
+                    <td class="py-3 px-4 font-semibold text-gray-400">${fmtSecret(d.cost)}</td>
+                    <td class="py-3 px-3 font-bold text-white">${d.qty}</td>
+                    <td class="py-3 px-4">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="editDevice(${d.id})" class="p-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-[11px]"></i></button>
+                            <button onclick="deleteDevice(${d.id})" class="p-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-[11px]"></i></button>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 font-bold text-emerald-400">${fmtSecret(profit)}</td>
+                `;
+                tbody.appendChild(tr);
+
+                // Mobile card
+                const card = document.createElement('div');
+                card.className = "p-3 flex flex-col gap-2";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-[10px] text-gray-400 font-bold">${d.brand}</div>
+                            <div class="text-sm font-bold text-white">${d.name}</div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="editDevice(${d.id})" class="p-1.5 bg-blue-600/20 text-blue-400 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteDevice(${d.id})" class="p-1.5 bg-red-600/20 text-red-400 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-semibold">${d.part}</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-semibold">${d.type || 'MẶC ĐỊNH'}</span>
+                        <span class="text-gray-400">SL: <b class="text-white">${d.qty}</b></span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-gray-800 text-xs">
+                        <div>
+                            <span class="text-gray-400">GIÁ:</span> <b class="text-emerald-400">${fmtVal(d.price)}</b>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">LÃI:</span> <b class="text-emerald-400">${fmtSecret(profit)}</b>
+                        </div>
+                    </div>
+                `;
+                mobileList.appendChild(card);
+            });
+        }
+
+        function handleEntity(type, action) {
+            let list = type === 'brands' ? brands : type === 'categories' ? categories : type === 'types' ? types : names;
+            let titleName = type === 'brands' ? 'HÃNG' : type === 'categories' ? 'LINH KIỆN' : type === 'types' ? 'KIỂU' : 'TÊN MÁY';
+
+            if (action === 'add') {
+                let val = prompt(`NHẬP ${titleName} MỚI:`).trim().toUpperCase();
+                if (val && !list.includes(val)) {
+                    list.push(val);
+                    saveAllToCloud();
+                    initTabs();
+                    renderTable();
+                }
+            } else if (action === 'edit') {
+                let target = type === 'brands' ? currentBrand : type === 'categories' ? currentCategory : '';
+                let oldVal = prompt(`SỬA ${titleName} (${target}):`, target);
+                if (oldVal) {
+                    oldVal = oldVal.trim().toUpperCase();
+                    let newVal = prompt(`NHẬP TÊN MỚI CHO ${oldVal}:`).trim().toUpperCase();
+                    if (newVal) {
+                        let idx = list.indexOf(oldVal);
+                        if (idx !== -1) {
+                            list[idx] = newVal;
+                            if (type === 'brands') currentBrand = newVal;
+                            if (type === 'categories') currentCategory = newVal;
+                            saveAllToCloud();
+                            initTabs();
+                            renderTable();
+                        }
+                    }
+                }
+            } else if (action === 'delete') {
+                let target = type === 'brands' ? currentBrand : type === 'categories' ? currentCategory : '';
+                if (confirm(`BẠN CÓ CHẮC XÓA ${titleName}: ${target}?`)) {
+                    let idx = list.indexOf(target);
+                    if (idx !== -1) {
+                        list.splice(idx, 1);
+                        if (type === 'brands' && brands.length) currentBrand = brands[0];
+                        if (type === 'categories' && categories.length) currentCategory = categories[0];
+                        saveAllToCloud();
+                        initTabs();
+                        renderTable();
+                    }
+                }
+            }
+        }
+
+        // Khởi động ứng dụng
+        syncFromCloud();
     </script>
 </body>
 </html>
