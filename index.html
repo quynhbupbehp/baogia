@@ -428,6 +428,24 @@
             updateModalStats();
         }
 
+        // HÀM NHÂN BẢN (CLONE) THIẾT BỊ
+        function cloneDevice(id) {
+            const item = devices.find(d => d.id === id);
+            if (!item) return;
+            document.getElementById('modal-title').innerText = "NHÂN BẢN THIẾT BỊ MỚI";
+            document.getElementById('device-id').value = ''; // Để trống ID để khi lưu sẽ tạo mới
+            document.getElementById('device-brand').value = item.brand;
+            document.getElementById('device-name').value = item.name;
+            document.getElementById('device-part').value = item.part;
+            document.getElementById('device-type').value = item.type;
+            document.getElementById('device-price').value = fmtVal(item.price);
+            document.getElementById('device-cost').value = fmtVal(item.cost);
+            document.getElementById('device-qty').value = item.qty;
+            document.getElementById('device-color').value = item.color || '';
+            document.getElementById('device-modal').classList.remove('hidden');
+            updateModalStats();
+        }
+
         function saveDevice(e) {
             e.preventDefault();
             const id = document.getElementById('device-id').value;
@@ -524,7 +542,6 @@
             filtered.forEach(d => {
                 const profit = (d.price - d.cost) * d.qty;
                 
-                // Hàm trả về màu nền chấm tròn dựa vào giá trị color (ĐEN -> #111 hoặc #000, TRẮNG -> #fff)
                 const getColorCircle = (colorStr) => {
                     if (!colorStr) return '';
                     let bg = '#111827';
@@ -542,7 +559,7 @@
                 
                 const colorDotDesktop = getColorCircle(d.color);
 
-                // Desktop row
+                // Desktop row (Thêm icon nhân bản cạnh nút sửa)
                 const tr = document.createElement('tr');
                 tr.className = "row-hover transition text-xs";
                 tr.innerHTML = `
@@ -558,6 +575,7 @@
                     <td class="py-3 px-4">
                         <div class="flex items-center justify-center gap-1.5">
                             <button onclick="editDevice(${d.id})" class="p-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-[11px]"></i></button>
+                            <button onclick="cloneDevice(${d.id})" class="p-1.5 bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white rounded-lg transition" title="NHÂN BẢN"><i class="fa-solid fa-clone text-[11px]"></i></button>
                             <button onclick="deleteDevice(${d.id})" class="p-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-[11px]"></i></button>
                         </div>
                     </td>
@@ -565,7 +583,7 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile card dạng lưới cân đối, chấm màu chuẩn theo Đen / Trắng và không có chữ
+                // Mobile card
                 const colorDotMobile = getColorCircle(d.color);
                 const card = document.createElement('div');
                 card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 grid grid-cols-4 items-center text-xs";
