@@ -12,14 +12,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
-        body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; font-size: 1.15rem; }
         .card-dark { background-color: #111827; border: 1px solid #1f2937; }
         .row-hover:hover { background-color: rgba(31, 41, 55, 0.5); }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
-<body class="min-h-screen p-3 md:p-8 uppercase">
+<body class="min-h-screen p-3 md:p-6 uppercase">
 
     <div class="max-w-7xl mx-auto space-y-4 md:space-y-6">
         <!-- THANH CÔNG CỤ & THỐNG KÊ -->
@@ -29,67 +29,75 @@
                     <!-- TABS HÃNG -->
                     <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0" id="brand-tabs"></div>
                     
-                    <!-- DÒNG LỌC LINH KIỆN -->
-                    <div class="flex flex-wrap items-center gap-1.5 pt-1 border-t border-gray-800/80 relative">
-                        <span class="text-[11px] font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
-                        <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1.5"></div>
-                        
-                        <!-- NÚT MŨI TÊN SANG PHẢI (XEM THÊM LINH KIỆN) -->
-                        <div class="relative">
-                            <button onclick="toggleMoreCats(event)" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center justify-center" title="XEM THÊM LINH KIỆN">
-                                <i class="fa-solid fa-chevron-right text-white text-xs"></i>
+                    <!-- DÒNG LỌC LINH KIỆN & CÁC NÚT ĐIỀU KHIỂN BÊN PHẢI (Ẩn, Cloud, Vốn) -->
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 pt-1 border-t border-gray-800/80">
+                        <div class="flex flex-wrap items-center gap-1.5 relative">
+                            <span class="text-sm font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
+                            <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1.5"></div>
+                            
+                            <!-- NÚT MŨI TÊN SANG PHẢI (XEM THÊM LINH KIỆN) -->
+                            <div class="relative">
+                                <button onclick="toggleMoreCats(event)" class="px-3 py-2 rounded-xl text-sm font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center justify-center" title="XEM THÊM LINH KIỆN">
+                                    <i class="fa-solid fa-chevron-right text-white text-xs"></i>
+                                </button>
+                                <div id="dropdown-more-cats" class="hidden absolute left-0 mt-2 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1.5">
+                                    <div id="sub-cat-list" class="flex flex-col gap-1"></div>
+                                    <div class="border-t border-gray-800 pt-1 mt-1">
+                                        <button onclick="handleEntity('categories', 'add')" class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold text-emerald-400 hover:bg-gray-800 transition flex items-center gap-2">
+                                            <i class="fa-solid fa-plus-circle"></i> TẠO MỚI LINH KIỆN
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CÁC NÚT BÊN PHẢI: ẨN/HIỆN, CLOUD, VỐN -->
+                        <div class="hidden xl:flex flex-wrap items-center gap-2 justify-end">
+                            <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-xl text-sm font-medium border border-gray-700 transition flex items-center justify-center w-10 h-10" title="ẨN / HIỆN VỐN & LÃI">
+                                <i class="fa-solid fa-eye text-base" id="privacy-icon"></i>
                             </button>
-                            <div id="dropdown-more-cats" class="hidden absolute left-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1.5">
-                                <div id="sub-cat-list" class="flex flex-col gap-1"></div>
-                                <div class="border-t border-gray-800 pt-1 mt-1">
-                                    <button onclick="handleEntity('categories', 'add')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-emerald-400 hover:bg-gray-800 transition flex items-center gap-2">
-                                        <i class="fa-solid fa-plus-circle"></i> TẠO MỚI LINH KIỆN
-                                    </button>
+                            <div id="cloud-status" class="flex w-10 h-10 bg-gray-900 rounded-xl border border-gray-800 items-center justify-center" title="Đang kết nối...">
+                                <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-base"></i>
+                            </div>
+                            <div class="flex items-center gap-2 bg-gray-900/80 px-3.5 py-1.5 rounded-xl border border-gray-800">
+                                <div>
+                                    <div class="text-[11px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
+                                    <div id="total-cost" class="text-sm font-bold text-amber-400 text-center">0</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- DÒNG TÌM KIẾM & NÚT KIỂU TRÊN CÙNG 1 HÀNG -->
-                    <div class="flex items-center gap-2 pt-1 border-t border-gray-800/80 relative">
-                        <div class="relative flex-1">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
-                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            </span>
-                            <input type="text" id="search-input" oninput="renderTable()" placeholder="TÌM KIẾM..." 
-                                class="w-full pl-9 pr-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
-                        </div>
+                    <!-- DÒNG TÌM KIẾM, NÚT KIỂU VÀ NÚT THÊM MỚI BÊN DƯỚI -->
+                    <div class="flex items-center justify-between gap-2 pt-1 border-t border-gray-800/80 relative">
+                        <div class="flex items-center gap-2 flex-1">
+                            <div class="relative w-64 md:w-80">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                </span>
+                                <input type="text" id="search-input" oninput="renderTable()" placeholder="TÌM KIẾM..." 
+                                    class="w-full pl-9 pr-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
+                            </div>
 
-                        <!-- NÚT LỌC KIỂU -->
-                        <div class="relative shrink-0" id="filter-type-container">
-                            <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-900 border border-gray-700 hover:bg-gray-800 text-white transition flex items-center gap-2" title="LỌC KIỂU">
-                                <span id="label-current-type" class="text-red-500 font-bold">KIỂU</span>
-                                <i class="fa-solid fa-chevron-down text-white text-xs transition-transform duration-200" id="type-chevron"></i>
-                            </button>
-                            <div id="dropdown-types" class="hidden absolute right-0 mt-2 w-44 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1">
-                                <div id="type-menu-list" class="flex flex-col gap-1"></div>
+                            <!-- NÚT LỌC KIỂU -->
+                            <div class="relative shrink-0" id="filter-type-container">
+                                <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-3.5 py-2 rounded-xl text-sm font-bold bg-gray-900 border border-gray-700 hover:bg-gray-800 text-white transition flex items-center gap-2" title="LỌC KIỂU">
+                                    <span id="label-current-type" class="text-red-500 font-bold">KIỂU</span>
+                                    <i class="fa-solid fa-chevron-down text-white text-xs transition-transform duration-200" id="type-chevron"></i>
+                                </button>
+                                <div id="dropdown-types" class="hidden absolute left-0 mt-2 w-44 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1">
+                                    <div id="type-menu-list" class="flex flex-col gap-1"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- CÁC NÚT QUẢN LÝ CHỈ HIỆN TRÊN DESKTOP -->
-                <div class="hidden xl:flex flex-wrap items-center gap-2 justify-end">
-                    <div id="cloud-status" class="flex w-9 h-9 bg-gray-900 rounded-xl border border-gray-800 items-center justify-center" title="Đang kết nối...">
-                        <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-sm"></i>
-                    </div>
-                    <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/30">
-                        <i class="fa-solid fa-plus"></i> THÊM MỚI
-                    </button>
-                    <div class="flex items-center gap-2 bg-gray-900/80 px-3 py-1.5 rounded-xl border border-gray-800">
-                        <div>
-                            <div class="text-[9px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
-                            <div id="total-cost" class="text-xs font-bold text-amber-400 text-center">0</div>
+                        <!-- NÚT THÊM MỚI -->
+                        <div class="hidden xl:block shrink-0">
+                            <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/35">
+                                <i class="fa-solid fa-plus"></i> THÊM MỚI
+                            </button>
                         </div>
                     </div>
-                    <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-xl text-xs font-medium border border-gray-700 transition flex items-center justify-center w-9 h-9" title="ẨN / HIỆN VỐN & LÃI">
-                        <i class="fa-solid fa-eye text-sm" id="privacy-icon"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -100,9 +108,9 @@
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
                     <thead>
-                        <tr id="desktop-table-header" class="bg-indigo-600 text-white text-xs uppercase tracking-wider shadow-sm"></tr>
+                        <tr id="desktop-table-header" class="bg-indigo-600 text-white text-sm uppercase tracking-wider shadow-sm"></tr>
                     </thead>
-                    <tbody id="device-table-body" class="divide-y divide-gray-800/60 text-sm"></tbody>
+                    <tbody id="device-table-body" class="divide-y divide-gray-800/60 text-base"></tbody>
                 </table>
             </div>
 
@@ -111,42 +119,42 @@
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
                 <i class="fa-solid fa-box-open text-3xl mb-2"></i>
-                <p class="text-xs">KHÔNG TÌM THẤY THIẾT BỊ NÀO PHÙ HỢP.</p>
+                <p class="text-sm">KHÔNG TÌM THẤY THIẾT BỊ NÀO PHÙ HỢP.</p>
             </div>
         </div>
     </div>
 
     <!-- MODAL THÊM / SỬA -->
     <div id="device-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="card-dark w-full max-w-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-gray-700 max-h-[90vh] overflow-y-auto">
+        <div class="card-dark w-full max-w-xl rounded-2xl p-5 md:p-7 shadow-2xl border border-gray-700 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modal-title" class="text-sm md:text-lg font-bold text-pink-500">THÊM THIẾT BỊ MỚI</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-base"></i></button>
+                <h3 id="modal-title" class="text-base md:text-xl font-bold text-pink-500">THÊM THIẾT BỊ MỚI</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="device-form" onsubmit="saveDevice(event)" class="space-y-3">
                 <input type="hidden" id="device-id">
 
                 <div>
-                    <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1">HÃNG</label>
+                    <label class="block text-sm font-bold text-amber-400 uppercase mb-1">HÃNG</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-brand" required list="brand-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-brand" required list="brand-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
                         <datalist id="brand-suggestions"></datalist>
                         <div class="flex items-center gap-1">
-                            <button type="button" onclick="handleEntity('brands', 'add')" class="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-xs font-bold" title="THÊM HÃNG"><i class="fa-solid fa-plus"></i></button>
-                            <button type="button" onclick="handleEntity('brands', 'edit')" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-xs font-bold" title="SỬA HÃNG"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="handleEntity('brands', 'delete')" class="p-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-xs font-bold" title="XÓA HÃNG"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="handleEntity('brands', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM HÃNG"><i class="fa-solid fa-plus"></i></button>
+                            <button type="button" onclick="handleEntity('brands', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA HÃNG"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="handleEntity('brands', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA HÃNG"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1">TÊN MÁY</label>
+                    <label class="block text-sm font-bold text-amber-400 uppercase mb-1">TÊN MÁY</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-name" required list="name-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-name" required list="name-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
                         <div class="flex items-center gap-1">
-                            <button type="button" onclick="handleEntity('names', 'add')" class="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-xs font-bold" title="THÊM TÊN MÁY"><i class="fa-solid fa-plus"></i></button>
-                            <button type="button" onclick="handleEntity('names', 'edit')" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-xs font-bold" title="SỬA TÊN MÁY"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="handleEntity('names', 'delete')" class="p-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-xs font-bold" title="XÓA TÊN MÁY"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="handleEntity('names', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM TÊN MÁY"><i class="fa-solid fa-plus"></i></button>
+                            <button type="button" onclick="handleEntity('names', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA TÊN MÁY"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="handleEntity('names', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA TÊN MÁY"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                     <datalist id="name-suggestions"></datalist>
@@ -154,27 +162,27 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center">LINH KIỆN</label>
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">LINH KIỆN</label>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="device-part" required list="part-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                            <input type="text" id="device-part" required list="part-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                             <datalist id="part-suggestions"></datalist>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="handleEntity('categories', 'add')" class="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-xs font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'edit')" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-xs font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'delete')" class="p-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-xs font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center">KIỂU</label>
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">KIỂU</label>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="device-type" list="type-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                            <input type="text" id="device-type" list="type-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                             <datalist id="type-suggestions"></datalist>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="handleEntity('types', 'add')" class="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-xs font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'edit')" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-xs font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'delete')" class="p-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-xs font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -182,28 +190,28 @@
 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center">GIÁ BÁN</label>
-                        <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500">
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ BÁN</label>
+                        <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center">GIÁ NHẬP</label>
-                        <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500">
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ NHẬP</label>
+                        <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div class="flex items-end gap-2 pt-1">
                     <div class="flex flex-col items-center">
-                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center w-full">SL</label>
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">SL</label>
                         <div class="flex items-center bg-gray-900 border border-gray-700 rounded-xl overflow-hidden p-0.5">
-                            <button type="button" onclick="adjustQty(-1)" class="w-8 h-8 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                            <input type="number" id="device-qty" required value="1" min="0" oninput="updateModalStats()" class="w-10 bg-transparent text-xs font-bold text-white text-center focus:outline-none">
-                            <button type="button" onclick="adjustQty(1)" class="w-8 h-8 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                            <button type="button" onclick="adjustQty(-1)" class="w-9 h-9 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-minus text-xs"></i></button>
+                            <input type="number" id="device-qty" required value="1" min="0" oninput="updateModalStats()" class="w-12 bg-transparent text-sm font-bold text-white text-center focus:outline-none">
+                            <button type="button" onclick="adjustQty(1)" class="w-9 h-9 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-plus text-xs"></i></button>
                         </div>
                     </div>
 
                     <div class="flex flex-col items-center">
-                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
-                        <input type="text" id="device-color" list="color-suggestions" placeholder="ĐEN / TRẮNG" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
+                        <input type="text" id="device-color" list="color-suggestions" placeholder="ĐEN / TRẮNG" class="w-28 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                         <datalist id="color-suggestions">
                             <option value="ĐEN">
                             <option value="TRẮNG">
@@ -211,15 +219,15 @@
                     </div>
 
                     <div class="flex-1 flex flex-col items-center min-w-0">
-                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center w-full">LÃI</label>
-                        <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-9 flex items-center justify-center">
-                            <div id="modal-profit-preview" class="text-xs font-bold text-emerald-400 leading-none truncate text-center w-full">0</div>
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">LÃI</label>
+                        <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-10 flex items-center justify-center">
+                            <div id="modal-profit-preview" class="text-sm font-bold text-emerald-400 leading-none truncate text-center w-full">0</div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-1 shrink-0">
-                        <button type="button" onclick="closeModal()" class="px-3 h-9 rounded-xl text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700 transition">HỦY</button>
-                        <button type="submit" class="px-3 h-9 rounded-xl text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/30 whitespace-nowrap">LƯU</button>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="closeModal()" class="px-4 h-10 rounded-xl text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700 transition">HỦY</button>
+                        <button type="submit" class="px-4 h-10 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/35 whitespace-nowrap">LƯU</button>
                     </div>
                 </div>
             </form>
@@ -252,7 +260,6 @@
 
         let currentBrand = brands[0] || '', currentCategory = categories[0] || '', currentType = '', isPrivacyMode = false;
 
-        // Hàm rút gọn tên linh kiện (Ví dụ: MÀN HÌNH -> MÀN)
         function getShortCategory(partName) {
             if (!partName) return '';
             const upper = partName.toUpperCase();
@@ -260,14 +267,12 @@
             return partName;
         }
 
-        // Hàm tách chuỗi theo dấu "-" và tạo các badge xen kẽ màu Vàng / Trắng
         function renderDeviceNames(nameStr) {
             if (!nameStr) return '';
             const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
             
             return parts.map((part, index) => {
-                const textColor = index % 2 === 0 ? 'text-amber-400' : 'text-white';
-                return `<span class="px-2.5 py-1 rounded-xl bg-gray-800/90 border border-gray-700/60 ${textColor} font-bold whitespace-nowrap text-xs inline-block m-0.5 shadow-sm">${part}</span>`;
+                return `<span class="px-1 py-0 rounded bg-gray-800/90 border border-gray-700/60 text-red-500 font-extrabold whitespace-nowrap text-xl inline-block m-0.5">${part}</span>`;
             }).join('');
         }
 
@@ -275,7 +280,7 @@
             const statusEl = document.getElementById('cloud-status');
             if(statusEl) {
                 statusEl.setAttribute('title', 'Đang đồng bộ...');
-                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-xs"></i>`;
+                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-sm"></i>`;
             }
 
             db.collection("store_data").doc("main").onSnapshot((doc) => {
@@ -291,7 +296,7 @@
                 }
                 if(statusEl) {
                     statusEl.setAttribute('title', 'Online Realtime');
-                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-xs"></i>`;
+                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-sm"></i>`;
                 }
                 if (!currentBrand && brands.length) currentBrand = brands[0];
                 if (!currentCategory && categories.length) currentCategory = categories[0];
@@ -301,7 +306,7 @@
                 console.error("Lỗi Firestore:", err);
                 if(statusEl) {
                     statusEl.setAttribute('title', 'Lỗi quyền Firebase');
-                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>`;
+                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-sm"></i>`;
                 }
             });
         }
@@ -318,20 +323,20 @@
 
         function initTabs() {
             document.getElementById('brand-tabs').innerHTML = brands.map(b => 
-                `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${b === currentBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`
+                `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition uppercase ${b === currentBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`
             ).join('');
 
             const fixedMainCats = ['MÀN HÌNH', 'PIN'];
             const catHtml = fixedMainCats.map(c => 
-                `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
+                `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
             ).join('');
 
             document.getElementById('main-cat-tabs').innerHTML = catHtml;
 
             const subCats = categories.filter(c => !fixedMainCats.includes(c));
             const subCatHtml = subCats.length ? subCats.map(c => 
-                `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event);" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">${c}</button>`
-            ).join('') : '<div class="px-3 py-1 text-xs text-gray-500 italic">Chưa có mục khác</div>';
+                `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event);" class="w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">${c}</button>`
+            ).join('') : '<div class="px-3 py-1 text-sm text-gray-500 italic">Chưa có mục khác</div>';
 
             document.getElementById('sub-cat-list').innerHTML = subCatHtml;
 
@@ -353,9 +358,9 @@
                 }
             }
 
-            const allTypeOption = `<button onclick="selectType('');" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${currentType === '' ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">-- TẤT CẢ --</button>`;
+            const allTypeOption = `<button onclick="selectType('');" class="w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold transition uppercase ${currentType === '' ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">-- TẤT CẢ --</button>`;
             const typeOptions = types.map(t => 
-                `<button onclick="selectType('${t}');" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${t === currentType ? 'bg-amber-400/20 text-amber-400' : 'text-gray-300 hover:bg-gray-800'}">${t}</button>`
+                `<button onclick="selectType('${t}');" class="w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold transition uppercase ${t === currentType ? 'bg-amber-400/20 text-amber-400' : 'text-gray-300 hover:bg-gray-800'}">${t}</button>`
             ).join('');
             
             document.getElementById('type-menu-list').innerHTML = allTypeOption + typeOptions;
@@ -508,9 +513,9 @@
             const icon = document.getElementById('privacy-icon');
             if (icon) {
                 if (isPrivacyMode) {
-                    icon.className = "fa-solid fa-eye-slash text-sm text-red-400";
+                    icon.className = "fa-solid fa-eye-slash text-base text-red-400";
                 } else {
-                    icon.className = "fa-solid fa-eye text-sm";
+                    icon.className = "fa-solid fa-eye text-base";
                 }
             }
             renderTable();
@@ -536,28 +541,16 @@
             });
 
             const desktopHeader = document.getElementById('desktop-table-header');
-            if (isIphone) {
-                desktopHeader.innerHTML = `
-                    <th class="py-3 px-4 font-bold text-center">TÊN MÁY</th>
-                    <th class="py-3 px-4 font-bold text-center">LINH KIỆN</th>
-                    <th class="py-3 px-3 font-bold text-center">KIỂU</th>
-                    <th class="py-3 px-4 font-bold text-center">GIÁ BÁN</th>
-                    <th class="py-3 px-4 font-bold text-center">GIÁ NHẬP</th>
-                    <th class="py-3 px-3 font-bold text-center">SL</th>
-                    <th class="py-3 px-4 font-bold text-center">THAO TÁC</th>
-                    <th class="py-3 px-4 font-bold text-center">LÃI</th>
-                `;
-            } else {
-                desktopHeader.innerHTML = `
-                    <th class="py-3 px-4 font-bold text-center">TÊN MÁY</th>
-                    <th class="py-3 px-4 font-bold text-center">LINH KIỆN</th>
-                    <th class="py-3 px-4 font-bold text-center">GIÁ BÁN</th>
-                    <th class="py-3 px-4 font-bold text-center">GIÁ NHẬP</th>
-                    <th class="py-3 px-3 font-bold text-center">SL</th>
-                    <th class="py-3 px-4 font-bold text-center">THAO TÁC</th>
-                    <th class="py-3 px-4 font-bold text-center">LÃI</th>
-                `;
-            }
+            desktopHeader.innerHTML = `
+                <th class="py-2 px-4 font-bold text-center">TÊN MÁY</th>
+                <th class="py-2 px-4 font-bold text-center">LINH KIỆN</th>
+                <th class="py-2 px-3 font-bold text-center">KIỂU</th>
+                <th class="py-2 px-4 font-bold text-center">GIÁ BÁN</th>
+                <th class="py-2 px-4 font-bold text-center">GIÁ NHẬP</th>
+                <th class="py-2 px-3 font-bold text-center">SL</th>
+                <th class="py-2 px-4 font-bold text-center">THAO TÁC</th>
+                <th class="py-2 px-4 font-bold text-center">LÃI</th>
+            `;
 
             const tbody = document.getElementById('device-table-body');
             const mobileList = document.getElementById('device-mobile-list');
@@ -595,62 +588,44 @@
                         bg = '#ffffff';
                         border = 'border-gray-300';
                     }
-                    return `<span class="w-3.5 h-3.5 rounded-full inline-block shrink-0 border ${border}" style="background-color: ${bg};"></span>`;
+                    return `<span class="w-4 h-4 rounded-full inline-block shrink-0 border ${border}" style="background-color: ${bg};"></span>`;
                 };
                 
                 const colorDotDesktop = getColorCircle(d.color);
 
-                // Desktop row
+                // Desktop row (Đã thu nhỏ py-1.5)
                 const tr = document.createElement('tr');
-                tr.className = "row-hover transition text-sm";
+                tr.className = "row-hover transition text-lg";
                 
                 const namesHtmlDesktop = `
-                    <div class="flex flex-wrap items-center gap-2 justify-start py-1">
+                    <div class="flex flex-wrap items-center gap-1.5 justify-start py-0.5">
                         ${renderDeviceNames(d.name)}
                         ${colorDotDesktop}
                     </div>
                 `;
 
-                if (isIphone) {
-                    tr.innerHTML = `
-                        <td class="py-3 px-4 text-left pl-6">${namesHtmlDesktop}</td>
-                        <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
-                        <td class="py-3 px-3 text-amber-400 font-semibold">${d.type || '-'}</td>
-                        <td class="py-3 px-4 font-bold text-emerald-400">${fmtVal(d.price)}</td>
-                        <td class="py-3 px-4 font-semibold text-gray-400">${fmtSecret(d.cost)}</td>
-                        <td class="py-3 px-3 font-bold text-white">${d.qty}</td>
-                        <td class="py-3 px-4">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="editDevice(${d.id})" class="p-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-[11px]"></i></button>
-                                <button onclick="cloneDevice(${d.id})" class="p-1.5 bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white rounded-lg transition" title="NHÂN BẢN"><i class="fa-solid fa-clone text-[11px]"></i></button>
-                                <button onclick="deleteDevice(${d.id})" class="p-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-[11px]"></i></button>
-                            </div>
-                        </td>
-                        <td class="py-3 px-4 font-bold text-emerald-400">${fmtSecret(profit)}</td>
-                    `;
-                } else {
-                    tr.innerHTML = `
-                        <td class="py-3 px-4 text-left pl-6">${namesHtmlDesktop}</td>
-                        <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
-                        <td class="py-3 px-4 font-bold text-emerald-400">${fmtVal(d.price)}</td>
-                        <td class="py-3 px-4 font-semibold text-gray-400">${fmtSecret(d.cost)}</td>
-                        <td class="py-3 px-3 font-bold text-white">${d.qty}</td>
-                        <td class="py-3 px-4">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="editDevice(${d.id})" class="p-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-[11px]"></i></button>
-                                <button onclick="cloneDevice(${d.id})" class="p-1.5 bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white rounded-lg transition" title="NHÂN BẢN"><i class="fa-solid fa-clone text-[11px]"></i></button>
-                                <button onclick="deleteDevice(${d.id})" class="p-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-[11px]"></i></button>
-                            </div>
-                        </td>
-                        <td class="py-3 px-4 font-bold text-emerald-400">${fmtSecret(profit)}</td>
-                    `;
-                }
+                tr.innerHTML = `
+                    <td class="py-1.5 px-4 text-left pl-6">${namesHtmlDesktop}</td>
+                    <td class="py-1.5 px-4 text-indigo-400 font-medium">${d.part}</td>
+                    <td class="py-1.5 px-3 text-amber-400 font-semibold">${d.type || '-'}</td>
+                    <td class="py-1.5 px-4 font-extrabold text-emerald-400 text-2xl">${fmtVal(d.price)}</td>
+                    <td class="py-1.5 px-4 font-bold text-pink-400">${fmtSecret(d.cost)}</td>
+                    <td class="py-1.5 px-3 font-bold text-white">${d.qty}</td>
+                    <td class="py-1.5 px-4">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editDevice(${d.id})" class="p-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl transition" title="SỬA"><i class="fa-solid fa-pen text-sm"></i></button>
+                            <button onclick="cloneDevice(${d.id})" class="p-1.5 bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white rounded-xl transition" title="NHÂN BẢN"><i class="fa-solid fa-clone text-sm"></i></button>
+                            <button onclick="deleteDevice(${d.id})" class="p-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition" title="XÓA"><i class="fa-solid fa-trash text-sm"></i></button>
+                        </div>
+                    </td>
+                    <td class="py-1.5 px-4 font-bold text-emerald-400 text-sm">${fmtSecret(profit)}</td>
+                `;
                 tbody.appendChild(tr);
 
-                // Mobile card
+                // Mobile card (Đã thu nhỏ py-1.5 để bó sát sát vào chữ trên mobile)
                 const colorDotMobile = getColorCircle(d.color);
                 const card = document.createElement('div');
-                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 flex items-center justify-between text-sm gap-2";
+                card.className = "bg-gray-900/60 border border-gray-800 rounded-2xl px-3 py-1.5 mb-2 flex items-center justify-between text-base gap-2";
                 card.onclick = () => editDevice(d.id);
 
                 const namesHtmlMobile = `
@@ -665,13 +640,12 @@
                         ${namesHtmlMobile}
                         <div class="text-center text-indigo-400 font-medium truncate">${getShortCategory(d.part)}</div>
                         <div class="text-center text-amber-400 font-bold truncate">${d.type || '-'}</div>
-                        <div class="text-right text-emerald-400 font-bold text-base shrink-0">${fmtVal(d.price)}</div>
+                        <div class="text-right text-emerald-400 font-extrabold text-2xl shrink-0">${fmtVal(d.price)}</div>
                     `;
                 } else {
-                    // Ngoài tab iPhone: Ẩn cột kiểu, chỉ hiển thị tên máy + giá bán (với tên máy dài sẽ tự linh hoạt xuống dòng trong giới hạn rộng)
                     card.innerHTML = `
                         ${namesHtmlMobile}
-                        <div class="text-right text-emerald-400 font-bold text-base shrink-0">${fmtVal(d.price)}</div>
+                        <div class="text-right text-emerald-400 font-extrabold text-2xl shrink-0">${fmtVal(d.price)}</div>
                     `;
                 }
                 mobileList.appendChild(card);
