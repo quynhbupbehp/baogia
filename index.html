@@ -73,6 +73,7 @@
                     </div>
                 </div>
 
+                <!-- CÁC NÚT QUẢN LÝ CHỈ HIỆN TRÊN DESKTOP (ẨN HOÀN TOÀN TRÊN MOBILE) -->
                 <div class="hidden xl:flex flex-wrap items-center gap-2 justify-end">
                     <div id="cloud-status" class="flex w-9 h-9 bg-gray-900 rounded-xl border border-gray-800 items-center justify-center" title="Đang kết nối...">
                         <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-sm"></i>
@@ -91,16 +92,6 @@
                     </button>
                 </div>
             </div>
-        </div>
-
-        <!-- NÚT THÊM MỚI & THỐNG KÊ CHO MOBILE -->
-        <div class="flex xl:hidden items-center justify-between gap-2">
-            <button onclick="openModal()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2.5 rounded-xl text-xs font-medium transition flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/30">
-                <i class="fa-solid fa-plus"></i> THÊM MỚI THIẾT BỊ
-            </button>
-            <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-2.5 rounded-xl text-xs font-medium border border-gray-700 transition flex items-center justify-center gap-1.5" title="ẨN / HIỆN VỐN & LÃI">
-                <i class="fa-solid fa-eye text-sm" id="privacy-icon-m"></i> <span>VỐN/LÃI</span>
-            </button>
         </div>
 
         <!-- BẢNG DỮ LIỆU -->
@@ -124,7 +115,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN CHUẨN MẪU -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN -->
             <div class="md:hidden divide-y divide-gray-800/60 p-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -311,13 +302,16 @@
                 `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${b === currentBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`
             ).join('');
 
-            const catHtml = categories.map(c => 
+            // Chỉ hiển thị cố định MÀN HÌNH và PIN trực tiếp bên ngoài trên mobile
+            const fixedMainCats = ['MÀN HÌNH', 'PIN'];
+            const catHtml = fixedMainCats.map(c => 
                 `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}">${c}</button>`
             ).join('');
 
             document.getElementById('main-cat-tabs').innerHTML = catHtml;
 
-            const subCats = categories;
+            // Danh sách bên trong dropdown (KÍNH - C.ỨNG, CÁP/BO SẠC và các mục khác nếu có)
+            const subCats = categories.filter(c => !fixedMainCats.includes(c));
             const subCatHtml = subCats.length ? subCats.map(c => 
                 `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event);" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition uppercase ${c === currentCategory ? 'bg-indigo-500/20 text-indigo-400' : 'text-gray-300 hover:bg-gray-800'}">${c}</button>`
             ).join('') : '<div class="px-3 py-1 text-xs text-gray-500 italic">Chưa có mục khác</div>';
@@ -468,13 +462,12 @@
         function togglePrivacyMode() {
             isPrivacyMode = !isPrivacyMode;
             const icon = document.getElementById('privacy-icon');
-            const iconM = document.getElementById('privacy-icon-m');
-            if (isPrivacyMode) {
-                if(icon) icon.className = "fa-solid fa-eye-slash text-sm text-red-400";
-                if(iconM) iconM.className = "fa-solid fa-eye-slash text-sm text-red-400";
-            } else {
-                if(icon) icon.className = "fa-solid fa-eye text-sm";
-                if(iconM) iconM.className = "fa-solid fa-eye text-sm";
+            if (icon) {
+                if (isPrivacyMode) {
+                    icon.className = "fa-solid fa-eye-slash text-sm text-red-400";
+                } else {
+                    icon.className = "fa-solid fa-eye text-sm";
+                }
             }
             renderTable();
         }
@@ -541,7 +534,7 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile card dạng dòng đơn giống hệt ảnh mẫu (Bấm vào để mở modal sửa)
+                // Mobile card dạng dòng đơn chuẩn xác theo mẫu
                 const card = document.createElement('div');
                 card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 flex items-center justify-between text-xs";
                 card.onclick = () => editDevice(d.id);
