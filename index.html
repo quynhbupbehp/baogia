@@ -428,12 +428,11 @@
             updateModalStats();
         }
 
-        // HÀM NHÂN BẢN (CLONE) THIẾT BỊ
         function cloneDevice(id) {
             const item = devices.find(d => d.id === id);
             if (!item) return;
             document.getElementById('modal-title').innerText = "NHÂN BẢN THIẾT BỊ MỚI";
-            document.getElementById('device-id').value = ''; // Để trống ID để khi lưu sẽ tạo mới
+            document.getElementById('device-id').value = '';
             document.getElementById('device-brand').value = item.brand;
             document.getElementById('device-name').value = item.name;
             document.getElementById('device-part').value = item.part;
@@ -559,7 +558,7 @@
                 
                 const colorDotDesktop = getColorCircle(d.color);
 
-                // Desktop row (Thêm icon nhân bản cạnh nút sửa)
+                // Desktop row
                 const tr = document.createElement('tr');
                 tr.className = "row-hover transition text-xs";
                 tr.innerHTML = `
@@ -583,18 +582,18 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile card
+                // Mobile card: Tên máy hiển thị đầy đủ, kéo giãn sang phải (whitespace-nowrap), chấm màu nằm sát ngay cạnh
                 const colorDotMobile = getColorCircle(d.color);
                 const card = document.createElement('div');
-                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 grid grid-cols-4 items-center text-xs";
+                card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 grid grid-cols-4 items-center text-xs gap-1";
                 card.onclick = () => editDevice(d.id);
                 card.innerHTML = `
                     <div class="col-span-1 flex items-center gap-1.5">
-                        <span class="px-2.5 py-1.5 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold truncate">${d.name}</span>
+                        <span class="px-2.5 py-1.5 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold whitespace-nowrap">${d.name}</span>
                         ${colorDotMobile}
                     </div>
-                    <div class="col-span-1 text-center text-gray-300 font-medium truncate px-1">${d.part}</div>
-                    <div class="col-span-1 text-center text-emerald-400 font-bold truncate px-1">${d.type || '-'}</div>
+                    <div class="col-span-1 text-center text-gray-300 font-medium px-1 truncate">${d.part}</div>
+                    <div class="col-span-1 text-center text-emerald-400 font-bold px-1 truncate">${d.type || '-'}</div>
                     <div class="col-span-1 text-right text-red-500 font-bold text-sm pr-1">${fmtVal(d.price)}</div>
                 `;
                 mobileList.appendChild(card);
