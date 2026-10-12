@@ -654,7 +654,7 @@
                 card.onclick = () => editDevice(d.id);
 
                 const namesHtmlMobile = `
-                    <div class="flex flex-wrap items-center gap-1.5 py-0.5 max-w-[55%] overflow-hidden">
+                    <div class="flex flex-wrap items-center gap-1.5 py-0.5 max-w-[65%] overflow-hidden">
                         ${renderDeviceNames(d.name)}
                         ${colorDotMobile}
                     </div>
@@ -668,9 +668,9 @@
                         <div class="text-right text-emerald-400 font-bold text-base shrink-0">${fmtVal(d.price)}</div>
                     `;
                 } else {
+                    // Ngoài tab iPhone: Ẩn cột kiểu, chỉ hiển thị tên máy + giá bán (với tên máy dài sẽ tự linh hoạt xuống dòng trong giới hạn rộng)
                     card.innerHTML = `
                         ${namesHtmlMobile}
-                        <div class="text-center text-indigo-400 font-medium truncate">${getShortCategory(d.part)}</div>
                         <div class="text-right text-emerald-400 font-bold text-base shrink-0">${fmtVal(d.price)}</div>
                     `;
                 }
