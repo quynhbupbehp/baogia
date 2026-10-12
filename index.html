@@ -96,7 +96,7 @@
 
         <!-- BẢNG DỮ LIỆU -->
         <div class="card-dark rounded-2xl overflow-hidden shadow-xl">
-            <!-- BẢNG DESKTOP (ĐÃ BỎ CỘT HÃNG) -->
+            <!-- BẢNG DESKTOP -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
                     <thead>
@@ -115,7 +115,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN (ĐÃ BỎ HÃNG) -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN -->
             <div class="md:hidden divide-y divide-gray-800/60 p-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -210,6 +210,12 @@
                         </div>
                     </div>
 
+                    <!-- Ô NHẬP MÀU (ĐÃ THÊM VÀO ĐÚNG VỊ TRÍ) -->
+                    <div class="flex flex-col items-center">
+                        <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
+                        <input type="text" id="device-color" placeholder="VD: ĐỎ" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                    </div>
+
                     <div class="flex-1 flex flex-col items-center min-w-0">
                         <label class="block text-[14px] font-bold text-amber-400 uppercase mb-1 text-center w-full">LÃI</label>
                         <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-9 flex items-center justify-center">
@@ -240,10 +246,10 @@
         const db = firebase.firestore();
 
         let devices = [
-            { id: 1, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'ZIN', name: '14 PRO MAX', price: 1200, cost: 800, qty: 5 },
-            { id: 2, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'GX', name: '12 PRO MAX', price: 1400, cost: 950, qty: 2 },
-            { id: 3, brand: 'SAMSUNG', part: 'PIN', type: 'ZIN HÃNG', name: 'S22 ULTRA - S23 ULTRA', price: 650, cost: 420, qty: 8 },
-            { id: 4, brand: 'OPPO - REALME', part: 'KÍNH - C.ỨNG', type: 'ZIN', name: 'A17 - A57 - A18 - A58 - C1 - C12 - A54', price: 950, cost: 700, qty: 3 }
+            { id: 1, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'ZIN', name: '14 PRO MAX', price: 1200, cost: 800, qty: 5, color: 'ĐEN' },
+            { id: 2, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'GX', name: '12 PRO MAX', price: 1400, cost: 950, qty: 2, color: 'TRẮNG' },
+            { id: 3, brand: 'SAMSUNG', part: 'PIN', type: 'ZIN HÃNG', name: 'S22 ULTRA - S23 ULTRA', price: 650, cost: 420, qty: 8, color: '' },
+            { id: 4, brand: 'OPPO - REALME', part: 'KÍNH - C.ỨNG', type: 'ZIN', name: 'A17 - A57 - A18 - A58 - C1 - C12 - A54', price: 950, cost: 700, qty: 3, color: 'XANH' }
         ];
         let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'KHÁC'];
         let categories = ['MÀN HÌNH', 'PIN', 'KÍNH - C.ỨNG', 'CÁP/BO SẠC'];
@@ -391,6 +397,7 @@
             document.getElementById('device-id').value = '';
             document.getElementById('device-form').reset();
             document.getElementById('device-qty').value = '1';
+            document.getElementById('device-color').value = '';
             document.getElementById('device-brand').value = currentBrand;
             document.getElementById('device-part').value = currentCategory;
             document.getElementById('device-modal').classList.remove('hidden');
@@ -413,6 +420,7 @@
             document.getElementById('device-price').value = fmtVal(item.price);
             document.getElementById('device-cost').value = fmtVal(item.cost);
             document.getElementById('device-qty').value = item.qty;
+            document.getElementById('device-color').value = item.color || '';
             document.getElementById('device-modal').classList.remove('hidden');
             updateModalStats();
         }
@@ -424,6 +432,7 @@
             const name = document.getElementById('device-name').value.trim().toUpperCase();
             const part = document.getElementById('device-part').value.trim().toUpperCase();
             const type = document.getElementById('device-type').value.trim().toUpperCase();
+            const color = document.getElementById('device-color').value.trim().toUpperCase();
             const price = parseNum(document.getElementById('device-price').value);
             const cost = parseNum(document.getElementById('device-cost').value);
             const qty = Number(document.getElementById('device-qty').value) || 0;
@@ -436,11 +445,11 @@
             if (id) {
                 const index = devices.findIndex(d => d.id === Number(id));
                 if (index !== -1) {
-                    devices[index] = { id: Number(id), brand, name, part, type, price, cost, qty };
+                    devices[index] = { id: Number(id), brand, name, part, type, price, cost, qty, color };
                 }
             } else {
                 const newId = devices.length ? Math.max(...devices.map(d => d.id)) + 1 : 1;
-                devices.push({ id: newId, brand, name, part, type, price, cost, qty });
+                devices.push({ id: newId, brand, name, part, type, price, cost, qty, color });
             }
 
             saveAllToCloud();
@@ -482,7 +491,8 @@
                     d.name.toUpperCase().includes(keyword) || 
                     d.brand.toUpperCase().includes(keyword) || 
                     d.part.toUpperCase().includes(keyword) || 
-                    (d.type && d.type.toUpperCase().includes(keyword));
+                    (d.type && d.type.toUpperCase().includes(keyword)) ||
+                    (d.color && d.color.toUpperCase().includes(keyword));
 
                 return matchBrand && matchCat && matchType && matchKeyword;
             });
@@ -511,11 +521,22 @@
             filtered.forEach(d => {
                 const profit = (d.price - d.cost) * d.qty;
                 
-                // Desktop row (Đã bỏ cột Hãng)
+                // Hàm tạo HTML chấm màu kèm chữ (chỉ hiện khi có nhập màu)
+                const getColorDisplay = (colorStr) => {
+                    if (!colorStr) return '';
+                    return `<span class="inline-flex items-center gap-1.5 ml-2 px-2 py-0.5 rounded-md bg-gray-800 border border-gray-700 text-[11px] text-gray-200"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block shadow-[0_0_6px_#fbbf24]"></span>${colorStr}</span>`;
+                };
+                
+                const colorHtml = getColorDisplay(d.color);
+
+                // Desktop row
                 const tr = document.createElement('tr');
                 tr.className = "row-hover transition text-xs";
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-bold text-white">${d.name}</td>
+                    <td class="py-3 px-4 font-bold text-white text-left pl-6 flex items-center justify-between">
+                        <span>${d.name}</span>
+                        ${colorHtml}
+                    </td>
                     <td class="py-3 px-4 text-indigo-400 font-medium">${d.part}</td>
                     <td class="py-3 px-3 text-amber-400 font-semibold">${d.type || '-'}</td>
                     <td class="py-3 px-4 font-bold text-emerald-400">${fmtVal(d.price)}</td>
@@ -531,13 +552,14 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile card dạng dòng đơn (Đã bỏ hãng, chỉ giữ tên máy, linh kiện, kiểu, giá)
+                // Mobile card dạng dòng đơn
                 const card = document.createElement('div');
                 card.className = "bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 mb-2 flex items-center justify-between text-xs";
                 card.onclick = () => editDevice(d.id);
                 card.innerHTML = `
                     <div class="flex items-center gap-2 overflow-hidden">
-                        <span class="px-2.5 py-1 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold shrink-0 max-w-[140px] truncate">${d.name}</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-gray-800/90 border border-gray-700/60 text-amber-400 font-bold shrink-0 max-w-[120px] truncate">${d.name}</span>
+                        ${d.color ? `<span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0 shadow-[0_0_6px_#fbbf24]" title="${d.color}"></span>` : ''}
                         <span class="text-gray-600 font-bold">|</span>
                         <span class="text-gray-300 font-medium shrink-0">${d.part}</span>
                         <span class="text-gray-600 font-bold">|</span>
