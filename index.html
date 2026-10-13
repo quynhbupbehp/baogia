@@ -663,22 +663,35 @@
                     </tr>
                 `;
 
-                // MOBILE: Nếu tên máy dài (nhiều phần tử > 3), tự động ẩn chữ màn hình để nhường chỗ và đẩy giá sang phải liền mạch tuyệt đối
-                const displayPart = namePartsCount > 3 ? '' : shortPart;
-
-                mobileHtml += `
-                    <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-1.5 flex-wrap flex-1">
-                            ${deviceNamesMobileHtml}
-                            ${colorDot}
+                // MOBILE: Phân tách rõ ràng giữa máy dài và máy ngắn giống hệt yêu cầu ảnh mẫu
+                if (namePartsCount > 3) {
+                    // MÁY DÀI: Ẩn chữ màn hình, nhường toàn bộ không gian cho tên máy
+                    mobileHtml += `
+                        <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-1.5 flex-wrap flex-1">
+                                ${deviceNamesMobileHtml}
+                                ${colorDot}
+                            </div>
+                            <div class="flex items-center justify-end gap-2.5 shrink-0 text-right">
+                                <span class="text-xs font-bold text-cyan-400 uppercase">${item.type || ''}</span>
+                                <span class="text-base font-extrabold text-red-500 min-w-[50px]">${fmtVal(item.price)}</span>
+                            </div>
                         </div>
-                        <div class="flex items-center justify-end gap-2.5 shrink-0 text-right">
-                            ${displayPart ? `<span class="text-xs font-bold text-gray-300 uppercase">${displayPart}</span>` : ''}
-                            <span class="text-xs font-bold text-cyan-400 uppercase">${item.type || ''}</span>
-                            <span class="text-base font-extrabold text-red-500 min-w-[50px]">${fmtVal(item.price)}</span>
+                    `;
+                } else {
+                    // MÁY NGẮN: Chia thành 4 cột cố định (Tên máy + Màu | Màn | Kiểu | Giá) thẳng tắp đẹp mắt giống ảnh khoanh đỏ
+                    mobileHtml += `
+                        <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl grid grid-cols-4 items-center gap-2 text-center">
+                            <div class="flex items-center justify-start gap-2 col-span-1">
+                                ${deviceNamesMobileHtml}
+                                ${colorDot}
+                            </div>
+                            <div class="text-sm font-bold text-gray-300 uppercase col-span-1 text-center">${shortPart}</div>
+                            <div class="text-sm font-bold text-cyan-400 uppercase col-span-1 text-center">${item.type || ''}</div>
+                            <div class="text-lg font-extrabold text-red-500 col-span-1 text-right">${fmtVal(item.price)}</div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             });
 
             tbody.innerHTML = desktopHtml;
