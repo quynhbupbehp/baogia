@@ -274,7 +274,7 @@
             if (isMobile) {
                 return parts.map((part, index) => {
                     const textColor = (index % 2 === 0) ? 'text-amber-400' : 'text-white';
-                    return `<span class="px-2 py-0.5 rounded-lg bg-gray-900 border border-gray-800 ${textColor} font-bold text-xs inline-block my-0.5">${part}</span>`;
+                    return `<span class="px-1.5 py-0.5 rounded-lg bg-gray-900 border border-gray-800 ${textColor} font-bold text-xs inline-block">${part}</span>`;
                 }).join(' ');
             }
 
@@ -665,29 +665,29 @@
 
                 if (namePartsCount > 3) {
                     mobileHtml += `
-                        <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl flex items-center justify-between gap-2">
+                        <div class="py-2 px-2.5 bg-gray-950/40 rounded-xl flex items-center justify-between gap-1.5">
                             <div class="flex items-center gap-1.5 flex-wrap flex-1">
                                 ${deviceNamesMobileHtml}
                                 ${colorDot}
                             </div>
-                            <div class="flex items-center justify-end gap-2.5 shrink-0 text-right">
+                            <div class="flex items-center justify-end gap-2 shrink-0 text-right">
                                 <span class="text-xs font-bold text-cyan-400 uppercase">${item.type || ''}</span>
                                 <span class="text-base font-extrabold text-red-500 min-w-[50px]">${fmtVal(item.price)}</span>
                             </div>
                         </div>
                     `;
                 } else {
-                    // MÁY NGẮN: Dùng grid chia đúng 3 phần (Trái: Tên+Màu | Giữa: Màn hình | Phải: Kiểu + Giá) dãn đều cân đối như ảnh khoanh đỏ
+                    // MÁY NGẮN: Thu gọn khoảng cách padding (py-2 px-2.5) để bó sát sạt vào chữ cực đẹp và gọn gàng
                     mobileHtml += `
-                        <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl grid grid-cols-3 items-center gap-2">
-                            <div class="flex items-center justify-start gap-2">
+                        <div class="py-2 px-2.5 bg-gray-950/40 rounded-xl grid grid-cols-3 items-center gap-1">
+                            <div class="flex items-center justify-start gap-1.5">
                                 ${deviceNamesMobileHtml}
                                 ${colorDot}
                             </div>
                             <div class="text-sm font-bold text-gray-300 uppercase text-center">${fullPart}</div>
-                            <div class="flex items-center justify-end gap-3 text-right">
+                            <div class="flex items-center justify-end gap-2 text-right">
                                 <span class="text-sm font-bold text-cyan-400 uppercase">${item.type || ''}</span>
-                                <span class="text-lg font-extrabold text-red-500 min-w-[55px]">${fmtVal(item.price)}</span>
+                                <span class="text-lg font-extrabold text-red-500 min-w-[50px]">${fmtVal(item.price)}</span>
                             </div>
                         </div>
                     `;
