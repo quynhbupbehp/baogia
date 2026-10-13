@@ -263,7 +263,7 @@
         function getShortCategory(partName) {
             if (!partName) return '';
             const upper = partName.toUpperCase();
-            if (upper.includes('MÀN HÌNH')) return 'MÀN HÌNH';
+            if (upper.includes('MÀN HÌNH')) return 'MÀN'; // Rút gọn MÀN HÌNH thành MÀN trên mobile
             return partName;
         }
 
@@ -274,7 +274,7 @@
             if (isMobile) {
                 return parts.map((part, index) => {
                     const textColor = (index % 2 === 0) ? 'text-amber-400' : 'text-white';
-                    return `<span class="px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-800 ${textColor} font-bold text-xs inline-block my-0.5">${part}</span>`;
+                    return `<span class="px-2 py-0.5 rounded-lg bg-gray-900 border border-gray-800 ${textColor} font-bold text-xs inline-block my-0.5">${part}</span>`;
                 }).join(' ');
             }
 
@@ -662,10 +662,10 @@
                     </tr>
                 `;
 
-                // MOBILE: Cố định chuẩn layout căn đều 2 bên (Trái: Tên + màu, Phải: Linh kiện, Kiểu, Giá căn thẳng tắp)
+                // MOBILE: Cố định chuẩn layout căn đều 2 bên (Trái: Tên máy tối đa 2 dòng + màu, Phải: Linh kiện rút gọn, Kiểu, Giá căn thẳng tắp)
                 mobileHtml += `
                     <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 flex-wrap max-w-[55%]">
+                        <div class="flex items-center gap-2 flex-wrap max-w-[52%] overflow-hidden" style="max-height: 4.5rem;">
                             ${deviceNamesMobileHtml}
                             ${colorDot}
                         </div>
