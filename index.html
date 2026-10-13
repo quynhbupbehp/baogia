@@ -17,19 +17,49 @@
         .row-hover:hover { background-color: rgba(31, 41, 55, 0.5); }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+
+        /* Hiệu ứng nhấp nháy nền vàng toàn bộ hàng ngang khi SL = 0 */
+        @keyframes yellowRowPulse {
+            0%, 100% {
+                background-color: rgba(234, 179, 8, 0.35);
+                box-shadow: inset 0 0 12px rgba(234, 179, 8, 0.3);
+            }
+            50% {
+                background-color: rgba(234, 179, 8, 0.05);
+                box-shadow: none;
+            }
+        }
+        .yellow-pulse-row {
+            animation: yellowRowPulse 1.6s ease-in-out infinite;
+        }
+
+        /* Thẻ nhãn hết hàng */
+        @keyframes yellowBadgePulse {
+            0%, 100% {
+                background-color: rgba(234, 179, 8, 0.95);
+                color: #000000;
+            }
+            50% {
+                background-color: rgba(234, 179, 8, 0.3);
+                color: #facc15;
+            }
+        }
+        .yellow-pulse-badge {
+            animation: yellowBadgePulse 1.6s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen p-3 md:p-6 uppercase">
 
-    <div class="max-w-7xl mx-auto space-y-4 md:space-y-6">
+    <div class="max-w-7xl mx-auto space-y-4 md:space-y-6 flex flex-col items-center">
         <!-- THANH CÔNG CỤ & THỐNG KÊ -->
-        <div class="card-dark p-3 md:p-4 rounded-2xl flex flex-col gap-3 shadow-lg">
+        <div class="card-dark p-3 md:p-4 rounded-2xl flex flex-col gap-3 shadow-lg w-full">
             <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
                 <div class="flex flex-col gap-2.5 w-full">
                     <!-- TABS HÃNG -->
                     <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0" id="brand-tabs"></div>
                     
-                    <!-- DÒNG LỌC LINH KIỆN & CÁC NÚT ĐIỀU KHIỂN BÊN PHẢI (Ẩn, Cloud, Vốn) -->
+                    <!-- DÒNG LỌC LINH KIỆN & CÁC NÚT ĐIỀU KHIỂN BÊN PHẢI -->
                     <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 pt-1 border-t border-gray-800/80">
                         <div class="flex flex-wrap items-center gap-1.5 relative">
                             <span class="text-sm font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
@@ -51,18 +81,18 @@
                             </div>
                         </div>
 
-                        <!-- CÁC NÚT BÊN PHẢI: ẨN/HIỆN, CLOUD, VỐN (Đã khôi phục đúng chuẩn bản gốc mobile/web) -->
-                        <div class="hidden xl:flex flex-wrap items-center gap-2 justify-end">
-                            <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-xl text-sm font-medium border border-gray-700 transition flex items-center justify-center w-10 h-10" title="ẨN / HIỆN VỐN & LÃI">
-                                <i class="fa-solid fa-eye text-base" id="privacy-icon"></i>
+                        <!-- CÁC NÚT BÊN PHẢI -->
+                        <div class="hidden xl:flex items-center gap-1.5 bg-gray-900/90 p-1 rounded-2xl border border-gray-800 overflow-hidden shrink-0">
+                            <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-sm font-medium border border-gray-700 transition flex items-center justify-center w-8 h-8 shrink-0" title="ẨN / HIỆN VỐN & LÃI">
+                                <i class="fa-solid fa-eye text-xs" id="privacy-icon"></i>
                             </button>
-                            <div id="cloud-status" class="flex w-10 h-10 bg-gray-900 rounded-xl border border-gray-800 items-center justify-center" title="Đang kết nối...">
-                                <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-base"></i>
+                            <div id="cloud-status" class="flex w-8 h-8 bg-gray-800 rounded-xl border border-gray-700 items-center justify-center shrink-0" title="Đang kết nối...">
+                                <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-xs"></i>
                             </div>
-                            <div class="flex items-center gap-2 bg-gray-900/80 px-3.5 py-1.5 rounded-xl border border-gray-800">
+                            <div class="flex items-center gap-1.5 bg-gray-900 px-2.5 py-1 rounded-xl border border-gray-800 shrink-0">
                                 <div>
-                                    <div class="text-[11px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
-                                    <div id="total-cost" class="text-sm font-bold text-amber-400 text-center">0</div>
+                                    <div class="text-[10px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
+                                    <div id="total-cost" class="text-xs font-bold text-amber-400 text-center">0</div>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +120,7 @@
                                 </div>
                             </div>
 
-                            <!-- NÚT THÊM MỚI (CHỈ HIỂN THỊ TRÊN WEB, NẰM SÁT CẠNH NÚT KIỂU) -->
+                            <!-- NÚT THÊM MỚI -->
                             <div class="hidden xl:block shrink-0">
                                 <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/35">
                                     <i class="fa-solid fa-plus"></i> THÊM MỚI
@@ -103,7 +133,7 @@
         </div>
 
         <!-- BẢNG DỮ LIỆU -->
-        <div class="card-dark rounded-2xl overflow-hidden shadow-xl">
+        <div class="card-dark rounded-2xl overflow-hidden shadow-xl w-full">
             <!-- BẢNG DESKTOP -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
@@ -128,7 +158,7 @@
     <div id="device-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="card-dark w-full max-w-xl rounded-2xl p-5 md:p-7 shadow-2xl border border-gray-700 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modal-title" class="text-base md:text-xl font-bold text-pink-500">THÊM THIẾT BỊ MỚI</h3>
+                <h3 id="modal-title" class="text-base md:text-xl font-bold text-pink-500 uppercase">CHỈNH SỬA THIẾT BỊ</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="device-form" onsubmit="saveDevice(event)" class="space-y-3">
@@ -137,12 +167,12 @@
                 <div>
                     <label class="block text-sm font-bold text-amber-400 uppercase mb-1">HÃNG</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-brand" required list="brand-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-brand" required list="brand-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
                         <datalist id="brand-suggestions"></datalist>
-                        <div class="flex items-center gap-1">
-                            <button type="button" onclick="handleEntity('brands', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM HÃNG"><i class="fa-solid fa-plus"></i></button>
-                            <button type="button" onclick="handleEntity('brands', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA HÃNG"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="handleEntity('brands', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA HÃNG"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="handleEntity('brands', 'add')" class="w-10 h-10 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition flex items-center justify-center font-bold text-sm shadow" title="THÊM HÃNG"><i class="fa-solid fa-plus"></i></button>
+                            <button type="button" onclick="handleEntity('brands', 'edit')" class="w-10 h-10 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center justify-center font-bold text-sm shadow" title="SỬA HÃNG"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="handleEntity('brands', 'delete')" class="w-10 h-10 bg-red-600 hover:bg-red-500 text-white rounded-xl transition flex items-center justify-center font-bold text-sm shadow" title="XÓA HÃNG"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
@@ -150,39 +180,40 @@
                 <div>
                     <label class="block text-sm font-bold text-amber-400 uppercase mb-1">TÊN MÁY</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-name" required list="name-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
-                        <div class="flex items-center gap-1">
-                            <button type="button" onclick="handleEntity('names', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM TÊN MÁY"><i class="fa-solid fa-plus"></i></button>
-                            <button type="button" onclick="handleEntity('names', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA TÊN MÁY"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="handleEntity('names', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA TÊN MÁY"><i class="fa-solid fa-trash"></i></button>
+                        <input type="text" id="device-name" required list="name-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="handleEntity('names', 'add')" class="w-10 h-10 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition flex items-center justify-center font-bold text-sm shadow" title="THÊM TÊN MÁY"><i class="fa-solid fa-plus"></i></button>
+                            <button type="button" onclick="handleEntity('names', 'edit')" class="w-10 h-10 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center justify-center font-bold text-sm shadow" title="SỬA TÊN MÁY"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="handleEntity('names', 'delete')" class="w-10 h-10 bg-red-600 hover:bg-red-500 text-white rounded-xl transition flex items-center justify-center font-bold text-sm shadow" title="XÓA TÊN MÁY"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                     <datalist id="name-suggestions"></datalist>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
+                <!-- LINH KIỆN VÀ KIỂU -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <div class="md:col-span-7">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">LINH KIỆN</label>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="device-part" required list="part-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" id="device-part" required list="part-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                             <datalist id="part-suggestions"></datalist>
-                            <div class="flex items-center gap-1">
-                                <button type="button" onclick="handleEntity('categories', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('categories', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="handleEntity('categories', 'add')" class="w-9 h-10 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition flex items-center justify-center font-bold text-xs shadow" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'edit')" class="w-9 h-10 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center justify-center font-bold text-xs shadow" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('categories', 'delete')" class="w-9 h-10 bg-red-600 hover:bg-red-500 text-white rounded-xl transition flex items-center justify-center font-bold text-xs shadow" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
 
-                    <div>
+                    <div class="md:col-span-5">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">KIỂU</label>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="device-type" list="type-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <div class="flex items-center gap-1">
+                            <input type="text" id="device-type" list="type-suggestions" class="w-16 md:w-20 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2.5 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                             <datalist id="type-suggestions"></datalist>
-                            <div class="flex items-center gap-1">
-                                <button type="button" onclick="handleEntity('types', 'add')" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition text-sm font-bold" title="THÊM"><i class="fa-solid fa-plus"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'edit')" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition text-sm font-bold" title="SỬA"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="handleEntity('types', 'delete')" class="p-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm font-bold" title="XÓA"><i class="fa-solid fa-trash"></i></button>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="handleEntity('types', 'add')" class="w-9 h-10 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition flex items-center justify-center font-bold text-xs shadow" title="THÊM"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'edit')" class="w-9 h-10 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center justify-center font-bold text-xs shadow" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="handleEntity('types', 'delete')" class="w-9 h-10 bg-red-600 hover:bg-red-500 text-white rounded-xl transition flex items-center justify-center font-bold text-xs shadow" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -191,43 +222,46 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ BÁN</label>
-                        <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ NHẬP</label>
-                        <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div class="flex items-end gap-2 pt-1">
                     <div class="flex flex-col items-center">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">SL</label>
-                        <div class="flex items-center bg-gray-900 border border-gray-700 rounded-xl overflow-hidden p-0.5">
-                            <button type="button" onclick="adjustQty(-1)" class="w-9 h-9 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-minus text-xs"></i></button>
-                            <input type="number" id="device-qty" required value="1" min="0" oninput="updateModalStats()" class="w-12 bg-transparent text-sm font-bold text-white text-center focus:outline-none">
-                            <button type="button" onclick="adjustQty(1)" class="w-9 h-9 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-plus text-xs"></i></button>
+                        <div class="flex items-center bg-gray-900 border border-gray-700 rounded-xl overflow-hidden p-0.5 h-11">
+                            <button type="button" onclick="adjustQty(-1)" class="w-9 h-10 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-minus text-xs"></i></button>
+                            <input type="number" id="device-qty" required value="1" min="0" oninput="updateModalStats()" class="w-10 bg-transparent text-sm font-bold text-white text-center focus:outline-none">
+                            <button type="button" onclick="adjustQty(1)" class="w-9 h-10 bg-gray-800 text-white font-bold transition flex items-center justify-center rounded-lg"><i class="fa-solid fa-plus text-xs"></i></button>
                         </div>
                     </div>
 
                     <div class="flex flex-col items-center">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
-                        <input type="text" id="device-color" list="color-suggestions" placeholder="ĐEN / TRẮNG" class="w-28 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-color" list="color-suggestions" placeholder="ĐEN / TRẮNG" class="w-28 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2.5 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase h-11">
                         <datalist id="color-suggestions">
                             <option value="ĐEN">
                             <option value="TRẮNG">
+                            <option value="ĐỎ">
+                            <option value="VÀNG">
+                            <option value="XANH">
                         </datalist>
                     </div>
 
                     <div class="flex-1 flex flex-col items-center min-w-0">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">LÃI</label>
-                        <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-10 flex items-center justify-center">
+                        <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-11 flex items-center justify-center">
                             <div id="modal-profit-preview" class="text-sm font-bold text-emerald-400 leading-none truncate text-center w-full">0</div>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-1.5 shrink-0">
-                        <button type="button" onclick="closeModal()" class="px-4 h-10 rounded-xl text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700 transition">HỦY</button>
-                        <button type="submit" class="px-4 h-10 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/35 whitespace-nowrap">LƯU</button>
+                        <button type="button" onclick="closeModal()" class="px-4 h-11 rounded-xl text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700 transition">HỦY</button>
+                        <button type="submit" class="px-5 h-11 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/35 whitespace-nowrap">LƯU</button>
                     </div>
                 </div>
             </form>
@@ -249,7 +283,7 @@
 
         let devices = [
             { id: 1, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'ZIN', name: '14 PRO MAX', price: 1200, cost: 800, qty: 5, color: 'ĐEN' },
-            { id: 2, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'GX', name: '12 PRO MAX', price: 1400, cost: 950, qty: 2, color: 'TRẮNG' },
+            { id: 2, brand: 'IPHONE', part: 'MÀN HÌNH', type: 'GX', name: '12 PRO MAX', price: 1400, cost: 950, qty: 0, color: 'TRẮNG' },
             { id: 3, brand: 'SAMSUNG', part: 'PIN', type: 'ZIN HÃNG', name: 'S22 ULTRA - S23 ULTRA', price: 650, cost: 420, qty: 8, color: '' },
             { id: 4, brand: 'OPPO - REALME', part: 'KÍNH - C.ỨNG', type: 'ZIN', name: 'A17 - A57 - A18 - A58 - C1 - C12 - A54', price: 950, cost: 700, qty: 3, color: 'ĐEN' }
         ];
@@ -267,28 +301,51 @@
             return partName;
         }
 
-        function renderDeviceNames(nameStr, isMobile = false) {
+        function getColorHex(colorName) {
+            if (!colorName) return '';
+            const c = colorName.trim().toUpperCase();
+            if (c.includes('ĐEN') || c.includes('BLACK')) return '#111827; border: 1px solid #4b5563';
+            if (c.includes('TRẮNG') || c.includes('WHITE')) return '#f9fafb';
+            if (c.includes('ĐỎ') || c.includes('RED')) return '#ef4444';
+            if (c.includes('VÀNG') || c.includes('GOLD') || c.includes('YELLOW')) return '#eab308';
+            if (c.includes('XANH') || c.includes('BLUE') || c.includes('GREEN')) return '#3b82f6';
+            if (c.includes('HỒNG') || c.includes('PINK')) return '#ec4899';
+            if (c.includes('TÍM') || c.includes('PURPLE')) return '#a855f7';
+            if (c.includes('XÁM') || c.includes('GRAY') || c.includes('GREY')) return '#6b7280';
+            return '#9ca3af';
+        }
+
+        function renderDeviceNames(nameStr, colorStr, isMobile = false) {
             if (!nameStr) return '';
             const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
+            
+            let colorDotHtml = '';
+            if (colorStr && colorStr.trim()) {
+                const hexStyle = getColorHex(colorStr);
+                colorDotHtml = `<span class="inline-block w-3.5 h-3.5 rounded-full ml-1.5 mr-1 shrink-0 align-middle shadow-sm" style="background-color: ${hexStyle};" title="MÀU: ${colorStr}"></span>`;
+            }
 
             if (isMobile) {
-                return parts.map((part, index) => {
+                const namePartsHtml = parts.map((part, index) => {
                     const textColor = (index % 2 === 0) ? 'text-amber-400' : 'text-white';
                     return `<span class="px-1.5 py-0.5 rounded-lg bg-gray-900 border border-gray-800 ${textColor} font-bold text-xs inline-block whitespace-nowrap">${part}</span>`;
                 }).join(' ');
+                return `<div class="inline-flex items-center flex-wrap">${namePartsHtml}${colorDotHtml}</div>`;
             }
 
-            return parts.map((part, index) => {
+            const namePartsHtml = parts.map((part, index) => {
                 const textColor = (index % 2 === 0) ? 'text-red-500' : 'text-white';
-                return `<span class="px-1 py-0 rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap text-xl inline-block m-0.5">${part}</span>`;
+                return `<span class="px-1.5 py-0.5 rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap text-lg inline-block m-0.5">${part}</span>`;
             }).join('');
+
+            return `<div class="inline-flex items-center flex-wrap justify-center">${namePartsHtml}${colorDotHtml}</div>`;
         }
 
         function syncFromCloud() {
             const statusEl = document.getElementById('cloud-status');
             if(statusEl) {
                 statusEl.setAttribute('title', 'Đang đồng bộ...');
-                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-sm"></i>`;
+                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-xs"></i>`;
             }
 
             db.collection("store_data").doc("main").onSnapshot((doc) => {
@@ -304,7 +361,7 @@
                 }
                 if(statusEl) {
                     statusEl.setAttribute('title', 'Online Realtime');
-                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-sm"></i>`;
+                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-xs"></i>`;
                 }
                 if (!currentBrand && brands.length) currentBrand = brands[0];
                 if (!currentCategory && categories.length) currentCategory = categories[0];
@@ -314,7 +371,7 @@
                 console.error("Lỗi Firestore:", err);
                 if(statusEl) {
                     statusEl.setAttribute('title', 'Lỗi quyền Firebase');
-                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-sm"></i>`;
+                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>`;
                 }
             });
         }
@@ -522,7 +579,7 @@
             isPrivacyMode = !isPrivacyMode;
             const icon = document.getElementById('privacy-icon');
             if (icon) {
-                icon.className = isPrivacyMode ? "fa-solid fa-eye-slash text-base text-amber-400" : "fa-solid fa-eye text-base";
+                icon.className = isPrivacyMode ? "fa-solid fa-eye-slash text-xs text-amber-400" : "fa-solid fa-eye text-xs";
             }
             renderTable();
         }
@@ -606,64 +663,69 @@
 
             emptyState.classList.add('hidden');
 
-            // Render Header Desktop
             let headers = ['TÊN MÁY'];
             if (isIphone) headers.push('KIỂU');
-            headers.push('GIÁ BÁN', 'NHẬP', 'LÃI', 'SL', 'MÀU', 'THƯ VIỆN THao TÁC');
-            desktopHeader.innerHTML = `<tr>${headers.map(h => `<th class="py-3 px-3">${h}</th>`).join('')}</tr>`;
+            headers.push('GIÁ BÁN', 'SL', 'THAO TÁC', 'GIÁ NHẬP', 'LÃI');
+            desktopHeader.innerHTML = `<tr>${headers.map(h => `<th class="py-2 px-1.5">${h}</th>`).join('')}</tr>`;
 
             let totalCostSum = 0;
 
-            // Render Body Desktop
             tbody.innerHTML = filtered.map(d => {
                 const profit = d.price - d.cost;
                 totalCostSum += (d.cost * (d.qty || 1));
-                const formattedName = renderDeviceNames(d.name, false);
+                const formattedName = renderDeviceNames(d.name, d.color, false);
+                
+                // Cảnh báo nhấp nháy nền vàng cả hàng ngang khi SL = 0
+                const isOutOfStock = d.qty === 0 || d.qty === '0';
+                const rowClass = isOutOfStock ? 'yellow-pulse-row' : 'row-hover';
+                const qtyTextClass = isOutOfStock ? 'text-amber-300 font-extrabold text-base' : 'text-sm font-bold';
 
-                let cols = `<td class="py-3 px-3 font-bold">${formattedName}</td>`;
+                let cols = `<td class="py-2 px-1.5 font-bold">${formattedName}</td>`;
                 if (isIphone) {
-                    cols += `<td class="py-3 px-3 font-bold text-amber-400">${d.type || '-'}</td>`;
+                    cols += `<td class="py-2 px-1.5 font-bold text-amber-400 text-sm">${d.type || '-'}</td>`;
                 }
                 cols += `
-                    <td class="py-3 px-3 font-bold text-emerald-400">${fmtVal(d.price)}</td>
-                    <td class="py-3 px-3 font-bold text-amber-400">${fmtSecret(d.cost)}</td>
-                    <td class="py-3 px-3 font-bold text-cyan-400">${fmtSecret(profit)}</td>
-                    <td class="py-3 px-3 font-bold">${d.qty}</td>
-                    <td class="py-3 px-3 font-bold text-pink-400">${d.color || '-'}</td>
-                    <td class="py-3 px-3">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <button onclick="cloneDevice(${d.id})" class="p-2 bg-emerald-600/80 hover:bg-emerald-500 text-white rounded-lg transition" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
-                            <button onclick="editDevice(${d.id})" class="p-2 bg-blue-600/80 hover:bg-blue-500 text-white rounded-lg transition" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="deleteDevice(${d.id})" class="p-2 bg-red-600/80 hover:bg-red-500 text-white rounded-lg transition" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <td class="py-2 px-1.5 font-bold text-emerald-400 text-xl">${fmtVal(d.price)}</td>
+                    <td class="py-2 px-1.5"><span class="${qtyTextClass}">${d.qty}</span></td>
+                    <td class="py-2 px-1.5">
+                        <div class="flex items-center justify-center gap-0.5">
+                            <button onclick="cloneDevice(${d.id})" class="w-6 h-6 bg-emerald-600/90 hover:bg-emerald-500 text-white rounded transition flex items-center justify-center text-[10px]" title="NHÂN BẢN"><i class="fa-solid fa-copy"></i></button>
+                            <button onclick="editDevice(${d.id})" class="w-6 h-6 bg-blue-600/90 hover:bg-blue-500 text-white rounded transition flex items-center justify-center text-[10px]" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteDevice(${d.id})" class="w-6 h-6 bg-red-600/90 hover:bg-red-500 text-white rounded transition flex items-center justify-center text-[10px]" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </td>
+                    <td class="py-2 px-1.5 font-bold text-pink-500 text-xs">${fmtSecret(d.cost)}</td>
+                    <td class="py-2 px-1.5 font-bold text-cyan-400 text-xs">${fmtSecret(profit)}</td>
                 `;
-                return `<tr class="row-hover transition">${cols}</tr>`;
+                return `<tr class="${rowClass} transition">${cols}</tr>`;
             }).join('');
 
-            // Render Mobile List
             mobileList.innerHTML = filtered.map(d => {
                 const profit = d.price - d.cost;
-                const formattedNameMobile = renderDeviceNames(d.name, true);
+                const formattedNameMobile = renderDeviceNames(d.name, d.color, true);
+                const isOutOfStock = d.qty === 0 || d.qty === '0';
+                const rowClassMobile = isOutOfStock ? 'yellow-pulse-row rounded-xl p-2 my-1' : 'py-3';
+                const qtyStyleMobile = isOutOfStock ? 'text-amber-300 font-extrabold' : 'text-gray-300 font-bold';
+
                 return `
-                    <div class="py-3 flex items-center justify-between gap-2">
+                    <div class="flex items-center justify-between gap-2 ${rowClassMobile}">
                         <div class="flex flex-col gap-1 min-w-0">
                             <div class="flex items-center gap-1.5 flex-wrap">
                                 ${formattedNameMobile}
                                 ${isIphone && d.type ? `<span class="text-xs font-bold text-amber-400 bg-gray-900 px-1.5 py-0.5 rounded border border-gray-800">${d.type}</span>` : ''}
-                                ${d.color ? `<span class="text-xs font-bold text-pink-400 bg-gray-900 px-1.5 py-0.5 rounded border border-gray-800">${d.color}</span>` : ''}
+                                ${isOutOfStock ? `<span class="text-[10px] yellow-pulse-badge px-1.5 py-0.2 rounded font-extrabold">HẾT HÀNG</span>` : ''}
                             </div>
                             <div class="flex items-center gap-3 text-sm">
-                                <span class="text-emerald-400 font-bold">GIÁ: ${fmtVal(d.price)}</span>
-                                <span class="text-amber-400 font-bold">VỐN: ${fmtSecret(d.cost)}</span>
-                                <span class="text-cyan-400 font-bold">LÃI: ${fmtSecret(profit)}</span>
-                                <span class="text-gray-300 font-bold">SL: ${d.qty}</span>
+                                <span class="text-emerald-400 font-bold text-lg">GIÁ: ${fmtVal(d.price)}</span>
+                                <span class="${qtyStyleMobile}">SL: ${d.qty}</span>
+                                <span class="text-pink-500 font-bold text-xs">GIÁ NHẬP: ${fmtSecret(d.cost)}</span>
+                                <span class="text-cyan-400 font-bold text-xs">LÃI: ${fmtSecret(profit)}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <button onclick="cloneDevice(${d.id})" class="p-2 bg-emerald-600 text-white rounded-lg" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
-                            <button onclick="editDevice(${d.id})" class="p-2 bg-blue-600 text-white rounded-lg" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="deleteDevice(${d.id})" class="p-2 bg-red-600 text-white rounded-lg" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                            <button onclick="cloneDevice(${d.id})" class="w-7 h-7 bg-emerald-600 text-white rounded flex items-center justify-center text-xs" title="NHÂN BẢN"><i class="fa-solid fa-copy"></i></button>
+                            <button onclick="editDevice(${d.id})" class="w-7 h-7 bg-blue-600 text-white rounded flex items-center justify-center text-xs" title="SỬA"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteDevice(${d.id})" class="w-7 h-7 bg-red-600 text-white rounded flex items-center justify-center text-xs" title="XÓA"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -672,7 +734,6 @@
             document.getElementById('total-cost').innerText = fmtSecret(totalCostSum);
         }
 
-        // Khởi động đồng bộ dữ liệu từ Cloud khi tải trang
         syncFromCloud();
     </script>
 </body>
