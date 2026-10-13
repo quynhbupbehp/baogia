@@ -114,8 +114,8 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN -->
-            <div class="md:hidden divide-y divide-gray-800/60 p-2" id="device-mobile-list"></div>
+            <!-- DANH SÁCH MOBILE RÚT GỌN (DẠNG HÀNG NGANG CHUẨN GIAO DIỆN GỐC) -->
+            <div class="md:hidden divide-y divide-gray-800/60 p-2 space-y-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
                 <i class="fa-solid fa-box-open text-3xl mb-2"></i>
@@ -263,25 +263,24 @@
         function getShortCategory(partName) {
             if (!partName) return '';
             const upper = partName.toUpperCase();
-            if (upper.includes('MÀN HÌNH')) return 'MÀN';
+            if (upper.includes('MÀN HÌNH')) return 'MÀN HÌNH';
             return partName;
         }
 
+        // Hàm dựng tên máy: Đỏ - Trắng xen kẽ
         function renderDeviceNames(nameStr, isMobile = false) {
             if (!nameStr) return '';
-            
-            // Mobile: giữ nguyên cấu trúc chữ gốc, chỉ tách và đổi màu chữ xen kẽ đỏ / trắng
+            const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
+
             if (isMobile) {
-                const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
-                if (parts.length <= 1) return nameStr;
+                // Hiển thị tên máy dạng nút bo góc trên Mobile
                 return parts.map((part, index) => {
-                    const textColor = (index % 2 === 0) ? 'text-red-500' : 'text-white';
-                    return `<span class="${textColor}">${part}</span>`;
-                }).join(' - ');
+                    const textColor = (index % 2 === 0) ? 'text-amber-400' : 'text-white';
+                    return `<span class="px-2.5 py-1.5 rounded-xl bg-gray-900 border border-gray-800 ${textColor} font-bold text-sm inline-flex items-center gap-1.5">${part}</span>`;
+                }).join(' ');
             }
 
-            // Desktop: giữ nguyên như cũ
-            const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
+            // Hiển thị dạng ô trên Desktop
             return parts.map((part, index) => {
                 const textColor = (index % 2 === 0) ? 'text-red-500' : 'text-white';
                 return `<span class="px-1 py-0 rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap text-xl inline-block m-0.5">${part}</span>`;
@@ -639,6 +638,13 @@
                 const deviceNamesHtml = renderDeviceNames(item.name, false);
                 const deviceNamesMobileHtml = renderDeviceNames(item.name, true);
 
+                // Biểu tượng màu tròn chuẩn giao diện gốc
+                let colorDot = '';
+                if (item.color) {
+                    const isWhite = item.color.toUpperCase().includes('TRẮNG');
+                    colorDot = `<span class="w-3.5 h-3.5 rounded-full inline-block border border-gray-600 ${isWhite ? 'bg-white' : 'bg-black'}"></span>`;
+                }
+
                 desktopHtml += `
                     <tr class="row-hover transition">
                         <td class="py-3 px-2 text-gray-400 font-medium">${index + 1}</td>
@@ -660,30 +666,16 @@
                     </tr>
                 `;
 
+                // GIAO DIỆN MOBILE CHUẨN HÀNG NGANG
                 mobileHtml += `
-                    <div class="p-3 row-hover flex flex-col gap-2">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <div class="font-bold text-white text-base">${deviceNamesMobileHtml}</div>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-amber-400 font-semibold">${shortPart}</span>
-                                    ${isIphone && item.type ? `<span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-cyan-400 font-semibold">${item.type}</span>` : ''}
-                                    ${item.color ? `<span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-semibold">${item.color}</span>` : ''}
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-sm font-bold text-emerald-400">${fmtVal(item.price)}</div>
-                                <div class="text-xs text-pink-500 font-semibold">LÃI: ${fmtSecret(profit)}</div>
-                            </div>
+                    <div class="p-3 bg-gray-900/60 rounded-2xl border border-gray-800 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            ${deviceNamesMobileHtml}
+                            ${colorDot}
                         </div>
-                        <div class="flex justify-between items-center pt-2 border-t border-gray-800/60 text-xs">
-                            <div class="text-gray-400">VỐN: <span class="text-amber-400 font-semibold">${fmtSecret(item.cost)}</span> | SL: <span class="text-indigo-400 font-bold">${item.qty}</span></div>
-                            <div class="flex items-center gap-1">
-                                <button onclick="cloneDevice(${item.id})" class="px-2.5 py-1 bg-gray-800 text-indigo-400 rounded-lg font-semibold">NHÂN BẢN</button>
-                                <button onclick="editDevice(${item.id})" class="px-2.5 py-1 bg-gray-800 text-blue-400 rounded-lg font-semibold">SỬA</button>
-                                <button onclick="deleteDevice(${item.id})" class="px-2.5 py-1 bg-gray-800 text-red-400 rounded-lg font-semibold">XÓA</button>
-                            </div>
-                        </div>
+                        <div class="text-sm font-bold text-gray-300 uppercase">${shortPart}</div>
+                        <div class="text-sm font-bold text-emerald-400 uppercase">${item.type || ''}</div>
+                        <div class="text-base font-extrabold text-red-500">${fmtVal(item.price)}</div>
                     </div>
                 `;
             });
