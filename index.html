@@ -267,12 +267,22 @@
             return partName;
         }
 
-        function renderDeviceNames(nameStr) {
+        function renderDeviceNames(nameStr, isMobile = false) {
             if (!nameStr) return '';
-            const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
             
+            // Mobile: giữ nguyên cấu trúc chữ gốc, chỉ tách và đổi màu chữ xen kẽ đỏ / trắng
+            if (isMobile) {
+                const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
+                if (parts.length <= 1) return nameStr;
+                return parts.map((part, index) => {
+                    const textColor = (index % 2 === 0) ? 'text-red-500' : 'text-white';
+                    return `<span class="${textColor}">${part}</span>`;
+                }).join(' - ');
+            }
+
+            // Desktop: giữ nguyên như cũ
+            const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
             return parts.map((part, index) => {
-                // Xen kẽ: index chẵn (0, 2, 4...) màu đỏ, index lẻ (1, 3, 5...) màu trắng
                 const textColor = (index % 2 === 0) ? 'text-red-500' : 'text-white';
                 return `<span class="px-1 py-0 rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap text-xl inline-block m-0.5">${part}</span>`;
             }).join('');
@@ -626,7 +636,8 @@
             filtered.forEach((item, index) => {
                 const profit = item.price - item.cost;
                 const shortPart = getShortCategory(item.part);
-                const deviceNamesHtml = renderDeviceNames(item.name);
+                const deviceNamesHtml = renderDeviceNames(item.name, false);
+                const deviceNamesMobileHtml = renderDeviceNames(item.name, true);
 
                 desktopHtml += `
                     <tr class="row-hover transition">
@@ -653,7 +664,7 @@
                     <div class="p-3 row-hover flex flex-col gap-2">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="font-bold text-white text-base">${deviceNamesHtml}</div>
+                                <div class="font-bold text-white text-base">${deviceNamesMobileHtml}</div>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-amber-400 font-semibold">${shortPart}</span>
                                     ${isIphone && item.type ? `<span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-cyan-400 font-semibold">${item.type}</span>` : ''}
