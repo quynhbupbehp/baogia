@@ -328,13 +328,17 @@
 
             if (isMobile) {
                 const namePartsHtml = parts.map((part, index) => {
-                    return `<span class="px-1.5 py-0.5 rounded-lg bg-gray-900 border border-gray-800 text-white font-bold text-xs inline-block whitespace-nowrap">${part}</span>`;
+                    // Nếu là IPHONE thì tên máy màu trắng, hãng khác màu chữ xen kẽ vàng - trắng
+                    const textColor = isIphone ? 'text-white' : ((index % 2 === 0) ? 'text-amber-400' : 'text-white');
+                    return `<span class="px-1.5 py-0.5 rounded-lg bg-gray-900 border border-gray-800 ${textColor} font-bold text-xs inline-block whitespace-nowrap">${part}</span>`;
                 }).join(' ');
                 return `<div class="inline-flex items-center flex-wrap">${appleIcon}${namePartsHtml}${colorDotHtml}</div>`;
             }
 
             const namePartsHtml = parts.map((part, index) => {
-                return `<span class="px-1.5 py-0.5 rounded bg-gray-800/90 border border-gray-700/60 text-white font-extrabold whitespace-nowrap text-lg inline-block m-0.5">${part}</span>`;
+                // Nếu là IPHONE thì tên máy màu trắng, hãng khác màu chữ xen kẽ vàng - trắng
+                const textColor = isIphone ? 'text-white' : ((index % 2 === 0) ? 'text-amber-400' : 'text-white');
+                return `<span class="px-1.5 py-0.5 rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap text-lg inline-block m-0.5">${part}</span>`;
             }).join('');
 
             return `<div class="inline-flex items-center flex-wrap justify-center">${appleIcon}${namePartsHtml}${colorDotHtml}</div>`;
