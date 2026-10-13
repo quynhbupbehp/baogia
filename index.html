@@ -677,18 +677,16 @@
                         </div>
                     `;
                 } else {
-                    // MÁY NGẮN: Tinh chỉnh lại khoảng cách p-1.5 px-2 và thu gọn các cột để bó sát sạt đúng ý anh
+                    // MÁY NGẮN: Dùng grid-cols-4 để phân bố: Tên máy -> Màn hình -> Kiểu (LÔ) -> Giá tiền
                     mobileHtml += `
-                        <div class="py-1.5 px-2 bg-gray-950/40 rounded-xl grid grid-cols-3 items-center gap-1">
-                            <div class="flex items-center justify-start gap-1">
+                        <div class="py-1.5 px-2 bg-gray-950/40 rounded-xl grid grid-cols-4 items-center gap-1">
+                            <div class="flex items-center justify-start gap-1 col-span-1">
                                 ${deviceNamesMobileHtml}
                                 ${colorDot}
                             </div>
-                            <div class="text-sm font-bold text-gray-300 uppercase text-center">${fullPart}</div>
-                            <div class="flex items-center justify-end gap-2 text-right">
-                                <span class="text-sm font-bold text-cyan-400 uppercase">${item.type || ''}</span>
-                                <span class="text-lg font-extrabold text-red-500 min-w-[45px]">${fmtVal(item.price)}</span>
-                            </div>
+                            <div class="text-sm font-bold text-gray-300 uppercase text-center col-span-1">${fullPart}</div>
+                            <div class="text-sm font-bold text-cyan-400 uppercase text-center col-span-1">${item.type || ''}</div>
+                            <div class="text-lg font-extrabold text-red-500 text-right col-span-1">${fmtVal(item.price)}</div>
                         </div>
                     `;
                 }
