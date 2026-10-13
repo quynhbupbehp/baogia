@@ -114,7 +114,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN (TỐI ƯU KHOẢNG CÁCH SÁT NHAU) -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN (CĂN GIỮA CÁC CỘT CÂN ĐỐI) -->
             <div class="md:hidden divide-y divide-gray-800/40 px-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -662,18 +662,16 @@
                     </tr>
                 `;
 
-                // MOBILE: Giảm khoảng cách padding (py-1.5) để các dòng sát nhau tối ưu tối đa không gian
+                // MOBILE: Sử dụng grid chia đều cột và căn giữa nội dung hoàn hảo
                 mobileHtml += `
-                    <div class="py-1.5 px-2 bg-gray-950/40 rounded-xl flex items-center justify-between gap-1.5">
-                        <div class="flex items-center gap-1.5 max-w-[62%] flex-wrap">
+                    <div class="py-1.5 px-2 bg-gray-950/40 rounded-xl grid grid-cols-4 items-center gap-1 text-center">
+                        <div class="flex items-center justify-center gap-1 flex-wrap col-span-1">
                             ${deviceNamesMobileHtml}
                             ${colorDot}
                         </div>
-                        <div class="flex items-center gap-2 ml-auto shrink-0">
-                            <div class="text-xs font-bold text-gray-400 uppercase">${shortPart}</div>
-                            <div class="text-xs font-bold text-cyan-400 uppercase">${item.type || ''}</div>
-                            <div class="text-base font-extrabold text-red-500">${fmtVal(item.price)}</div>
-                        </div>
+                        <div class="text-xs font-bold text-gray-400 uppercase truncate col-span-1">${shortPart}</div>
+                        <div class="text-xs font-bold text-cyan-400 uppercase truncate col-span-1">${item.type || ''}</div>
+                        <div class="text-base font-extrabold text-red-500 col-span-1 text-right">${fmtVal(item.price)}</div>
                     </div>
                 `;
             });
