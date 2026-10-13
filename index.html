@@ -114,7 +114,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN (DẠNG HÀNG NGANG CHUẨN GIAO DIỆN GỐC) -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN -->
             <div class="md:hidden divide-y divide-gray-800/60 p-2 space-y-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -267,20 +267,17 @@
             return partName;
         }
 
-        // Hàm dựng tên máy: Đỏ - Trắng xen kẽ
         function renderDeviceNames(nameStr, isMobile = false) {
             if (!nameStr) return '';
             const parts = nameStr.split('-').map(p => p.trim()).filter(Boolean);
 
             if (isMobile) {
-                // Hiển thị tên máy dạng nút bo góc trên Mobile
                 return parts.map((part, index) => {
                     const textColor = (index % 2 === 0) ? 'text-amber-400' : 'text-white';
-                    return `<span class="px-2.5 py-1.5 rounded-xl bg-gray-900 border border-gray-800 ${textColor} font-bold text-sm inline-flex items-center gap-1.5">${part}</span>`;
+                    return `<span class="px-2 py-1 rounded-xl bg-gray-900 border border-gray-800 ${textColor} font-bold text-sm inline-block m-0.5">${part}</span>`;
                 }).join(' ');
             }
 
-            // Hiển thị dạng ô trên Desktop
             return parts.map((part, index) => {
                 const textColor = (index % 2 === 0) ? 'text-red-500' : 'text-white';
                 return `<span class="px-1 py-0 rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap text-xl inline-block m-0.5">${part}</span>`;
@@ -638,7 +635,6 @@
                 const deviceNamesHtml = renderDeviceNames(item.name, false);
                 const deviceNamesMobileHtml = renderDeviceNames(item.name, true);
 
-                // Biểu tượng màu tròn chuẩn giao diện gốc
                 let colorDot = '';
                 if (item.color) {
                     const isWhite = item.color.toUpperCase().includes('TRẮNG');
@@ -666,16 +662,18 @@
                     </tr>
                 `;
 
-                // GIAO DIỆN MOBILE CHUẨN HÀNG NGANG
+                // MOBILE: Bố cục dùng flex-wrap / grid để tên máy dài tự xuống hàng, không bị chèn ép chữ khác
                 mobileHtml += `
-                    <div class="p-3 bg-gray-900/60 rounded-2xl border border-gray-800 flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
+                    <div class="p-3 bg-gray-900/60 rounded-2xl border border-gray-800 flex flex-wrap items-center justify-between gap-y-2 gap-x-2">
+                        <div class="flex items-center gap-2 max-w-[65%] flex-wrap">
                             ${deviceNamesMobileHtml}
                             ${colorDot}
                         </div>
-                        <div class="text-sm font-bold text-gray-300 uppercase">${shortPart}</div>
-                        <div class="text-sm font-bold text-emerald-400 uppercase">${item.type || ''}</div>
-                        <div class="text-base font-extrabold text-red-500">${fmtVal(item.price)}</div>
+                        <div class="flex items-center gap-3 ml-auto">
+                            <div class="text-xs font-bold text-gray-400 uppercase">${shortPart}</div>
+                            <div class="text-xs font-bold text-cyan-400 uppercase">${item.type || ''}</div>
+                            <div class="text-base font-extrabold text-red-500">${fmtVal(item.price)}</div>
+                        </div>
                     </div>
                 `;
             });
