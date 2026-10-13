@@ -114,7 +114,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN (CÂN ĐỐI CHUẨN XÁC, KHÔNG BỊ TRỐNG KHOẢNG CÁCH) -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN -->
             <div class="md:hidden divide-y divide-gray-800/40 px-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -263,7 +263,7 @@
         function getShortCategory(partName) {
             if (!partName) return '';
             const upper = partName.toUpperCase();
-            if (upper.includes('MÀN HÌNH')) return 'MÀN'; // Rút gọn MÀN HÌNH thành MÀN trên mobile
+            if (upper.includes('MÀN HÌNH')) return 'MÀN';
             return partName;
         }
 
@@ -634,6 +634,7 @@
                 const shortPart = getShortCategory(item.part);
                 const deviceNamesHtml = renderDeviceNames(item.name, false);
                 const deviceNamesMobileHtml = renderDeviceNames(item.name, true);
+                const namePartsCount = item.name ? item.name.split('-').length : 1;
 
                 let colorDot = '';
                 if (item.color) {
@@ -662,17 +663,19 @@
                     </tr>
                 `;
 
-                // MOBILE: Cho phép tên máy co giãn linh hoạt tối đa 2 dòng, phần thông tin bên phải bám sát liền kề, không bị khoảng trống xa
+                // MOBILE: Nếu tên máy dài (nhiều phần tử > 3), tự động ẩn chữ màn hình để nhường chỗ và đẩy giá sang phải liền mạch tuyệt đối
+                const displayPart = namePartsCount > 3 ? '' : shortPart;
+
                 mobileHtml += `
-                    <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 flex-wrap flex-1 max-w-[65%]">
+                    <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5 flex-wrap flex-1">
                             ${deviceNamesMobileHtml}
                             ${colorDot}
                         </div>
-                        <div class="flex items-center justify-end gap-3 shrink-0 text-right">
-                            <span class="text-sm font-bold text-gray-300 uppercase">${shortPart}</span>
-                            <span class="text-sm font-bold text-cyan-400 uppercase">${item.type || ''}</span>
-                            <span class="text-lg font-extrabold text-red-500 min-w-[55px]">${fmtVal(item.price)}</span>
+                        <div class="flex items-center justify-end gap-2.5 shrink-0 text-right">
+                            ${displayPart ? `<span class="text-xs font-bold text-gray-300 uppercase">${displayPart}</span>` : ''}
+                            <span class="text-xs font-bold text-cyan-400 uppercase">${item.type || ''}</span>
+                            <span class="text-base font-extrabold text-red-500 min-w-[50px]">${fmtVal(item.price)}</span>
                         </div>
                     </div>
                 `;
