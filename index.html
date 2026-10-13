@@ -114,7 +114,7 @@
                 </table>
             </div>
 
-            <!-- DANH SÁCH MOBILE RÚT GỌN (CÂN ĐỐI CHUẨN XÁC) -->
+            <!-- DANH SÁCH MOBILE RÚT GỌN (CÂN ĐỐI CHUẨN XÁC, KHÔNG BỊ TRỐNG KHOẢNG CÁCH) -->
             <div class="md:hidden divide-y divide-gray-800/40 px-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
@@ -662,14 +662,14 @@
                     </tr>
                 `;
 
-                // MOBILE: Cố định chuẩn layout căn đều 2 bên (Trái: Tên máy tối đa 2 dòng + màu, Phải: Linh kiện rút gọn, Kiểu, Giá căn thẳng tắp)
+                // MOBILE: Cho phép tên máy co giãn linh hoạt tối đa 2 dòng, phần thông tin bên phải bám sát liền kề, không bị khoảng trống xa
                 mobileHtml += `
                     <div class="py-2.5 px-3 bg-gray-950/40 rounded-xl flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 flex-wrap max-w-[52%] overflow-hidden" style="max-height: 4.5rem;">
+                        <div class="flex items-center gap-2 flex-wrap flex-1 max-w-[65%]">
                             ${deviceNamesMobileHtml}
                             ${colorDot}
                         </div>
-                        <div class="flex items-center justify-end gap-3 shrink-0 ml-auto text-right">
+                        <div class="flex items-center justify-end gap-3 shrink-0 text-right">
                             <span class="text-sm font-bold text-gray-300 uppercase">${shortPart}</span>
                             <span class="text-sm font-bold text-cyan-400 uppercase">${item.type || ''}</span>
                             <span class="text-lg font-extrabold text-red-500 min-w-[55px]">${fmtVal(item.price)}</span>
