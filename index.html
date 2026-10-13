@@ -51,8 +51,8 @@
                             </div>
                         </div>
 
-                        <!-- CÁC NÚT BÊN PHẢI: ẨN/HIỆN, CLOUD, VỐN -->
-                        <div class="flex flex-wrap items-center gap-2 justify-end">
+                        <!-- CÁC NÚT BÊN PHẢI: ẨN/HIỆN, CLOUD, VỐN (Đã khôi phục đúng chuẩn bản gốc mobile/web) -->
+                        <div class="hidden xl:flex flex-wrap items-center gap-2 justify-end">
                             <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-xl text-sm font-medium border border-gray-700 transition flex items-center justify-center w-10 h-10" title="ẨN / HIỆN VỐN & LÃI">
                                 <i class="fa-solid fa-eye text-base" id="privacy-icon"></i>
                             </button>
@@ -90,8 +90,8 @@
                                 </div>
                             </div>
 
-                            <!-- NÚT THÊM MỚI (NẰM SÁT CẠNH NÚT KIỂU) -->
-                            <div class="shrink-0">
+                            <!-- NÚT THÊM MỚI (CHỈ HIỂN THỊ TRÊN WEB, NẰM SÁT CẠNH NÚT KIỂU) -->
+                            <div class="hidden xl:block shrink-0">
                                 <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/35">
                                     <i class="fa-solid fa-plus"></i> THÊM MỚI
                                 </button>
