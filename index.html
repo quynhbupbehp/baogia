@@ -74,21 +74,21 @@
                     </div>
                 </div>
 
-                <!-- PHẦN LINH KIỆN (HIỂN THỊ ĐẦY ĐỦ CHO MỌI HÃNG) -->
+                <!-- PHẦN LINH KIỆN -->
                 <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto pt-1">
                     <span class="text-xs md:text-sm font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
                     <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1"></div>
 
-                    <!-- Kiểu trên Desktop (giữ nguyên) -->
+                    <!-- Kiểu trên Desktop -->
                     <div class="hidden xl:relative xl:block shrink-0 ml-1" id="filter-type-container-desktop"></div>
                 </div>
 
+                <!-- THANH TÌM KIẾM & NÚT KIỂU BÊN TRÁI -->
                 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2 pt-2 border-t border-gray-800/80">
                     <div class="flex-1"></div>
 
-                    <!-- Thanh tìm kiếm & Kiểu bên trái trên Mobile -->
                     <div class="flex items-center justify-between gap-1.5 flex-1 w-full xl:w-auto">
-                        <!-- Nút kiểu bên trái thanh tìm kiếm trên mobile (Chỉ hiện khi ở tab IPHONE) -->
+                        <!-- Nút kiểu bên trái thanh tìm kiếm trên mobile -->
                         <div class="relative shrink-0 block xl:hidden" id="filter-type-container-mobile"></div>
 
                         <div class="relative flex-1 xl:w-80">
@@ -610,7 +610,6 @@
 
                 const itemKey = d.id !== undefined && d.id !== null ? d.id : index;
 
-                // --- DESKTOP TABLE ROW (GIỮ NGUYÊN HOÀN TOÀN) ---
                 desktopHtml += `
                     <tr class="${rowClass} transition">
                         <td class="py-2.5 px-3 text-left">${nameHtml}</td>
@@ -632,7 +631,6 @@
                     </tr>
                 `;
 
-                // --- MOBILE LIST ITEM ---
                 if (isIphone) {
                     const mobileTypeStr = d.type ? ` - <span class="text-amber-400 font-bold text-xs">${d.type}</span>` : '';
                     mobileHtml += `
