@@ -75,18 +75,18 @@
                 </div>
 
                 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2 pt-2 border-t border-gray-800/80">
-                    <!-- Desktop: Linh Kiện + Kiểu (cũ) | Mobile: Linh Kiện riêng -->
+                    <!-- Linh Kiện (Desktop & Mobile) -->
                     <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto">
                         <span class="text-xs md:text-sm font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
                         <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1"></div>
 
-                        <!-- Kiểu trên Desktop (giữ nguyên vị trí cũ) -->
+                        <!-- Kiểu trên Desktop (giữ nguyên) -->
                         <div class="hidden xl:relative xl:block shrink-0 ml-1" id="filter-type-container-desktop"></div>
                     </div>
 
-                    <!-- Thanh tìm kiếm & Nút Kiểu trên Mobile -->
-                    <div class="flex items-center justify-between gap-1.5 flex-1 w-full xl:w-auto">
-                        <div class="relative flex-1 xl:w-80">
+                    <!-- Thanh tìm kiếm (Đã xóa nút kiểu trên mobile theo yêu cầu) -->
+                    <div class="flex items-center justify-center gap-2 flex-1 w-full xl:w-auto">
+                        <div class="relative w-full xl:w-80">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             </span>
@@ -96,9 +96,6 @@
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
-
-                        <!-- Kiểu trên Mobile (nằm ngay bên phải ô tìm kiếm) -->
-                        <div class="relative shrink-0 block xl:hidden" id="filter-type-container-mobile"></div>
                     </div>
 
                     <div class="hidden xl:block shrink-0">
@@ -294,22 +291,24 @@
             }
 
             const parts = processedName.split('-').map(p => p.trim()).filter(Boolean);
-            const appleIcon = isIphone ? `<i class="fa-brands fa-apple text-pink-500 text-sm md:text-base mr-1 align-middle"></i>` : '';
+            const appleIcon = isIphone ? `<i class="fa-brands fa-apple text-pink-500 ${isMobile ? 'text-sm' : 'text-base'} mr-1 align-middle"></i>` : '';
 
             let colorDotHtml = '';
             if (colorStr && colorStr.trim()) {
                 const hexStyle = getColorHex(colorStr);
-                colorDotHtml = `<span class="inline-block w-3 h-3 md:w-3.5 md:h-3.5 rounded-full ml-1 mr-0.5 shrink-0 align-middle shadow-sm" style="background-color: ${hexStyle};" title="MÀU: ${colorStr}"></span>`;
+                const dotSize = isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5';
+                colorDotHtml = `<span class="inline-block ${dotSize} rounded-full ml-1 mr-0.5 shrink-0 align-middle shadow-sm" style="background-color: ${hexStyle};" title="MÀU: ${colorStr}"></span>`;
             }
 
             const dashCount = (processedName.match(/-/g) || []).length;
             const isVeryLong = dashCount >= 10;
 
             if (isMobile) {
-                const textSizeClass = isVeryLong ? 'text-[10px]' : 'text-xs';
+                // Phạt size tên máy to hơn 20% trên mobile (từ text-xs/text-[10px] lên text-sm/text-xs)
+                const textSizeClass = isVeryLong ? 'text-xs' : 'text-sm font-bold';
                 const namePartsHtml = parts.map((part, index) => {
                     const textColor = isIphone ? 'text-white' : ((index % 2 === 0) ? 'text-amber-400' : 'text-white');
-                    return `<span class="px-1 py-0.5 rounded bg-gray-900 border border-gray-800 ${textColor} font-bold ${textSizeClass} inline-block whitespace-nowrap">${part}</span>`;
+                    return `<span class="px-1 py-0.5 rounded bg-gray-900 border border-gray-800 ${textColor} ${textSizeClass} inline-block whitespace-nowrap">${part}</span>`;
                 }).join(' ');
                 return `<div class="inline-flex items-center flex-wrap">${appleIcon}${namePartsHtml}${colorDotHtml}</div>`;
             }
@@ -407,25 +406,19 @@
                     <span id="label-current-type" class="text-white font-bold">${currentType || 'KIỂU'}</span>
                     <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200" id="type-chevron"></i>
                 </button>
-                <div id="dropdown-types" class="hidden absolute right-0 xl:left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
+                <div id="dropdown-types" class="hidden absolute left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
                     <div id="type-menu-list" class="flex flex-col gap-1"></div>
                 </div>
             `;
 
             const filterContainerDesktop = document.getElementById('filter-type-container-desktop');
-            const filterContainerMobile = document.getElementById('filter-type-container-mobile');
-
-            if (filterContainerDesktop && filterContainerMobile) {
+            if (filterContainerDesktop) {
                 if (isIphone) {
                     filterContainerDesktop.style.display = 'block';
                     filterContainerDesktop.innerHTML = typeFilterHtml;
-                    filterContainerMobile.style.display = 'block';
-                    filterContainerMobile.innerHTML = typeFilterHtml;
                 } else {
                     filterContainerDesktop.style.display = 'none';
                     filterContainerDesktop.innerHTML = '';
-                    filterContainerMobile.style.display = 'none';
-                    filterContainerMobile.innerHTML = '';
                 }
             }
 
@@ -605,7 +598,7 @@
 
                 const itemKey = d.id !== undefined && d.id !== null ? d.id : index;
 
-                // --- DESKTOP TABLE ROW ---
+                // --- DESKTOP TABLE ROW (GIỮ NGUYÊN HOÀN TOÀN) ---
                 desktopHtml += `
                     <tr class="${rowClass} transition">
                         <td class="py-2.5 px-3 text-left">${nameHtml}</td>
@@ -627,16 +620,18 @@
                     </tr>
                 `;
 
-                // --- MOBILE LIST ITEM (CHỈ HIỂN THỊ: TÊN MÁY - CHẤM MÀU - LINH KIỆN - KIỂU - GIÁ) ---
-                const mobileTypeStr = (isIphone && d.type) ? ` - <span class="text-indigo-400 font-bold">${d.type}</span>` : '';
+                // --- MOBILE LIST ITEM ---
+                // Kiểu hiển thị màu vàng, giảm kích cỡ đi 40% (dùng text-[9px])
+                // Giá hiển thị màu đỏ (text-red-500)
+                const mobileTypeStr = (isIphone && d.type) ? ` - <span class="text-amber-400 font-bold text-[9px]">${d.type}</span>` : '';
                 mobileHtml += `
                     <div class="py-2.5 px-1 flex justify-between items-center gap-2 border-b border-gray-800/60">
                         <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
-                            <div class="text-xs font-bold text-white">${mobileNameHtml}</div>
+                            <div class="font-bold text-white">${mobileNameHtml}</div>
                             <span class="text-emerald-400 font-bold text-[11px]">• ${d.part}</span>
                             ${mobileTypeStr}
                         </div>
-                        <div class="text-pink-400 font-extrabold text-sm shrink-0 whitespace-nowrap">
+                        <div class="text-red-500 font-extrabold text-sm shrink-0 whitespace-nowrap">
                             ${formatCurrency(price)}
                         </div>
                     </div>
