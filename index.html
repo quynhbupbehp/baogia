@@ -76,25 +76,11 @@
 
                 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 pt-2 border-t border-gray-800/80">
                     <div class="flex flex-wrap items-center gap-1.5 relative">
-                        <span class="text-sm font-bold text-gray-400 uppercase mr-1">LINH KIỆN:</span>
+                        <span class="text-sm font-bold text-amber-400 uppercase mr-1">LINH KIỆN:</span>
                         <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1.5"></div>
-                        
-                        <div class="relative">
-                            <button onclick="toggleMoreCats(event)" class="px-3 py-2 rounded-xl text-sm font-bold bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white transition flex items-center justify-center" title="XEM THÊM LINH KIỆN">
-                                <i class="fa-solid fa-chevron-right text-white text-xs"></i>
-                            </button>
-                            <div id="dropdown-more-cats" class="hidden absolute left-0 mt-2 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1.5">
-                                <div id="sub-cat-list" class="flex flex-col gap-1"></div>
-                                <div class="border-t border-gray-800 pt-1 mt-1">
-                                    <button onclick="handleEntity('categories', 'add')" class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold text-emerald-400 hover:bg-gray-800 transition flex items-center gap-2">
-                                        <i class="fa-solid fa-plus-circle"></i> THÊM LINH KIỆN MỚI
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="relative shrink-0 ml-2" id="filter-type-container">
-                            <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-3.5 py-2 rounded-xl text-sm font-bold bg-gray-900 border border-gray-700 hover:bg-gray-800 text-white transition flex items-center gap-2" title="LỌC KIỂU">
+                            <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-3.5 py-2 rounded-xl text-sm font-bold bg-red-600 border border-red-500 hover:bg-red-500 text-white transition flex items-center gap-2 shadow-md" title="LỌC KIỂU">
                                 <span id="label-current-type" class="text-white font-bold">KIỂU</span>
                                 <i class="fa-solid fa-chevron-down text-white text-xs transition-transform duration-200" id="type-chevron"></i>
                             </button>
@@ -243,7 +229,7 @@
                     <div class="flex-1 flex flex-col items-center min-w-0">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">LÃI</label>
                         <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-11 flex items-center justify-center">
-                            <div id="modal-profit-preview" class="text-sm font-bold text-emerald-400 leading-none truncate text-center w-full">0</div>
+                            <div id="modal-profit-preview" class="text-xs font-bold text-emerald-400 leading-none truncate text-center w-full">0</div>
                         </div>
                     </div>
 
@@ -271,17 +257,19 @@
 
         let devices = [];
         let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'KHÁC'];
-        let categories = ['MÀN HÌNH', 'PIN', 'KÍNH - C.ỨNG', 'CÁP/BO SẠC'];
+        let categories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP', 'LƯNG'];
         let types = ['ZIN', 'GX', 'ZIN BÓC MÁY', 'ZIN HÃNG', 'OLED', 'LINH KIỆN'];
         let names = [];
 
-        let currentBrand = brands[0] || '', currentCategory = categories[0] || '', currentType = '', isPrivacyMode = false;
+        let currentBrand = brands[0] || '', currentCategory = 'MÀN HÌNH', currentType = '', isPrivacyMode = false;
 
         function getFullCategory(partName) {
             if (!partName) return '';
             const upper = partName.toUpperCase();
-            if (upper.includes('MÀN HÌNH')) return 'MÀN HÌNH';
-            return partName;
+            if (upper.includes('MÀN')) return 'MÀN HÌNH';
+            if (upper.includes('KÍNH')) return 'KÍNH ÉP';
+            if (upper.includes('SẠC')) return 'BO SẠC';
+            return upper;
         }
 
         function getColorHex(colorName) {
@@ -329,7 +317,7 @@
             }
 
             const fontSizeClass = isVeryLong ? 'text-xs' : 'text-lg';
-            const paddingClass = isVeryLong ? 'px-1 py-0.5 m-0.25' : 'px-1.5 py-0.5 m-0.5';
+            const paddingClass = isVeryLong ? 'px-1 py-0.5 m-0.5' : 'px-1.5 py-0.5 m-0.5';
 
             const namePartsHtml = parts.map((part, index) => {
                 const textColor = isIphone ? 'text-white' : ((index % 2 === 0) ? 'text-amber-400' : 'text-white');
@@ -362,7 +350,7 @@
                     statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-xs"></i>`;
                 }
                 if (!currentBrand && brands.length) currentBrand = brands[0];
-                if (!currentCategory && categories.length) currentCategory = categories[0];
+                if (!currentCategory) currentCategory = 'MÀN HÌNH';
                 initTabs();
                 renderTable();
             }, (err) => {
@@ -393,8 +381,18 @@
                 return `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition uppercase ${btnClass}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`;
             }).join('');
 
-            const fixedMainCats = ['MÀN HÌNH', 'PIN'];
-            const catHtml = fixedMainCats.map(c => {
+            const isIphone = currentBrand.toUpperCase() === 'IPHONE';
+
+            let displayCategories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP'];
+            if (isIphone) {
+                displayCategories.push('LƯNG');
+            }
+
+            if (currentCategory.toUpperCase() === 'LƯNG' && !isIphone) {
+                currentCategory = 'MÀN HÌNH';
+            }
+
+            const catHtml = displayCategories.map(c => {
                 const isSelected = getFullCategory(c) === getFullCategory(currentCategory);
                 const btnClass = isSelected 
                     ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
@@ -404,18 +402,6 @@
 
             document.getElementById('main-cat-tabs').innerHTML = catHtml;
 
-            const subCats = categories.filter(c => !fixedMainCats.includes(c));
-            const subCatHtml = subCats.length ? subCats.map(c => {
-                const isSelected = getFullCategory(c) === getFullCategory(currentCategory);
-                const btnClass = isSelected 
-                    ? 'pink-pulse-selected text-white font-bold shadow-lg' 
-                    : 'text-gray-300 hover:bg-gray-800';
-                return `<button onclick="currentCategory='${c}'; initTabs(); renderTable(); toggleMoreCats(event);" class="w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
-            }).join('') : '<div class="px-3 py-1 text-sm text-gray-500 italic">Chưa có mục khác</div>';
-
-            document.getElementById('sub-cat-list').innerHTML = subCatHtml;
-
-            const isIphone = currentBrand.toUpperCase() === 'IPHONE';
             const filterTypeContainer = document.getElementById('filter-type-container');
             if (filterTypeContainer) {
                 filterTypeContainer.style.display = isIphone ? 'block' : 'none';
@@ -438,7 +424,7 @@
                 if (currentType) {
                     btnTypeFilter.className = "px-3.5 py-2 rounded-xl text-sm font-bold pink-pulse-selected text-white transition flex items-center gap-2 shadow-lg";
                 } else {
-                    btnTypeFilter.className = "px-3.5 py-2 rounded-xl text-sm font-bold bg-gray-900 border border-gray-700 hover:bg-gray-800 text-white transition flex items-center gap-2";
+                    btnTypeFilter.className = "px-3.5 py-2 rounded-xl text-sm font-bold bg-red-600 border border-red-500 hover:bg-red-500 text-white transition flex items-center gap-2 shadow-md";
                 }
             }
 
@@ -459,7 +445,6 @@
 
         function toggleTypeFilter(e) {
             e.stopPropagation();
-            document.getElementById('dropdown-more-cats')?.classList.add('hidden');
             document.getElementById('dropdown-types').classList.toggle('hidden');
         }
 
@@ -470,14 +455,7 @@
             renderTable();
         }
 
-        function toggleMoreCats(e) { 
-            e.stopPropagation(); 
-            document.getElementById('dropdown-types')?.classList.add('hidden');
-            document.getElementById('dropdown-more-cats').classList.toggle('hidden'); 
-        }
-
         window.onclick = () => {
-            document.getElementById('dropdown-more-cats')?.classList.add('hidden');
             document.getElementById('dropdown-types')?.classList.add('hidden');
         };
 
@@ -541,14 +519,23 @@
                 const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
                 if (!matchBrand) return false;
 
+                const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
+                const matchType = !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase();
+                if (!matchCat || !matchType) return false;
+
                 if (searchVal) {
                     const fullText = `${d.brand} ${d.name} ${d.part} ${d.type} ${d.color}`.toUpperCase();
                     return searchVal.split(' ').every(w => fullText.includes(w));
                 }
 
-                const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
-                const matchType = !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase();
-                return matchCat && matchType;
+                return true;
+            });
+
+            // Sắp xếp danh sách thiết bị theo tên máy từ A-Z
+            filtered.sort((a, b) => {
+                const nameA = (a.name || '').toUpperCase();
+                const nameB = (b.name || '').toUpperCase();
+                return nameA.localeCompare(nameB, 'vi', { numeric: true });
             });
 
             let totalCostVal = 0;
@@ -612,7 +599,6 @@
 
                 const typeTdHtml = isIphone ? `<td class="py-3 px-3 text-indigo-400 font-bold">${d.type || '---'}</td>` : '';
 
-                // Lưu ý: Lưu trực tiếp ID hoặc chỉ số vào thuộc tính data-id / data-index để tìm chính xác phần tử trong mảng devices gốc
                 const itemKey = d.id !== undefined && d.id !== null ? d.id : index;
 
                 desktopHtml += `
@@ -632,7 +618,7 @@
                             </div>
                         </td>
                         <td class="py-3 px-3 text-amber-400">${costDisplay}</td>
-                        <td class="py-3 px-3 text-emerald-400 font-bold" style="font-size: 0.9rem;">${profitDisplay}</td>
+                        <td class="py-3 px-3 text-emerald-400 font-bold" style="font-size: 0.88rem;">${profitDisplay}</td>
                     </tr>
                 `;
 
@@ -648,7 +634,7 @@
                         <div class="flex justify-between items-center text-sm pt-1 border-t border-gray-800/60">
                             <div>
                                 <span class="text-gray-400 text-xs">BÁN:</span> <span class="text-pink-400 font-extrabold" style="font-size: 1.15rem;">${formatCurrency(price)}</span>
-                                <span class="ml-2 text-gray-400 text-xs">LÃI:</span> <span class="text-emerald-400 font-bold" style="font-size: 0.8rem;">${profitDisplay}</span>
+                                <span class="ml-2 text-gray-400 text-xs">LÃI:</span> <span class="text-emerald-400 font-bold" style="font-size: 0.78rem;">${profitDisplay}</span>
                             </div>
                             <div class="flex items-center gap-1">
                                 <button data-action="edit" data-key="${itemKey}" class="w-7 h-7 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
@@ -664,14 +650,12 @@
             mobileList.innerHTML = mobileHtml;
         }
 
-        // Bắt sự kiện click toàn cục qua Event Delegation để đảm bảo 100% bắt được thao tác
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('button[data-action]');
             if (!btn) return;
             const action = btn.getAttribute('data-action');
             const key = btn.getAttribute('data-key');
 
-            // Tìm thiết bị trong mảng devices dựa vào id hoặc index vị trí
             let targetDevice = devices.find(item => String(item.id) === String(key));
             if (!targetDevice && !isNaN(key)) {
                 targetDevice = devices[Number(key)];
@@ -729,7 +713,7 @@
             document.getElementById('device-form').reset();
 
             document.getElementById('modal-title').innerText = "THÊM LINH KIỆN MỚI (BẢN SAO)";
-            document.getElementById('device-id').value = ''; // Để trống ID để khi lưu tạo mới bản ghi
+            document.getElementById('device-id').value = '';
             document.getElementById('device-brand').value = d.brand || currentBrand;
             document.getElementById('device-name').value = d.name || '';
             document.getElementById('device-part').value = d.part || currentCategory;
@@ -840,7 +824,6 @@
             }
         }
 
-        // Khởi động ứng dụng
         syncFromCloud();
     </script>
 </body>
