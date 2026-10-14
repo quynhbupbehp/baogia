@@ -74,18 +74,23 @@
                     </div>
                 </div>
 
+                <!-- PHẦN LINH KIỆN (LUÔN HIỆN Ở MỌI TAB) -->
+                <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto pt-1">
+                    <span class="text-xs md:text-sm font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
+                    <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1"></div>
+
+                    <!-- Kiểu trên Desktop (giữ nguyên) -->
+                    <div class="hidden xl:relative xl:block shrink-0 ml-1" id="filter-type-container-desktop"></div>
+                </div>
+
                 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2 pt-2 border-t border-gray-800/80">
-                    <!-- Phần linh kiện (Chỉ hiển thị khi ở tab IPHONE trên mobile) -->
-                    <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto" id="mobile-category-wrapper">
-                        <span class="text-xs md:text-sm font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
-                        <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1"></div>
+                    <div class="flex-1"></div>
 
-                        <!-- Kiểu trên Desktop (giữ nguyên) -->
-                        <div class="hidden xl:relative xl:block shrink-0 ml-1" id="filter-type-container-desktop"></div>
-                    </div>
-
-                    <!-- Thanh tìm kiếm & Kiểu trên Mobile (Nằm bên phải ô tìm kiếm) -->
+                    <!-- Thanh tìm kiếm & Kiểu bên trái trên Mobile -->
                     <div class="flex items-center justify-between gap-1.5 flex-1 w-full xl:w-auto">
+                        <!-- Nút kiểu bên trái thanh tìm kiếm trên mobile (Chỉ hiện khi ở tab IPHONE) -->
+                        <div class="relative shrink-0 block xl:hidden" id="filter-type-container-mobile"></div>
+
                         <div class="relative flex-1 xl:w-80">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -96,9 +101,6 @@
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
-
-                        <!-- Nút kiểu bên phải thanh tìm kiếm trên mobile -->
-                        <div class="relative shrink-0 block xl:hidden" id="filter-type-container-mobile"></div>
                     </div>
 
                     <div class="hidden xl:block shrink-0">
@@ -307,7 +309,6 @@
             const isVeryLong = dashCount >= 10;
 
             if (isMobile) {
-                // Tên máy to hơn 20% trên mobile
                 const textSizeClass = isVeryLong ? 'text-xs' : 'text-sm font-bold';
                 const namePartsHtml = parts.map((part, index) => {
                     const textColor = isIphone ? 'text-white' : ((index % 2 === 0) ? 'text-amber-400' : 'text-white');
@@ -383,13 +384,6 @@
 
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
 
-            // Ẩn/hiện phần linh kiện trên mobile tùy theo tab IPHONE hay hãng khác
-            const mobileCatWrapper = document.getElementById('mobile-category-wrapper');
-            if (mobileCatWrapper) {
-                // Trên desktop luôn hiện, trên mobile chỉ hiện nếu là IPHONE
-                mobileCatWrapper.className = isIphone ? "flex flex-wrap items-center gap-1 relative w-full xl:w-auto" : "hidden xl:flex flex-wrap items-center gap-1 relative w-full xl:w-auto";
-            }
-
             let displayCategories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP'];
             if (isIphone) {
                 displayCategories.push('LƯNG');
@@ -416,7 +410,7 @@
                     <span id="label-current-type" class="text-white font-bold">${currentType || 'KIỂU'}</span>
                     <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200" id="type-chevron"></i>
                 </button>
-                <div id="dropdown-types" class="hidden absolute right-0 xl:left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
+                <div id="dropdown-types" class="hidden absolute left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
                     <div id="type-menu-list" class="flex flex-col gap-1"></div>
                 </div>
             `;
@@ -533,7 +527,6 @@
                 const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
                 if (!matchBrand) return false;
 
-                // Với iPhone kiểm tra danh mục, hãng khác không lọc theo danh mục linh kiện ẩn
                 if (isIphone) {
                     const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
                     const matchType = !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase();
@@ -641,8 +634,6 @@
 
                 // --- MOBILE LIST ITEM ---
                 if (isIphone) {
-                    // Tab iPhone: Tên máy - Chấm màu - Linh kiện - Kiểu (to hơn 20%, màu vàng) - Giá (màu đỏ)
-                    // (Giảm kích cỡ cũ 40% rồi phóng to thêm 20% tương đương text-[11px] hoặc text-xs)
                     const mobileTypeStr = d.type ? ` - <span class="text-amber-400 font-bold text-xs">${d.type}</span>` : '';
                     mobileHtml += `
                         <div class="py-2.5 px-1 flex justify-between items-center gap-2 border-b border-gray-800/60">
@@ -657,7 +648,6 @@
                         </div>
                     `;
                 } else {
-                    // Các hãng khác: Chỉ hiển thị Tên máy và Giá bán (màu đỏ)
                     mobileHtml += `
                         <div class="py-2.5 px-1 flex justify-between items-center gap-2 border-b border-gray-800/60">
                             <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
