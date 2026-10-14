@@ -75,32 +75,30 @@
                 </div>
 
                 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2 pt-2 border-t border-gray-800/80">
-                    <div class="flex flex-wrap items-center gap-1 relative">
+                    <!-- Desktop: Linh Kiện + Kiểu (cũ) | Mobile: Linh Kiện riêng -->
+                    <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto">
                         <span class="text-xs md:text-sm font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
                         <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1"></div>
 
-                        <div class="relative shrink-0 ml-1" id="filter-type-container">
-                            <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-bold bg-red-600 border border-red-500 hover:bg-red-500 text-white transition flex items-center gap-1 shadow-md" title="LỌC KIỂU">
-                                <span id="label-current-type" class="text-white font-bold">KIỂU</span>
-                                <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200" id="type-chevron"></i>
-                            </button>
-                            <div id="dropdown-types" class="hidden absolute left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
-                                <div id="type-menu-list" class="flex flex-col gap-1"></div>
-                            </div>
-                        </div>
+                        <!-- Kiểu trên Desktop (giữ nguyên vị trí cũ) -->
+                        <div class="hidden xl:relative xl:block shrink-0 ml-1" id="filter-type-container-desktop"></div>
                     </div>
 
-                    <div class="flex items-center justify-center gap-2 flex-1 w-full xl:w-auto">
-                        <div class="relative w-64 md:w-80">
+                    <!-- Thanh tìm kiếm & Nút Kiểu trên Mobile -->
+                    <div class="flex items-center justify-between gap-1.5 flex-1 w-full xl:w-auto">
+                        <div class="relative flex-1 xl:w-80">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             </span>
-                            <input type="text" id="search-input" oninput="handleSearchInput()" placeholder="TÌM KIẾM..." 
+                            <input type="text" id="search-input" oninput="handleSearchInput()" placeholder="TÌM..." 
                                 class="w-full pl-8 pr-8 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs md:text-sm focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
                             <button id="btn-clear-search" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-2.5 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
+
+                        <!-- Kiểu trên Mobile (nằm ngay bên phải ô tìm kiếm) -->
+                        <div class="relative shrink-0 block xl:hidden" id="filter-type-container-mobile"></div>
                     </div>
 
                     <div class="hidden xl:block shrink-0">
@@ -397,35 +395,37 @@
                 const btnClass = isSelected 
                     ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
-                // Đã bo viền sát chữ bằng cách dùng px-2 py-1 md:px-2.5 md:py-1 rounded-lg
                 return `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-2 py-1 md:px-2.5 md:py-1 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
 
             document.getElementById('main-cat-tabs').innerHTML = catHtml;
 
-            const filterTypeContainer = document.getElementById('filter-type-container');
-            if (filterTypeContainer) {
-                filterTypeContainer.style.display = isIphone ? 'block' : 'none';
-            }
             if (!isIphone) currentType = '';
 
-            const lblType = document.getElementById('label-current-type');
-            if (lblType) {
-                if (currentType) {
-                    lblType.innerText = currentType;
-                    lblType.className = "text-white font-bold";
-                } else {
-                    lblType.innerText = "KIỂU";
-                    lblType.className = "text-white font-bold";
-                }
-            }
+            const typeFilterHtml = `
+                <button id="btn-type-filter" onclick="toggleTypeFilter(event)" class="px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-bold ${currentType ? 'pink-pulse-selected text-white' : 'bg-red-600 border border-red-500 hover:bg-red-500 text-white'} transition flex items-center gap-1 shadow-md" title="LỌC KIỂU">
+                    <span id="label-current-type" class="text-white font-bold">${currentType || 'KIỂU'}</span>
+                    <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200" id="type-chevron"></i>
+                </button>
+                <div id="dropdown-types" class="hidden absolute right-0 xl:left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
+                    <div id="type-menu-list" class="flex flex-col gap-1"></div>
+                </div>
+            `;
 
-            const btnTypeFilter = document.getElementById('btn-type-filter');
-            if (btnTypeFilter) {
-                if (currentType) {
-                    btnTypeFilter.className = "px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-bold pink-pulse-selected text-white transition flex items-center gap-1 shadow-lg";
+            const filterContainerDesktop = document.getElementById('filter-type-container-desktop');
+            const filterContainerMobile = document.getElementById('filter-type-container-mobile');
+
+            if (filterContainerDesktop && filterContainerMobile) {
+                if (isIphone) {
+                    filterContainerDesktop.style.display = 'block';
+                    filterContainerDesktop.innerHTML = typeFilterHtml;
+                    filterContainerMobile.style.display = 'block';
+                    filterContainerMobile.innerHTML = typeFilterHtml;
                 } else {
-                    btnTypeFilter.className = "px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-bold bg-red-600 border border-red-500 hover:bg-red-500 text-white transition flex items-center gap-1 shadow-md";
+                    filterContainerDesktop.style.display = 'none';
+                    filterContainerDesktop.innerHTML = '';
+                    filterContainerMobile.style.display = 'none';
+                    filterContainerMobile.innerHTML = '';
                 }
             }
 
@@ -436,7 +436,10 @@
                 return `<button onclick="selectType('${t}');" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${t}</button>`;
             }).join('');
             
-            document.getElementById('type-menu-list').innerHTML = allTypeOption + typeOptions;
+            const menuListEl = document.querySelectorAll('#type-menu-list');
+            menuListEl.forEach(el => {
+                el.innerHTML = allTypeOption + typeOptions;
+            });
 
             document.getElementById('brand-suggestions').innerHTML = brands.map(b => `<option value="${b}">`).join('');
             document.getElementById('part-suggestions').innerHTML = categories.map(c => `<option value="${c}">`).join('');
@@ -446,18 +449,19 @@
 
         function toggleTypeFilter(e) {
             e.stopPropagation();
-            document.getElementById('dropdown-types').classList.toggle('hidden');
+            const dropdowns = document.querySelectorAll('#dropdown-types');
+            dropdowns.forEach(d => d.classList.toggle('hidden'));
         }
 
         function selectType(t) {
             currentType = t;
-            document.getElementById('dropdown-types').classList.add('hidden');
+            document.querySelectorAll('#dropdown-types').forEach(d => d.classList.add('hidden'));
             initTabs();
             renderTable();
         }
 
         window.onclick = () => {
-            document.getElementById('dropdown-types')?.classList.add('hidden');
+            document.querySelectorAll('#dropdown-types').forEach(d => d.classList.add('hidden'));
         };
 
         function adjustQty(val) {
@@ -601,6 +605,7 @@
 
                 const itemKey = d.id !== undefined && d.id !== null ? d.id : index;
 
+                // --- DESKTOP TABLE ROW ---
                 desktopHtml += `
                     <tr class="${rowClass} transition">
                         <td class="py-2.5 px-3 text-left">${nameHtml}</td>
@@ -622,25 +627,17 @@
                     </tr>
                 `;
 
+                // --- MOBILE LIST ITEM (CHỈ HIỂN THỊ: TÊN MÁY - CHẤM MÀU - LINH KIỆN - KIỂU - GIÁ) ---
+                const mobileTypeStr = (isIphone && d.type) ? ` - <span class="text-indigo-400 font-bold">${d.type}</span>` : '';
                 mobileHtml += `
-                    <div class="py-2.5 px-1 flex flex-col gap-1.5 ${isZeroQty ? 'yellow-pulse-row rounded-xl p-2' : ''}">
-                        <div class="flex justify-between items-start gap-2">
-                            <div class="flex-1 min-w-0">
-                                <div class="text-xs md:text-sm font-bold text-white break-words mb-0.5">${mobileNameHtml}</div>
-                                <div class="text-emerald-400 font-bold text-[11px]">${d.part} ${(isIphone && d.type) ? ' - ' + d.type : ''}</div>
-                            </div>
-                            <span class="${badgeClass} shrink-0">SL: ${qty}</span>
+                    <div class="py-2.5 px-1 flex justify-between items-center gap-2 border-b border-gray-800/60">
+                        <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
+                            <div class="text-xs font-bold text-white">${mobileNameHtml}</div>
+                            <span class="text-emerald-400 font-bold text-[11px]">• ${d.part}</span>
+                            ${mobileTypeStr}
                         </div>
-                        <div class="flex justify-between items-center text-xs pt-1 border-t border-gray-800/60">
-                            <div>
-                                <span class="text-gray-400 text-[10px]">BÁN:</span> <span class="text-pink-400 font-extrabold text-base">${formatCurrency(price)}</span>
-                                <span class="ml-2 text-gray-400 text-[10px]">LÃI:</span> <span class="text-emerald-400 font-bold text-xs">${profitDisplay}</span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <button data-action="edit" data-key="${itemKey}" class="w-6 h-6 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-pen text-[9px] pointer-events-none"></i></button>
-                                <button data-action="clone" data-key="${itemKey}" class="w-6 h-6 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-copy text-[9px] pointer-events-none"></i></button>
-                                <button data-action="delete" data-key="${itemKey}" class="w-6 h-6 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center"><i class="fa-solid fa-trash text-[9px] pointer-events-none"></i></button>
-                            </div>
+                        <div class="text-pink-400 font-extrabold text-sm shrink-0 whitespace-nowrap">
+                            ${formatCurrency(price)}
                         </div>
                     </div>
                 `;
