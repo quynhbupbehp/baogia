@@ -283,6 +283,8 @@
             if (upper.includes('MÀN')) return 'MÀN HÌNH';
             if (upper.includes('KÍNH')) return 'KÍNH ÉP';
             if (upper.includes('SẠC')) return 'BO SẠC';
+            if (upper.includes('PIN')) return 'PIN';
+            if (upper.includes('LƯNG')) return 'LƯNG';
             return upper;
         }
 
@@ -398,14 +400,7 @@
 
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
 
-            let displayCategories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP'];
-            if (isIphone) {
-                displayCategories.push('LƯNG');
-            }
-
-            if (currentCategory.toUpperCase() === 'LƯNG' && !isIphone) {
-                currentCategory = 'MÀN HÌNH';
-            }
+            let displayCategories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP', 'LƯNG'];
 
             const catHtmlDesktop = displayCategories.map(c => {
                 const isSelected = getFullCategory(c) === getFullCategory(currentCategory);
@@ -472,7 +467,6 @@
                 return `<button onclick="selectType('${t}');" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${t}</button>`;
             }).join('');
             
-            // Tạo dropdown menu động chung cho cả 2 giao diện nếu chưa có
             let dropdownEl = document.getElementById('dropdown-types');
             if (!dropdownEl) {
                 dropdownEl = document.createElement('div');
@@ -556,7 +550,6 @@
 
         function handleSearchInput(inputEl) {
             const val = inputEl.value.trim();
-            // Đồng bộ giá trị giữa 2 ô tìm kiếm Desktop và Mobile
             const deskInput = document.getElementById('search-input-desktop');
             const mobInput = document.getElementById('search-input-mobile');
             if (deskInput && deskInput !== inputEl) deskInput.value = val;
@@ -592,10 +585,14 @@
                 const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
                 if (!matchBrand) return false;
 
+                // Áp dụng bộ lọc linh kiện cho tất cả các hãng (cả iPhone lẫn Android)
+                const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
+                if (!matchCat) return false;
+
+                // Nếu là iPhone mới lọc thêm theo kiểu linh kiện
                 if (isIphone) {
-                    const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
                     const matchType = !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase();
-                    if (!matchCat || !matchType) return false;
+                    if (!matchType) return false;
                 }
 
                 if (searchVal) {
