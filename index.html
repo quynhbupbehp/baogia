@@ -75,8 +75,8 @@
                 </div>
 
                 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2 pt-2 border-t border-gray-800/80">
-                    <!-- Linh Kiện (Desktop & Mobile) -->
-                    <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto">
+                    <!-- Phần linh kiện (Chỉ hiển thị khi ở tab IPHONE trên mobile) -->
+                    <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto" id="mobile-category-wrapper">
                         <span class="text-xs md:text-sm font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
                         <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1"></div>
 
@@ -84,18 +84,21 @@
                         <div class="hidden xl:relative xl:block shrink-0 ml-1" id="filter-type-container-desktop"></div>
                     </div>
 
-                    <!-- Thanh tìm kiếm (Đã xóa nút kiểu trên mobile theo yêu cầu) -->
-                    <div class="flex items-center justify-center gap-2 flex-1 w-full xl:w-auto">
-                        <div class="relative w-full xl:w-80">
+                    <!-- Thanh tìm kiếm & Kiểu trên Mobile (Nằm bên phải ô tìm kiếm) -->
+                    <div class="flex items-center justify-between gap-1.5 flex-1 w-full xl:w-auto">
+                        <div class="relative flex-1 xl:w-80">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             </span>
-                            <input type="text" id="search-input" oninput="handleSearchInput()" placeholder="TÌM..." 
+                            <input type="text" id="search-input" oninput="handleSearchInput()" placeholder="TÌM KIẾM..." 
                                 class="w-full pl-8 pr-8 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs md:text-sm focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
                             <button id="btn-clear-search" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-2.5 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
+
+                        <!-- Nút kiểu bên phải thanh tìm kiếm trên mobile -->
+                        <div class="relative shrink-0 block xl:hidden" id="filter-type-container-mobile"></div>
                     </div>
 
                     <div class="hidden xl:block shrink-0">
@@ -304,7 +307,7 @@
             const isVeryLong = dashCount >= 10;
 
             if (isMobile) {
-                // Phạt size tên máy to hơn 20% trên mobile (từ text-xs/text-[10px] lên text-sm/text-xs)
+                // Tên máy to hơn 20% trên mobile
                 const textSizeClass = isVeryLong ? 'text-xs' : 'text-sm font-bold';
                 const namePartsHtml = parts.map((part, index) => {
                     const textColor = isIphone ? 'text-white' : ((index % 2 === 0) ? 'text-amber-400' : 'text-white');
@@ -380,6 +383,13 @@
 
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
 
+            // Ẩn/hiện phần linh kiện trên mobile tùy theo tab IPHONE hay hãng khác
+            const mobileCatWrapper = document.getElementById('mobile-category-wrapper');
+            if (mobileCatWrapper) {
+                // Trên desktop luôn hiện, trên mobile chỉ hiện nếu là IPHONE
+                mobileCatWrapper.className = isIphone ? "flex flex-wrap items-center gap-1 relative w-full xl:w-auto" : "hidden xl:flex flex-wrap items-center gap-1 relative w-full xl:w-auto";
+            }
+
             let displayCategories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP'];
             if (isIphone) {
                 displayCategories.push('LƯNG');
@@ -406,19 +416,25 @@
                     <span id="label-current-type" class="text-white font-bold">${currentType || 'KIỂU'}</span>
                     <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200" id="type-chevron"></i>
                 </button>
-                <div id="dropdown-types" class="hidden absolute left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
+                <div id="dropdown-types" class="hidden absolute right-0 xl:left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
                     <div id="type-menu-list" class="flex flex-col gap-1"></div>
                 </div>
             `;
 
             const filterContainerDesktop = document.getElementById('filter-type-container-desktop');
-            if (filterContainerDesktop) {
+            const filterContainerMobile = document.getElementById('filter-type-container-mobile');
+
+            if (filterContainerDesktop && filterContainerMobile) {
                 if (isIphone) {
                     filterContainerDesktop.style.display = 'block';
                     filterContainerDesktop.innerHTML = typeFilterHtml;
+                    filterContainerMobile.style.display = 'block';
+                    filterContainerMobile.innerHTML = typeFilterHtml;
                 } else {
                     filterContainerDesktop.style.display = 'none';
                     filterContainerDesktop.innerHTML = '';
+                    filterContainerMobile.style.display = 'none';
+                    filterContainerMobile.innerHTML = '';
                 }
             }
 
@@ -517,9 +533,12 @@
                 const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
                 if (!matchBrand) return false;
 
-                const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
-                const matchType = !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase();
-                if (!matchCat || !matchType) return false;
+                // Với iPhone kiểm tra danh mục, hãng khác không lọc theo danh mục linh kiện ẩn
+                if (isIphone) {
+                    const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
+                    const matchType = !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase();
+                    if (!matchCat || !matchType) return false;
+                }
 
                 if (searchVal) {
                     const fullText = `${d.brand} ${d.name} ${d.part} ${d.type} ${d.color}`.toUpperCase();
@@ -621,21 +640,35 @@
                 `;
 
                 // --- MOBILE LIST ITEM ---
-                // Kiểu hiển thị màu vàng, giảm kích cỡ đi 40% (dùng text-[9px])
-                // Giá hiển thị màu đỏ (text-red-500)
-                const mobileTypeStr = (isIphone && d.type) ? ` - <span class="text-amber-400 font-bold text-[9px]">${d.type}</span>` : '';
-                mobileHtml += `
-                    <div class="py-2.5 px-1 flex justify-between items-center gap-2 border-b border-gray-800/60">
-                        <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
-                            <div class="font-bold text-white">${mobileNameHtml}</div>
-                            <span class="text-emerald-400 font-bold text-[11px]">• ${d.part}</span>
-                            ${mobileTypeStr}
+                if (isIphone) {
+                    // Tab iPhone: Tên máy - Chấm màu - Linh kiện - Kiểu (to hơn 20%, màu vàng) - Giá (màu đỏ)
+                    // (Giảm kích cỡ cũ 40% rồi phóng to thêm 20% tương đương text-[11px] hoặc text-xs)
+                    const mobileTypeStr = d.type ? ` - <span class="text-amber-400 font-bold text-xs">${d.type}</span>` : '';
+                    mobileHtml += `
+                        <div class="py-2.5 px-1 flex justify-between items-center gap-2 border-b border-gray-800/60">
+                            <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
+                                <div class="font-bold text-white">${mobileNameHtml}</div>
+                                <span class="text-emerald-400 font-bold text-[11px]">• ${d.part}</span>
+                                ${mobileTypeStr}
+                            </div>
+                            <div class="text-red-500 font-extrabold text-sm shrink-0 whitespace-nowrap">
+                                ${formatCurrency(price)}
+                            </div>
                         </div>
-                        <div class="text-red-500 font-extrabold text-sm shrink-0 whitespace-nowrap">
-                            ${formatCurrency(price)}
+                    `;
+                } else {
+                    // Các hãng khác: Chỉ hiển thị Tên máy và Giá bán (màu đỏ)
+                    mobileHtml += `
+                        <div class="py-2.5 px-1 flex justify-between items-center gap-2 border-b border-gray-800/60">
+                            <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
+                                <div class="font-bold text-white">${mobileNameHtml}</div>
+                            </div>
+                            <div class="text-red-500 font-extrabold text-sm shrink-0 whitespace-nowrap">
+                                ${formatCurrency(price)}
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             });
 
             tbody.innerHTML = desktopHtml;
