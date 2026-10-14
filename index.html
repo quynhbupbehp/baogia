@@ -74,13 +74,10 @@
                     </div>
                 </div>
 
-                <!-- PHẦN LINH KIỆN -->
+                <!-- PHẦN LINH KIỆN (HIỂN THỊ ĐẦY ĐỦ CHO MỌI HÃNG - HOÀN TOÀN KHÔNG CÓ NÚT KIỂU Ở ĐÂY NỮA) -->
                 <div class="flex flex-wrap items-center gap-1 relative w-full xl:w-auto pt-1">
                     <span class="text-xs md:text-sm font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
                     <div id="main-cat-tabs" class="flex flex-wrap items-center gap-1"></div>
-
-                    <!-- Kiểu trên Desktop -->
-                    <div class="hidden xl:relative xl:block shrink-0 ml-1" id="filter-type-container-desktop"></div>
                 </div>
 
                 <!-- THANH TÌM KIẾM & NÚT KIỂU BÊN TRÁI -->
@@ -88,8 +85,8 @@
                     <div class="flex-1"></div>
 
                     <div class="flex items-center justify-between gap-1.5 flex-1 w-full xl:w-auto">
-                        <!-- Nút kiểu bên trái thanh tìm kiếm trên mobile -->
-                        <div class="relative shrink-0 block xl:hidden" id="filter-type-container-mobile"></div>
+                        <!-- Nút kiểu bên trái thanh tìm kiếm (chỉ hiện khi ở tab iPhone) -->
+                        <div class="relative shrink-0 block" id="filter-type-container"></div>
 
                         <div class="relative flex-1 xl:w-80">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
@@ -415,20 +412,15 @@
                 </div>
             `;
 
-            const filterContainerDesktop = document.getElementById('filter-type-container-desktop');
-            const filterContainerMobile = document.getElementById('filter-type-container-mobile');
+            const filterContainer = document.getElementById('filter-type-container');
 
-            if (filterContainerDesktop && filterContainerMobile) {
+            if (filterContainer) {
                 if (isIphone) {
-                    filterContainerDesktop.style.display = 'block';
-                    filterContainerDesktop.innerHTML = typeFilterHtml;
-                    filterContainerMobile.style.display = 'block';
-                    filterContainerMobile.innerHTML = typeFilterHtml;
+                    filterContainer.style.display = 'block';
+                    filterContainer.innerHTML = typeFilterHtml;
                 } else {
-                    filterContainerDesktop.style.display = 'none';
-                    filterContainerDesktop.innerHTML = '';
-                    filterContainerMobile.style.display = 'none';
-                    filterContainerMobile.innerHTML = '';
+                    filterContainer.style.display = 'none';
+                    filterContainer.innerHTML = '';
                 }
             }
 
