@@ -538,7 +538,7 @@
 
             let totalCostSum = 0;
             filtered.forEach(d => {
-                totalCostSum += (parseMoney(d.cost) * (parseInt(d.qty) || 1));
+                totalCostSum += (parseMoney(d.cost) * (parseInt(d.qty) || 0));
             });
             if (totalCostEl) totalCostEl.innerText = isPrivacyMode ? '***' : formatMoney(totalCostSum);
 
@@ -579,20 +579,23 @@
             if (tbody) {
                 tbody.innerHTML = filtered.map((d, index) => {
                     const realIndex = devices.indexOf(d);
+                    const qtyVal = parseInt(d.qty) || 0;
                     const priceFormatted = formatMoney(d.price);
                     const costFormatted = formatMoney(d.cost);
-                    const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * (parseInt(d.qty) || 1);
+                    const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * qtyVal;
                     const profitFormatted = formatMoney(profitVal);
                     const formattedNameHtml = renderDeviceNames(d.name, d.color, false);
 
+                    const zeroQtyClass = qtyVal === 0 ? 'yellow-pulse-row' : 'row-hover';
+
                     if (isPrivacyMode) {
                         return `
-                            <tr class="row-hover transition">
+                            <tr class="${zeroQtyClass} transition">
                                 <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
                                 <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
                                 <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
                                 <td class="py-3 px-3 font-bold text-pink-500">${priceFormatted}</td>
-                                <td class="py-3 px-3 font-bold text-amber-400">${d.qty}</td>
+                                <td class="py-3 px-3 font-bold ${qtyVal === 0 ? 'text-red-500 font-extrabold' : 'text-amber-400'}">${d.qty}</td>
                                 <td class="py-3 px-3">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -605,12 +608,12 @@
                     }
 
                     return `
-                        <tr class="row-hover transition">
+                        <tr class="${zeroQtyClass} transition">
                             <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
                             <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
                             <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
                             <td class="py-3 px-3 font-bold text-pink-500">${priceFormatted}</td>
-                            <td class="py-3 px-3 font-bold text-amber-400">${d.qty}</td>
+                            <td class="py-3 px-3 font-bold ${qtyVal === 0 ? 'text-red-500 font-extrabold' : 'text-amber-400'}">${d.qty}</td>
                             <td class="py-3 px-3">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -625,65 +628,37 @@
                 }).join('');
             }
 
-            // DỪNG LẠI Ở ĐÂY VÀ GIỮ NGUYÊN HOÀN TOÀN KHÔNG SỬA DANH SÁCH MOBILE GỐC
+            // HIỂN THỊ MOBILE: CẬP NHẬT THEO YÊU CẦU
             if (mobileList) {
-                mobileList.innerHTML = filtered.map((d, index) => {
-                    const realIndex = devices.indexOf(d);
+                mobileList.innerHTML = filtered.map((d) => {
+                    const qtyVal = parseInt(d.qty) || 0;
                     const priceFormatted = formatMoney(d.price);
-                    const costFormatted = formatMoney(d.cost);
-                    const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * (parseInt(d.qty) || 1);
-                    const profitFormatted = formatMoney(profitVal);
                     const formattedNameHtml = renderDeviceNames(d.name, d.color, true);
 
-                    if (isPrivacyMode) {
-                        return `
-                            <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40">
-                                <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        ${formattedNameHtml}
-                                    </div>
-                                    <div class="flex items-center gap-2 text-xs text-gray-400">
-                                        <span class="text-emerald-400 font-semibold">${d.part}</span>
-                                        ${d.type ? `<span class="text-indigo-300">• ${d.type}</span>` : ''}
-                                        <span>• SL: <strong class="text-amber-400">${d.qty}</strong></span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3 shrink-0">
-                                    <div class="text-right">
-                                        <div class="text-base font-bold text-pink-500">${priceFormatted}</div>
-                                    </div>
-                                    <div class="flex items-center gap-1">
-                                        <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
-                                        <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-copy text-xs"></i></button>
-                                        <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
-                                    </div>
-                                </div>
+                    const zeroQtyClassMobile = qtyVal === 0 ? 'yellow-pulse-row px-2 rounded-xl' : '';
+
+                    // Kiểm tra điều kiện hiển thị linh kiện/kiểu cho mobile
+                    let detailsHtml = '';
+                    if (isIphone) {
+                        detailsHtml = `
+                            <div class="flex items-center gap-2 text-xs text-gray-400">
+                                <span class="text-emerald-400 font-semibold">${d.part}</span>
+                                ${d.type ? `<span class="text-indigo-300">• ${d.type}</span>` : ''}
                             </div>
                         `;
                     }
 
                     return `
-                        <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40">
+                        <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}">
                             <div class="flex flex-col gap-0.5 min-w-0 flex-1">
                                 <div class="flex items-center gap-2">
                                     ${formattedNameHtml}
                                 </div>
-                                <div class="flex items-center gap-2 text-xs text-gray-400">
-                                    <span class="text-emerald-400 font-semibold">${d.part}</span>
-                                    ${d.type ? `<span class="text-indigo-300">• ${d.type}</span>` : ''}
-                                    <span>• SL: <strong class="text-amber-400">${d.qty}</strong></span>
-                                    <span>• Vốn: ${costFormatted}</span>
-                                </div>
+                                ${detailsHtml}
                             </div>
                             <div class="flex items-center gap-3 shrink-0">
                                 <div class="text-right">
                                     <div class="text-base font-bold text-pink-500">${priceFormatted}</div>
-                                    <div class="text-xs font-bold text-emerald-400">+${profitFormatted}</div>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
-                                    <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-copy text-xs"></i></button>
-                                    <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -767,7 +742,7 @@
         function updateModalStats() {
             const price = parseMoney(document.getElementById('device-price').value);
             const cost = parseMoney(document.getElementById('device-cost').value);
-            const qty = parseInt(document.getElementById('device-qty').value) || 1;
+            const qty = parseInt(document.getElementById('device-qty').value) || 0;
             const profit = (price - cost) * qty;
             document.getElementById('modal-profit-preview').innerText = formatMoney(profit);
         }
@@ -784,7 +759,7 @@
             const type = document.getElementById('device-type').value.trim().toUpperCase();
             const price = document.getElementById('device-price').value.trim();
             const cost = document.getElementById('device-cost').value.trim();
-            const qty = parseInt(document.getElementById('device-qty').value) || 1;
+            const qty = parseInt(document.getElementById('device-qty').value) || 0;
             const color = document.getElementById('device-color').value.trim().toUpperCase();
 
             if (!brands.includes(brand)) brands.push(brand);
@@ -820,7 +795,7 @@
             document.getElementById('device-type').value = d.type || '';
             document.getElementById('device-price').value = d.price || '';
             document.getElementById('device-cost').value = d.cost || '';
-            document.getElementById('device-qty').value = d.qty || 1;
+            document.getElementById('device-qty').value = d.qty !== undefined ? d.qty : 1;
             document.getElementById('device-color').value = d.color || '';
             updateModalStats();
         }
