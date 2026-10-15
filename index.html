@@ -14,7 +14,7 @@
     <style>
         body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; font-size: 1.15rem; }
         .card-dark { background-color: #111827; border: 1px solid #1f2937; }
-        .row-hover:hover { background-color: rgba(31, 41, 55, 0.5); }
+        .row-hover:hover { background-color: rgba(31, 41, 55, 0.5); cursor: pointer; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
@@ -32,7 +32,13 @@
                 box-shadow: none;
             }
         }
-        .yellow-pulse-row { animation: yellowRowPulse 1.6s ease-in-out infinite; }
+        .yellow-pulse-row { animation: yellowRowPulse 1.6s ease-in-out infinite; cursor: pointer; }
+
+        /* Hiệu ứng tô màu xanh lá khi click vào dòng */
+        .clicked-green-row {
+            background-color: rgba(16, 185, 129, 0.35) !important;
+            transition: background-color 0.4s ease;
+        }
 
         @keyframes yellowBadgePulse {
             0%, 100% { background-color: rgba(234, 179, 8, 0.95); color: #dc2626; }
@@ -345,6 +351,24 @@
             return `<div class="inline-flex items-center flex-nowrap whitespace-nowrap justify-start">${appleIcon}${namePartsHtml}${colorDotHtml}</div>`;
         }
 
+        function handleRowClick(rowElement) {
+            // Nếu click vào nút bấm thao tác thì bỏ qua hiệu ứng tô màu hàng
+            if (event.target.closest('button')) return;
+            
+            // Xóa hiệu ứng cũ nếu có để reset thời gian 5s
+            rowElement.classList.remove('clicked-green-row');
+            void rowElement.offsetWidth; // Trigger reflow
+            rowElement.classList.add('clicked-green-row');
+
+            if (rowElement.timeoutId) {
+                clearTimeout(rowElement.timeoutId);
+            }
+
+            rowElement.timeoutId = setTimeout(() => {
+                rowElement.classList.remove('clicked-green-row');
+            }, 5000);
+        }
+
         function syncFromCloud() {
             const statusEl = document.getElementById('cloud-status');
             if(statusEl) {
@@ -595,7 +619,7 @@
 
                     if (isPrivacyMode) {
                         return `
-                            <tr class="${zeroQtyClass} transition">
+                            <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
                                 <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
                                 <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
                                 <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
@@ -613,7 +637,7 @@
                     }
 
                     return `
-                        <tr class="${zeroQtyClass} transition">
+                        <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
                             <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
                             <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
                             <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
@@ -633,18 +657,18 @@
                 }).join('');
             }
 
-            // HIỂN THỊ MOBILE: CÂN BẰNG KHOẢNG CÁCH CHO TAB IPHONE
+            // HIỂN THỊ MOBILE
             if (mobileList) {
                 mobileList.innerHTML = filtered.map((d) => {
                     const qtyVal = parseInt(d.qty) || 0;
                     const priceFormatted = formatMoney(d.price);
                     const formattedNameHtml = renderDeviceNames(d.name, d.color, true);
 
-                    const zeroQtyClassMobile = qtyVal === 0 ? 'yellow-pulse-row px-2 rounded-xl' : '';
+                    const zeroQtyClassMobile = qtyVal === 0 ? 'yellow-pulse-row px-2 rounded-xl' : 'row-hover px-2 rounded-xl';
 
                     if (isIphone) {
                         return `
-                            <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}">
+                            <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}" onclick="handleRowClick(this)">
                                 <div class="flex items-center gap-2 min-w-0">
                                     ${formattedNameHtml}
                                     <div class="flex items-center gap-1 text-xs text-gray-400 shrink-0">
@@ -660,7 +684,7 @@
                     }
 
                     return `
-                        <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}">
+                        <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}" onclick="handleRowClick(this)">
                             <div class="flex items-center gap-2 min-w-0 flex-1">
                                 ${formattedNameHtml}
                             </div>
