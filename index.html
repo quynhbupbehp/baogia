@@ -18,7 +18,6 @@
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* Ẩn thanh cuộn ngang nhưng vẫn vuốt được mượt mà */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -34,29 +33,23 @@
         }
         .yellow-pulse-row { animation: yellowRowPulse 1.6s ease-in-out infinite; cursor: pointer; }
 
-        /* Hiệu ứng tô màu xanh lá khi click vào dòng */
         .clicked-green-row {
             background-color: rgba(16, 185, 129, 0.35) !important;
             transition: background-color 0.3s ease;
         }
 
-        @keyframes yellowBadgePulse {
-            0%, 100% { background-color: rgba(234, 179, 8, 0.95); color: #dc2626; }
-            50% { background-color: rgba(234, 179, 8, 0.3); color: #ef4444; }
-        }
-        .yellow-pulse-badge { animation: yellowBadgePulse 1.6s ease-in-out infinite; }
-
-        @keyframes pinkSelectionPulse {
+        /* Đổi kiểu sang màu vàng thay vì tím */
+        @keyframes yellowSelectionPulse {
             0%, 100% {
-                background-color: rgba(236, 72, 153, 0.95);
-                box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
+                background-color: rgba(234, 179, 8, 0.95);
+                box-shadow: 0 0 12px rgba(234, 179, 8, 0.6);
             }
             50% {
-                background-color: rgba(236, 72, 153, 0.4);
-                box-shadow: 0 0 4px rgba(236, 72, 153, 0.2);
+                background-color: rgba(234, 179, 8, 0.4);
+                box-shadow: 0 0 4px rgba(234, 179, 8, 0.2);
             }
         }
-        .pink-pulse-selected { animation: pinkSelectionPulse 1.6s ease-in-out infinite; }
+        .yellow-pulse-selected { animation: yellowSelectionPulse 1.6s ease-in-out infinite; color: #000 !important; font-weight: bold; }
     </style>
 </head>
 <body class="min-h-screen p-2 md:p-6 uppercase">
@@ -100,14 +93,14 @@
                             <i class="fa-solid fa-magnifying-glass text-xs"></i>
                         </span>
                         <input type="text" id="search-input-desktop" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
-                            class="w-full pl-9 pr-9 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
+                            class="w-full pl-9 pr-9 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
                         <button id="btn-clear-search-desktop" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
 
                     <div class="shrink-0">
-                        <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/35">
+                        <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-amber-600/35">
                             <i class="fa-solid fa-plus text-xs"></i> THÊM MỚI
                         </button>
                     </div>
@@ -128,7 +121,7 @@
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             </span>
                             <input type="text" id="search-input-mobile" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
-                                class="w-full pl-8 pr-8 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 uppercase">
+                                class="w-full pl-8 pr-8 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
                             <button id="btn-clear-search-mobile" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-2.5 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
@@ -143,7 +136,7 @@
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
                     <thead>
-                        <tr id="desktop-table-header" class="bg-indigo-600 text-white text-sm uppercase tracking-wider shadow-sm"></tr>
+                        <tr id="desktop-table-header" class="bg-amber-600 text-white text-sm uppercase tracking-wider shadow-sm"></tr>
                     </thead>
                     <tbody id="device-table-body" class="divide-y divide-gray-800/60 text-base"></tbody>
                 </table>
@@ -168,7 +161,7 @@
     <div id="device-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="card-dark w-full max-w-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-gray-700 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3">
-                <h3 id="modal-title" class="text-base md:text-xl font-bold text-pink-500 uppercase">THÊM LINH KIỆN MỚI</h3>
+                <h3 id="modal-title" class="text-base md:text-xl font-bold text-amber-400 uppercase">THÊM LINH KIỆN MỚI</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="device-form" onsubmit="saveDevice(event)" class="space-y-3">
@@ -178,7 +171,7 @@
                 <div>
                     <label class="block text-sm font-bold text-amber-400 uppercase mb-1">HÃNG</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-brand" required list="brand-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase">
+                        <input type="text" id="device-brand" required list="brand-suggestions" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 uppercase">
                         <datalist id="brand-suggestions"></datalist>
                         <div class="flex items-center gap-1">
                             <button type="button" onclick="handleEntity('brands', 'add')" class="w-6 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="THÊM HÃNG"><i class="fa-solid fa-plus"></i></button>
@@ -191,7 +184,7 @@
                 <div>
                     <label class="block text-sm font-bold text-amber-400 uppercase mb-1">TÊN MÁY</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="device-name" required class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 uppercase" autocomplete="off">
+                        <input type="text" id="device-name" required class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 uppercase" autocomplete="off">
                         <div class="flex items-center gap-1">
                             <button type="button" onclick="handleEntity('names', 'add')" class="w-6 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="THÊM TÊN MÁY"><i class="fa-solid fa-plus"></i></button>
                             <button type="button" onclick="handleEntity('names', 'edit')" class="w-6 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="SỬA TÊN MÁY"><i class="fa-solid fa-pen text-[10px]"></i></button>
@@ -205,7 +198,7 @@
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1">LINH KIỆN</label>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="device-part" required list="part-suggestions" oninput="onModalPartChange()" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                            <input type="text" id="device-part" required list="part-suggestions" oninput="onModalPartChange()" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500 uppercase">
                             <datalist id="part-suggestions"></datalist>
                             <div class="flex items-center gap-1 shrink-0">
                                 <button type="button" onclick="handleEntity('categories', 'add')" class="w-6 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="THÊM"><i class="fa-solid fa-plus"></i></button>
@@ -218,7 +211,7 @@
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1">KIỂU</label>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="device-type" list="type-suggestions" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                            <input type="text" id="device-type" list="type-suggestions" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500 uppercase">
                             <datalist id="type-suggestions"></datalist>
                             <div class="flex items-center gap-1 shrink-0">
                                 <button type="button" onclick="handleEntity('types', 'add')" class="w-6 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="THÊM"><i class="fa-solid fa-plus"></i></button>
@@ -232,11 +225,11 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ BÁN</label>
-                        <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ NHẬP</label>
-                        <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
 
@@ -252,7 +245,7 @@
 
                     <div class="flex flex-col items-center">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
-                        <input type="text" id="device-color" list="color-suggestions" placeholder="" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase h-10">
+                        <input type="text" id="device-color" list="color-suggestions" placeholder="" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500 uppercase h-10">
                         <datalist id="color-suggestions">
                             <option value="ĐEN"><option value="TRẮNG"><option value="ĐỎ"><option value="VÀNG"><option value="XANH">
                         </datalist>
@@ -267,7 +260,7 @@
 
                     <div class="flex items-center gap-1 shrink-0">
                         <button type="button" onclick="closeModal()" class="px-3.5 h-10 rounded-xl text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700 transition">HỦY</button>
-                        <button type="submit" class="px-4 h-10 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/35 whitespace-nowrap">LƯU</button>
+                        <button type="submit" class="px-4 h-10 rounded-xl text-sm font-semibold bg-amber-600 text-white hover:bg-amber-500 transition shadow-lg shadow-amber-600/35 whitespace-nowrap">LƯU</button>
                     </div>
                 </div>
             </form>
@@ -321,7 +314,7 @@
             }
 
             const parts = processedName.split('-').map(p => p.trim()).filter(Boolean);
-            const appleIcon = isIphone ? `<i class="fa-brands fa-apple text-pink-500 ${isMobile ? 'text-sm' : 'text-base'} mr-1 align-middle"></i>` : '';
+            const appleIcon = isIphone ? `<i class="fa-brands fa-apple text-amber-500 ${isMobile ? 'text-sm' : 'text-base'} mr-1 align-middle"></i>` : '';
 
             let colorDotHtml = '';
             if (colorStr && colorStr.trim()) {
@@ -343,20 +336,17 @@
             }
 
             const fontSizeClass = isVeryLong ? 'text-xs' : 'text-base md:text-lg';
-            const paddingClass = isVeryLong ? 'px-1 py-0.25 m-0.25' : 'px-1 py-0.25 m-0.25';
-
             const namePartsHtml = parts.map((part, index) => {
                 const textColor = isIphone ? 'text-white' : ((index % 2 === 0) ? 'text-amber-400' : 'text-white');
-                return `<span class="rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap ${fontSizeClass} inline-block ${paddingClass}">${part}</span>`;
+                return `<span class="rounded bg-gray-800/90 border border-gray-700/60 ${textColor} font-extrabold whitespace-nowrap ${fontSizeClass} inline-block px-1 py-0.25 m-0.25">${part}</span>`;
             }).join('');
 
             return `<div class="inline-flex items-center flex-nowrap whitespace-nowrap justify-start">${appleIcon}${namePartsHtml}${colorDotHtml}</div>`;
         }
 
         function handleRowClick(rowElement) {
-            if (event.target.closest('button')) return;
+            if (event.target.closest('button') || event.target.closest('.qty-container')) return;
             
-            // Xóa hiệu ứng của hàng đang chọn trước đó (nếu có)
             if (activeRowElement && activeRowElement !== rowElement) {
                 activeRowElement.classList.remove('clicked-green-row');
             }
@@ -364,13 +354,11 @@
                 clearTimeout(activeRowTimeout);
             }
 
-            // Gán hiệu ứng cho hàng mới
             activeRowElement = rowElement;
             activeRowElement.classList.remove('clicked-green-row');
-            void activeRowElement.offsetWidth; // Trigger reflow
+            void activeRowElement.offsetWidth;
             activeRowElement.classList.add('clicked-green-row');
 
-            // Thiết lập đếm ngược 5 giây tự động tắt
             activeRowTimeout = setTimeout(() => {
                 if (activeRowElement) {
                     activeRowElement.classList.remove('clicked-green-row');
@@ -379,11 +367,31 @@
             }, 5000);
         }
 
+        function enableInlineQtyEdit(containerEl, realIndex) {
+            const currentQty = parseInt(containerEl.getAttribute('data-qty')) || 0;
+            containerEl.innerHTML = `
+                <div class="inline-flex items-center bg-gray-900 border border-amber-500 rounded-lg overflow-hidden p-0.5 shadow-lg qty-container" onclick="event.stopPropagation()">
+                    <button type="button" onclick="updateQtyDirect(${realIndex}, -1)" class="w-6 h-6 bg-gray-800 hover:bg-gray-700 text-white font-bold flex items-center justify-center rounded"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                    <span class="w-7 text-xs font-bold text-amber-400 text-center">${currentQty}</span>
+                    <button type="button" onclick="updateQtyDirect(${realIndex}, 1)" class="w-6 h-6 bg-gray-800 hover:bg-gray-700 text-white font-bold flex items-center justify-center rounded"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                </div>
+            `;
+        }
+
+        async function updateQtyDirect(realIndex, change) {
+            let currentQty = parseInt(devices[realIndex].qty) || 0;
+            currentQty += change;
+            if (currentQty < 0) currentQty = 0;
+            devices[realIndex].qty = currentQty;
+            await saveAllToCloud();
+            renderTable();
+        }
+
         function syncFromCloud() {
             const statusEl = document.getElementById('cloud-status');
             if(statusEl) {
                 statusEl.setAttribute('title', 'Đang đồng bộ...');
-                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-400 text-xs"></i>`;
+                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-amber-400 text-xs"></i>`;
             }
 
             db.collection("store_data").doc("main").onSnapshot((doc) => {
@@ -399,7 +407,7 @@
                 }
                 if(statusEl) {
                     statusEl.setAttribute('title', 'Online Realtime');
-                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-400 text-xs"></i>`;
+                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-amber-400 text-xs"></i>`;
                 }
                 if (!currentBrand && brands.length) currentBrand = brands[0];
                 if (!currentCategory) currentCategory = 'MÀN HÌNH';
@@ -428,7 +436,7 @@
             document.getElementById('brand-tabs').innerHTML = brands.map(b => {
                 const isSelected = b === currentBrand;
                 const btnClass = isSelected 
-                    ? 'pink-pulse-selected text-white font-bold shadow-lg' 
+                    ? 'yellow-pulse-selected text-black font-bold shadow-lg' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
                 return `<button onclick="currentBrand='${b}'; currentCategory='MÀN HÌNH'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`;
             }).join('');
@@ -447,7 +455,7 @@
             const catHtmlDesktop = displayCategories.map(c => {
                 const isSelected = c === currentCategory;
                 const btnClass = isSelected 
-                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
+                    ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
                 return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
@@ -455,7 +463,7 @@
             const catHtmlMobile = displayCategories.map(c => {
                 const isSelected = c === currentCategory;
                 const btnClass = isSelected 
-                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400 shrink-0' 
+                    ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400 shrink-0' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                 return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
@@ -480,7 +488,7 @@
 
                 const allTypeSelected = currentType === '';
                 const allTypeClass = allTypeSelected 
-                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400 shrink-0' 
+                    ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400 shrink-0' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                 
                 typeButtonsHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
@@ -490,7 +498,7 @@
                     if (validTypesSet.has(t.toUpperCase())) {
                         const isSelected = currentType === t;
                         const btnClass = isSelected 
-                            ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400 shrink-0' 
+                            ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400 shrink-0' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                         typeButtonsHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
                         typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
@@ -504,7 +512,7 @@
             if (typeContainerDesktop) {
                 if (isIphone && typeButtonsHtml !== '') {
                     typeContainerDesktop.style.display = 'flex';
-                    typeContainerDesktop.innerHTML = `<span class="text-sm font-bold text-red-500 uppercase mr-1">KIỂU:</span>` + typeButtonsHtml;
+                    typeContainerDesktop.innerHTML = `<span class="text-sm font-bold text-amber-400 uppercase mr-1">KIỂU:</span>` + typeButtonsHtml;
                 } else {
                     typeContainerDesktop.style.display = 'none';
                     typeContainerDesktop.innerHTML = '';
@@ -515,7 +523,7 @@
                 if (isIphone && typeButtonsMobileHtml !== '') {
                     typeContainerMobile.style.display = 'flex';
                     typeContainerMobile.className = "flex items-center gap-1 w-full pt-1 overflow-x-auto no-scrollbar whitespace-nowrap";
-                    typeContainerMobile.innerHTML = `<span class="text-xs font-bold text-red-500 uppercase mr-0.5 shrink-0">KIỂU:</span>` + typeButtonsMobileHtml;
+                    typeContainerMobile.innerHTML = `<span class="text-xs font-bold text-amber-400 uppercase mr-0.5 shrink-0">KIỂU:</span>` + typeButtonsMobileHtml;
                 } else {
                     typeContainerMobile.style.display = 'none';
                     typeContainerMobile.innerHTML = '';
@@ -550,7 +558,7 @@
         }
 
         function renderTable() {
-            activeRowElement = null; // Reset trạng thái khi render lại bảng
+            activeRowElement = null;
             if (activeRowTimeout) clearTimeout(activeRowTimeout);
 
             const tbody = document.getElementById('device-table-body');
@@ -630,14 +638,15 @@
 
                     const zeroQtyClass = qtyVal === 0 ? 'yellow-pulse-row' : 'row-hover';
 
+                    // Web: Giá bán tăng 30% (text-xl md:text-2xl font-black text-amber-500), Giá nhập & Lãi giảm 10% (text-sm text-gray-400, text-xs text-emerald-400), Giá nhập in đậm (font-bold)
                     if (isPrivacyMode) {
                         return `
                             <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
                                 <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
                                 <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
                                 <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
-                                <td class="py-3 px-3 font-bold text-pink-500">${priceFormatted}</td>
-                                <td class="py-3 px-3 font-bold ${qtyVal === 0 ? 'text-red-500 font-extrabold' : 'text-amber-400'}">${d.qty}</td>
+                                <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500">${priceFormatted}</td>
+                                <td class="py-3 px-3 font-bold ${qtyVal === 0 ? 'text-red-500 font-extrabold' : 'text-amber-450'}" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
                                 <td class="py-3 px-3">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -654,8 +663,8 @@
                             <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
                             <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
                             <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
-                            <td class="py-3 px-3 font-bold text-pink-500">${priceFormatted}</td>
-                            <td class="py-3 px-3 font-bold ${qtyVal === 0 ? 'text-red-500 font-extrabold' : 'text-amber-400'}">${d.qty}</td>
+                            <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500">${priceFormatted}</td>
+                            <td class="py-3 px-3 font-bold ${qtyVal === 0 ? 'text-red-500 font-extrabold' : 'text-amber-400'}" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
                             <td class="py-3 px-3">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -663,8 +672,8 @@
                                     <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                                 </div>
                             </td>
-                            <td class="py-3 px-3 font-medium text-gray-300">${costFormatted}</td>
-                            <td class="py-3 px-3 font-bold text-emerald-400">${profitFormatted}</td>
+                            <td class="py-3 px-3 font-bold text-sm text-gray-300">${costFormatted}</td>
+                            <td class="py-3 px-3 font-semibold text-xs text-emerald-400">${profitFormatted}</td>
                         </tr>
                     `;
                 }).join('');
@@ -673,6 +682,7 @@
             // HIỂN THỊ MOBILE
             if (mobileList) {
                 mobileList.innerHTML = filtered.map((d) => {
+                    const realIndex = devices.indexOf(d);
                     const qtyVal = parseInt(d.qty) || 0;
                     const priceFormatted = formatMoney(d.price);
                     const formattedNameHtml = renderDeviceNames(d.name, d.color, true);
@@ -689,8 +699,11 @@
                                         ${d.type ? `<span class="text-indigo-300">• ${d.type}</span>` : ''}
                                     </div>
                                 </div>
-                                <div class="text-right shrink-0 ml-auto">
-                                    <div class="text-base font-bold text-pink-500">${priceFormatted}</div>
+                                <div class="flex items-center gap-3 shrink-0 ml-auto">
+                                    <div class="text-xs text-amber-400 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">SL: ${d.qty}</div>
+                                    <div class="text-right shrink-0">
+                                        <div class="text-base font-bold text-amber-500">${priceFormatted}</div>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -701,8 +714,11 @@
                             <div class="flex items-center gap-2 min-w-0 flex-1">
                                 ${formattedNameHtml}
                             </div>
-                            <div class="text-right shrink-0">
-                                <div class="text-base font-bold text-pink-500">${priceFormatted}</div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="text-xs text-amber-400 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">SL: ${d.qty}</div>
+                                <div class="text-right shrink-0">
+                                    <div class="text-base font-bold text-amber-500">${priceFormatted}</div>
+                                </div>
                             </div>
                         </div>
                     `;
