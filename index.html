@@ -53,90 +53,100 @@
 </head>
 <body class="min-h-screen p-2 md:p-6 uppercase">
 
-    <div class="max-w-7xl mx-auto space-y-3 md:space-y-6 flex flex-col items-center">
-        <!-- THANH CÔNG CỤ & THỐNG KÊ (CỐ ĐỊNH KHI CUỘN) -->
-        <div class="sticky top-2 z-40 card-dark p-2.5 md:p-4 rounded-2xl flex flex-col gap-2.5 shadow-xl w-full backdrop-blur-md bg-opacity-95">
-            <div class="flex flex-col gap-2.5">
-                <!-- HÀNG 1: CÁC HÃNG & THÔNG TIN ẨN/HIỆN, VỐN -->
-                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2">
-                    <div class="flex flex-wrap items-center gap-1 overflow-x-auto pb-1 xl:pb-0" id="brand-tabs"></div>
+    <div class="max-w-7xl mx-auto space-y-3 md:space-y-4 flex flex-col items-center">
+        
+        <!-- CỤM CỐ ĐỊNH KHI CUỘN (GỒM CẢ THANH CÔNG CỤ + TIÊU ĐỀ BẢNG) -->
+        <div class="sticky top-0 z-40 w-full flex flex-col gap-2 pt-2 bg-[#0b0f19]">
+            <!-- THANH CÔNG CỤ & THỐNG KÊ -->
+            <div class="card-dark p-2.5 md:p-4 rounded-2xl flex flex-col gap-2.5 shadow-xl w-full">
+                <div class="flex flex-col gap-2.5">
+                    <!-- HÀNG 1: CÁC HÃNG & THÔNG TIN ẨN/HIỆN, VỐN -->
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-1 overflow-x-auto pb-1 xl:pb-0" id="brand-tabs"></div>
 
-                    <div class="hidden xl:flex items-center gap-1 bg-gray-900/90 p-1 rounded-2xl border border-gray-800 overflow-hidden shrink-0 self-end xl:self-auto">
-                        <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-sm font-medium border border-gray-700 transition flex items-center justify-center w-8 h-8 shrink-0" title="ẨN / HIỆN VỐN & LÃI">
-                            <i class="fa-solid fa-eye text-xs" id="privacy-icon"></i>
-                        </button>
-                        <div id="cloud-status" class="flex w-8 h-8 bg-gray-800 rounded-xl border border-gray-700 items-center justify-center shrink-0" title="Đang kết nối...">
-                            <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-xs"></i>
+                        <div class="hidden xl:flex items-center gap-1 bg-gray-900/90 p-1 rounded-2xl border border-gray-800 overflow-hidden shrink-0 self-end xl:self-auto">
+                            <button onclick="togglePrivacyMode()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-sm font-medium border border-gray-700 transition flex items-center justify-center w-8 h-8 shrink-0" title="ẨN / HIỆN VỐN & LÃI">
+                                <i class="fa-solid fa-eye text-xs" id="privacy-icon"></i>
+                            </button>
+                            <div id="cloud-status" class="flex w-8 h-8 bg-gray-800 rounded-xl border border-gray-700 items-center justify-center shrink-0" title="Đang kết nối...">
+                                <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-xs"></i>
+                            </div>
+                            <div class="flex items-center gap-1 bg-gray-900 px-2 py-1 rounded-xl border border-gray-800 shrink-0">
+                                <div>
+                                    <div class="text-[10px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
+                                    <div id="total-cost" class="text-xs font-bold text-amber-400 text-center">0</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-1 bg-gray-900 px-2 py-1 rounded-xl border border-gray-800 shrink-0">
-                            <div>
-                                <div class="text-[10px] text-gray-400 uppercase tracking-wider text-center">VỐN</div>
-                                <div id="total-cost" class="text-xs font-bold text-amber-400 text-center">0</div>
+                    </div>
+
+                    <!-- HÀNG 2 (DESKTOP): LINH KIỆN + KIỂU + TÌM KIẾM + THÊM MỚI -->
+                    <div class="hidden xl:flex items-center justify-between gap-3 pt-2 border-t border-gray-800/80 w-full">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <span class="text-sm font-bold text-amber-400 uppercase mr-1">LINH KIỆN:</span>
+                                <div id="main-cat-tabs-desktop" class="flex items-center gap-1"></div>
+                            </div>
+                            <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
+                        </div>
+
+                        <div class="relative flex-1 max-w-md">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            </span>
+                            <input type="text" id="search-input-desktop" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
+                                class="w-full pl-9 pr-9 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
+                            <button id="btn-clear-search-desktop" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="shrink-0">
+                            <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-amber-600/35">
+                                <i class="fa-solid fa-plus text-xs"></i> THÊM MỚI
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PHẦN GIAO DIỆN MOBILE -->
+                    <div class="flex xl:hidden flex-col gap-2 pt-2 border-t border-gray-800/80">
+                        <div class="flex items-center gap-1 relative w-full pt-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+                            <span class="text-xs font-bold text-amber-400 uppercase mr-0.5 shrink-0">LINH KIỆN:</span>
+                            <div id="main-cat-tabs-mobile" class="inline-flex items-center gap-1 shrink-0"></div>
+                        </div>
+
+                        <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
+
+                        <div class="flex items-center justify-between gap-1.5 w-full">
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
+                                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                </span>
+                                <input type="text" id="search-input-mobile" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
+                                    class="w-full pl-8 pr-8 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
+                                <button id="btn-clear-search-mobile" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-2.5 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- HÀNG 2 (DESKTOP): LINH KIỆN + KIỂU + TÌM KIẾM + THÊM MỚI -->
-                <div class="hidden xl:flex items-center justify-between gap-3 pt-2 border-t border-gray-800/80 w-full">
-                    <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <span class="text-sm font-bold text-amber-400 uppercase mr-1">LINH KIỆN:</span>
-                            <div id="main-cat-tabs-desktop" class="flex items-center gap-1"></div>
-                        </div>
-                        <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
-                    </div>
-
-                    <div class="relative flex-1 max-w-md">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
-                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                        </span>
-                        <input type="text" id="search-input-desktop" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
-                            class="w-full pl-9 pr-9 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
-                        <button id="btn-clear-search-desktop" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-
-                    <div class="shrink-0">
-                        <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-amber-600/35">
-                            <i class="fa-solid fa-plus text-xs"></i> THÊM MỚI
-                        </button>
-                    </div>
-                </div>
-
-                <!-- PHẦN GIAO DIỆN MOBILE -->
-                <div class="flex xl:hidden flex-col gap-2 pt-2 border-t border-gray-800/80">
-                    <div class="flex items-center gap-1 relative w-full pt-1 overflow-x-auto no-scrollbar whitespace-nowrap">
-                        <span class="text-xs font-bold text-amber-400 uppercase mr-0.5 shrink-0">LINH KIỆN:</span>
-                        <div id="main-cat-tabs-mobile" class="inline-flex items-center gap-1 shrink-0"></div>
-                    </div>
-
-                    <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
-
-                    <div class="flex items-center justify-between gap-1.5 w-full">
-                        <div class="relative flex-1">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
-                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            </span>
-                            <input type="text" id="search-input-mobile" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
-                                class="w-full pl-8 pr-8 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
-                            <button id="btn-clear-search-mobile" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-2.5 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <!-- TIÊU ĐỀ BẢNG CHO DESKTOP DÍNH NGAY PHÍA DƯỚI -->
+            <div class="hidden md:block card-dark rounded-t-2xl overflow-hidden shadow-md">
+                <table class="w-full text-center border-collapse">
+                    <thead>
+                        <tr id="desktop-table-header" class="bg-amber-600 text-white text-sm uppercase tracking-wider"></tr>
+                    </thead>
+                </table>
             </div>
         </div>
 
-        <!-- BẢNG DỮ LIỆU -->
-        <div class="card-dark rounded-2xl overflow-hidden shadow-xl w-full">
+        <!-- BẢNG NỘI DUNG DỮ LIỆU CUỘN -->
+        <div class="card-dark rounded-2xl md:rounded-t-none overflow-hidden shadow-xl w-full">
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
-                    <thead>
-                        <tr id="desktop-table-header" class="sticky top-[135px] z-30 bg-amber-600 text-white text-sm uppercase tracking-wider shadow-md"></tr>
-                    </thead>
                     <tbody id="device-table-body" class="divide-y divide-gray-800/60 text-base"></tbody>
                 </table>
             </div>
@@ -601,23 +611,23 @@
             if (desktopHeader) {
                 if (isPrivacyMode) {
                     desktopHeader.innerHTML = `
-                        <th class="py-3 px-4 text-left">TÊN MÁY</th>
-                        <th class="py-3 px-3">LINH KIỆN</th>
-                        <th class="py-3 px-3">KIỂU</th>
-                        <th class="py-3 px-3">GIÁ BÁN</th>
-                        <th class="py-3 px-3">SL</th>
-                        <th class="py-3 px-3">THAO TÁC</th>
+                        <th class="py-3 px-4 text-left w-1/4">TÊN MÁY</th>
+                        <th class="py-3 px-3 w-1/6">LINH KIỆN</th>
+                        <th class="py-3 px-3 w-1/6">KIỂU</th>
+                        <th class="py-3 px-3 w-1/6">GIÁ BÁN</th>
+                        <th class="py-3 px-3 w-1/12">SL</th>
+                        <th class="py-3 px-3 w-1/6">THAO TÁC</th>
                     `;
                 } else {
                     desktopHeader.innerHTML = `
-                        <th class="py-3 px-4 text-left">TÊN MÁY</th>
-                        <th class="py-3 px-3">LINH KIỆN</th>
-                        <th class="py-3 px-3">KIỂU</th>
-                        <th class="py-3 px-3">GIÁ BÁN</th>
-                        <th class="py-3 px-3">SL</th>
-                        <th class="py-3 px-3">THAO TÁC</th>
-                        <th class="py-3 px-3">GIÁ NHẬP</th>
-                        <th class="py-3 px-3">LÃI</th>
+                        <th class="py-3 px-4 text-left w-1/4">TÊN MÁY</th>
+                        <th class="py-3 px-3 w-1/6">LINH KIỆN</th>
+                        <th class="py-3 px-3 w-1/12">KIỂU</th>
+                        <th class="py-3 px-3 w-1/6">GIÁ BÁN</th>
+                        <th class="py-3 px-3 w-1/12">SL</th>
+                        <th class="py-3 px-3 w-1/6">THAO TÁC</th>
+                        <th class="py-3 px-3 w-1/12">GIÁ NHẬP</th>
+                        <th class="py-3 px-3 w-1/12">LÃI</th>
                     `;
                 }
             }
@@ -646,12 +656,12 @@
                     if (isPrivacyMode) {
                         return `
                             <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
-                                <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
-                                <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
-                                <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500">${priceFormatted}</td>
-                                <td class="py-3 px-3 font-bold text-lg text-red-500" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                <td class="py-3 px-3">
+                                <td class="py-3 px-4 text-left w-1/4">${formattedNameHtml}</td>
+                                <td class="py-3 px-3 font-semibold text-emerald-400 w-1/6">${d.part}</td>
+                                <td class="py-3 px-3 text-indigo-300 font-medium w-1/6">${d.type || '---'}</td>
+                                <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500 w-1/6">${priceFormatted}</td>
+                                <td class="py-3 px-3 font-bold text-lg text-red-500 w-1/12" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                                <td class="py-3 px-3 w-1/6">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                         <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -664,20 +674,20 @@
 
                     return `
                         <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                            <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
-                            <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
-                            <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
-                            <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500">${priceFormatted}</td>
-                            <td class="py-3 px-3 font-bold text-lg text-red-500" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                            <td class="py-3 px-3">
+                            <td class="py-3 px-4 text-left w-1/4">${formattedNameHtml}</td>
+                            <td class="py-3 px-3 font-semibold text-emerald-400 w-1/6">${d.part}</td>
+                            <td class="py-3 px-3 text-indigo-300 font-medium w-1/12">${d.type || '---'}</td>
+                            <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500 w-1/6">${priceFormatted}</td>
+                            <td class="py-3 px-3 font-bold text-lg text-red-500 w-1/12" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                            <td class="py-3 px-3 w-1/6">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                     <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
                                     <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                                 </div>
                             </td>
-                            <td class="py-3 px-3 font-bold text-sm text-gray-300">${costFormatted}</td>
-                            <td class="py-3 px-3 font-semibold text-xs text-emerald-400">${profitFormatted}</td>
+                            <td class="py-3 px-3 font-bold text-sm text-gray-300 w-1/12">${costFormatted}</td>
+                            <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-1/12">${profitFormatted}</td>
                         </tr>
                     `;
                 }).join('');
