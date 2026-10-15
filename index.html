@@ -75,12 +75,14 @@
                     </div>
                 </div>
 
-                <!-- HÀNG 2 (DESKTOP): LINH KIỆN + NÚT KIỂU + TÌM KIẾM + THÊM MỚI -->
+                <!-- HÀNG 2 (DESKTOP): LINH KIỆN + KIỂU + TÌM KIẾM + THÊM MỚI -->
                 <div class="hidden xl:flex items-center justify-between gap-3 pt-2 border-t border-gray-800/80 w-full">
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="text-sm font-bold text-amber-400 uppercase mr-1">LINH KIỆN:</span>
-                        <div id="main-cat-tabs-desktop" class="flex items-center gap-1"></div>
-                        <div class="relative shrink-0 ml-1" id="filter-type-container-desktop"></div>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="text-sm font-bold text-amber-400 uppercase mr-1">LINH KIỆN:</span>
+                            <div id="main-cat-tabs-desktop" class="flex items-center gap-1"></div>
+                        </div>
+                        <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
                     </div>
 
                     <div class="relative flex-1 max-w-md">
@@ -107,10 +109,9 @@
                         <span class="text-xs font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
                         <div id="main-cat-tabs-mobile" class="flex flex-wrap items-center gap-1"></div>
                     </div>
+                    <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
 
-                    <div class="flex items-center justify-between gap-1.5 w-full">
-                        <div class="relative shrink-0 block" id="filter-type-container-mobile"></div>
-
+                    <div class="flex items-center justify-between gap-1.5 w-full pt-1">
                         <div class="relative flex-1">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -193,7 +194,7 @@
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1">LINH KIỆN</label>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="device-part" required list="part-suggestions" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
+                            <input type="text" id="device-part" required list="part-suggestions" oninput="onModalPartChange()" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-indigo-500 uppercase">
                             <datalist id="part-suggestions"></datalist>
                             <div class="flex items-center gap-1 shrink-0">
                                 <button type="button" onclick="handleEntity('categories', 'add')" class="w-6 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="THÊM"><i class="fa-solid fa-plus"></i></button>
@@ -282,17 +283,6 @@
         let names = [];
 
         let currentBrand = brands[0] || '', currentCategory = 'MÀN HÌNH', currentType = '', isPrivacyMode = false;
-
-        function getFullCategory(partName) {
-            if (!partName) return '';
-            const upper = partName.toUpperCase();
-            if (upper.includes('MÀN')) return 'MÀN HÌNH';
-            if (upper.includes('KÍNH')) return 'KÍNH ÉP';
-            if (upper.includes('SẠC')) return 'BO SẠC';
-            if (upper.includes('PIN')) return 'PIN';
-            if (upper.includes('LƯNG')) return 'LƯNG';
-            return upper;
-        }
 
         function getColorHex(colorName) {
             if (!colorName) return '';
@@ -401,7 +391,7 @@
                 const btnClass = isSelected 
                     ? 'pink-pulse-selected text-white font-bold shadow-lg' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
-                return `<button onclick="currentBrand='${b}'; initTabs(); renderTable();" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`;
+                return `<button onclick="currentBrand='${b}'; currentCategory='MÀN HÌNH'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`;
             }).join('');
 
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
@@ -411,24 +401,24 @@
                 displayCategories.push('LƯNG');
             }
 
-            if (currentCategory.toUpperCase() === 'LƯNG' && !isIphone) {
-                currentCategory = 'MÀN HÌNH';
+            if (!displayCategories.includes(currentCategory)) {
+                currentCategory = displayCategories[0];
             }
 
             const catHtmlDesktop = displayCategories.map(c => {
-                const isSelected = getFullCategory(c) === getFullCategory(currentCategory);
+                const isSelected = c === currentCategory;
                 const btnClass = isSelected 
                     ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
-                return `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
+                return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
 
             const catHtmlMobile = displayCategories.map(c => {
-                const isSelected = getFullCategory(c) === getFullCategory(currentCategory);
+                const isSelected = c === currentCategory;
                 const btnClass = isSelected 
                     ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
-                return `<button onclick="currentCategory='${c}'; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${c}</button>`;
+                return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
 
             document.getElementById('main-cat-tabs-desktop').innerHTML = catHtmlDesktop;
@@ -436,490 +426,485 @@
 
             if (!isIphone) currentType = '';
 
-            const typeFilterHtmlDesktop = `
-                <button id="btn-type-filter-desktop" onclick="toggleTypeFilter(event)" class="px-3 py-1.5 rounded-lg text-sm font-bold ${currentType ? 'pink-pulse-selected text-white' : 'bg-red-600 border border-red-500 hover:bg-red-500 text-white'} transition flex items-center gap-1 shadow-md" title="LỌC KIỂU">
-                    <span class="text-white font-bold">${currentType || 'KIỂU'}</span>
-                    <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200"></i>
-                </button>
-            `;
+            let typeButtonsHtml = '';
+            let typeButtonsMobileHtml = '';
 
-            const typeFilterHtmlMobile = `
-                <button id="btn-type-filter-mobile" onclick="toggleTypeFilter(event)" class="px-2.5 py-1.5 rounded-lg text-xs font-bold ${currentType ? 'pink-pulse-selected text-white' : 'bg-red-600 border border-red-500 hover:bg-red-500 text-white'} transition flex items-center gap-1 shadow-md" title="LỌC KIỂU">
-                    <span class="text-white font-bold">${currentType || 'KIỂU'}</span>
-                    <i class="fa-solid fa-chevron-down text-white text-[10px] transition-transform duration-200"></i>
-                </button>
-            `;
+            if (isIphone) {
+                // Lấy các kiểu thực tế đã tồn tại trong devices của Hãng hiện tại và Linh kiện hiện tại
+                const validTypesSet = new Set();
+                devices.forEach(d => {
+                    if ((d.brand || '').toUpperCase() === currentBrand.toUpperCase() &&
+                        (d.part || '').toUpperCase() === currentCategory.toUpperCase() &&
+                        d.type) {
+                        validTypesSet.add(d.type.toUpperCase());
+                    }
+                });
 
-            const filterDesktop = document.getElementById('filter-type-container-desktop');
-            const filterMobile = document.getElementById('filter-type-container-mobile');
+                const allTypeSelected = currentType === '';
+                const allTypeClass = allTypeSelected 
+                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
+                
+                typeButtonsHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
+                typeButtonsMobileHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-[11px] font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
 
-            if (filterDesktop) {
-                if (isIphone) {
-                    filterDesktop.style.display = 'block';
-                    filterDesktop.innerHTML = typeFilterHtmlDesktop;
+                // Chỉ hiển thị các kiểu thuộc đúng linh kiện đó
+                types.forEach(t => {
+                    if (validTypesSet.has(t.toUpperCase())) {
+                        const isSelected = currentType === t;
+                        const btnClass = isSelected 
+                            ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
+                        typeButtonsHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
+                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-[11px] font-semibold transition uppercase ${btnClass}">${t}</button>`;
+                    }
+                });
+            }
+
+            const typeContainerDesktop = document.getElementById('type-tabs-container-desktop');
+            const typeContainerMobile = document.getElementById('type-tabs-container-mobile');
+
+            if (typeContainerDesktop) {
+                if (isIphone && typeButtonsHtml !== '') {
+                    typeContainerDesktop.style.display = 'flex';
+                    typeContainerDesktop.innerHTML = `<span class="text-sm font-bold text-red-500 uppercase mr-1">KIỂU:</span>` + typeButtonsHtml;
                 } else {
-                    filterDesktop.style.display = 'none';
-                    filterDesktop.innerHTML = '';
+                    typeContainerDesktop.style.display = 'none';
+                    typeContainerDesktop.innerHTML = '';
                 }
             }
 
-            if (filterMobile) {
-                if (isIphone) {
-                    filterMobile.style.display = 'block';
-                    filterMobile.innerHTML = typeFilterHtmlMobile;
+            if (typeContainerMobile) {
+                if (isIphone && typeButtonsMobileHtml !== '') {
+                    typeContainerMobile.style.display = 'flex';
+                    typeContainerMobile.innerHTML = `<span class="text-xs font-bold text-red-500 uppercase mr-0.5">KIỂU:</span>` + typeButtonsMobileHtml;
                 } else {
-                    filterMobile.style.display = 'none';
-                    filterMobile.innerHTML = '';
+                    typeContainerMobile.style.display = 'none';
+                    typeContainerMobile.innerHTML = '';
                 }
             }
-
-            const allTypeOption = `<button onclick="selectType('');" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${currentType === '' ? 'pink-pulse-selected text-white font-bold' : 'text-gray-300 hover:bg-gray-800'}">-- TẤT CẢ --</button>`;
-            const typeOptions = types.map(t => {
-                const isSelected = t === currentType;
-                const btnClass = isSelected ? 'pink-pulse-selected text-white font-bold' : 'text-gray-300 hover:bg-gray-800';
-                return `<button onclick="selectType('${t}');" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${t}</button>`;
-            }).join('');
-            
-            let dropdownEl = document.getElementById('dropdown-types');
-            if (!dropdownEl) {
-                dropdownEl = document.createElement('div');
-                dropdownEl.id = 'dropdown-types';
-                dropdownEl.className = 'hidden absolute left-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1';
-                document.body.appendChild(dropdownEl);
-            }
-            dropdownEl.innerHTML = `<div class="flex flex-col gap-1">${allTypeOption + typeOptions}</div>`;
-
-            document.getElementById('brand-suggestions').innerHTML = brands.map(b => `<option value="${b}">`).join('');
-            document.getElementById('part-suggestions').innerHTML = categories.map(c => `<option value="${c}">`).join('');
-            document.getElementById('type-suggestions').innerHTML = types.map(t => `<option value="${t}">`).join('');
-            document.getElementById('name-suggestions').innerHTML = names.map(n => `<option value="${n}">`).join('');
         }
 
-        function toggleTypeFilter(e) {
-            e.stopPropagation();
-            const btn = e.currentTarget;
-            const rect = btn.getBoundingClientRect();
-            const dropdown = document.getElementById('dropdown-types');
-            
-            if (dropdown.classList.contains('hidden')) {
-                dropdown.style.top = (rect.bottom + window.scrollY + 4) + 'px';
-                dropdown.style.left = (rect.left + window.scrollX) + 'px';
-                dropdown.classList.remove('hidden');
-            } else {
-                dropdown.classList.add('hidden');
-            }
+        function formatMoney(amount) {
+            return Number(amount).toLocaleString('vi-VN');
         }
 
-        function selectType(t) {
-            currentType = t;
-            const dropdown = document.getElementById('dropdown-types');
-            if(dropdown) dropdown.classList.add('hidden');
-            initTabs();
-            renderTable();
-        }
-
-        window.onclick = () => {
-            const dropdown = document.getElementById('dropdown-types');
-            if(dropdown) dropdown.classList.add('hidden');
-        };
-
-        function adjustQty(val) {
-            const input = document.getElementById('device-qty');
-            input.value = Math.max(0, (Number(input.value) || 0) + val);
-            updateModalStats();
-        }
-
-        function formatCurrency(num) {
-            if (num === undefined || num === null) return '0';
-            return Number(num).toLocaleString('vi-VN');
-        }
-
-        function parseCurrency(str) {
+        function parseMoney(str) {
             if (!str) return 0;
-            return Number(str.toString().replace(/\D/g, '')) || 0;
+            return parseInt(str.toString().replace(/\./g, ''), 10) || 0;
         }
 
         function formatCurrencyInput(input) {
-            let val = parseCurrency(input.value);
-            input.value = val ? formatCurrency(val) : '';
-            updateModalStats();
-        }
-
-        function updateModalStats() {
-            const price = parseCurrency(document.getElementById('device-price').value);
-            const cost = parseCurrency(document.getElementById('device-cost').value);
-            const profit = price - cost;
-            const profitEl = document.getElementById('modal-profit-preview');
-            profitEl.innerText = formatCurrency(profit);
-            profitEl.className = profit < 0 ? "text-xs font-bold text-red-400 leading-none truncate text-center w-full" : "text-xs font-bold text-emerald-400 leading-none truncate text-center w-full";
+            let val = input.value.replace(/\D/g, '');
+            if (val) {
+                val = parseInt(val, 10).toLocaleString('vi-VN');
+            }
+            input.value = val;
         }
 
         function togglePrivacyMode() {
             isPrivacyMode = !isPrivacyMode;
             const icon = document.getElementById('privacy-icon');
-            icon.className = isPrivacyMode ? "fa-solid fa-eye-slash text-xs text-amber-400" : "fa-solid fa-eye text-xs";
+            if (icon) {
+                icon.className = isPrivacyMode ? "fa-solid fa-eye-slash text-xs text-red-400" : "fa-solid fa-eye text-xs";
+            }
             renderTable();
         }
 
-        function handleSearchInput(inputEl) {
-            const val = inputEl.value.trim();
-            const deskInput = document.getElementById('search-input-desktop');
-            const mobInput = document.getElementById('search-input-mobile');
-            if (deskInput && deskInput !== inputEl) deskInput.value = val;
-            if (mobInput && mobInput !== inputEl) mobInput.value = val;
+        function renderTable() {
+            const tbody = document.getElementById('device-table-body');
+            const mobileList = document.getElementById('device-mobile-list');
+            const emptyState = document.getElementById('empty-state');
+            const rowCountEl = document.getElementById('row-count');
+            const totalCostEl = document.getElementById('total-cost');
 
-            const btnClearDesk = document.getElementById('btn-clear-search-desktop');
-            const btnClearMob = document.getElementById('btn-clear-search-mobile');
-            
+            const searchInputDesktop = document.getElementById('search-input-desktop');
+            const searchInputMobile = document.getElementById('search-input-mobile');
+            const keyword = (searchInputDesktop?.value || searchInputMobile?.value || '').trim().toUpperCase();
+
+            const isIphone = currentBrand.toUpperCase() === 'IPHONE';
+
+            const filtered = devices.filter(d => {
+                const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
+                const matchCategory = (d.part || '').toUpperCase() === currentCategory.toUpperCase();
+                const matchType = (!isIphone || !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase());
+
+                const fullSearchStr = `${d.brand} ${d.name} ${d.part} ${d.type} ${d.color}`.toUpperCase();
+                const matchKeyword = !keyword || keyword.split(' ').every(k => fullSearchStr.includes(k));
+
+                return matchBrand && matchCategory && matchType && matchKeyword;
+            });
+
+            if (rowCountEl) rowCountEl.innerText = filtered.length;
+
+            let totalCostSum = 0;
+            filtered.forEach(d => {
+                totalCostSum += (parseMoney(d.cost) * (parseInt(d.qty) || 1));
+            });
+            if (totalCostEl) totalCostEl.innerText = isPrivacyMode ? '***' : formatMoney(totalCostSum);
+
+            const desktopHeader = document.getElementById('desktop-table-header');
+            if (desktopHeader) {
+                if (isPrivacyMode) {
+                    desktopHeader.innerHTML = `
+                        <th class="py-3 px-4 text-left">TÊN MÁY</th>
+                        <th class="py-3 px-3">LINH KIỆN</th>
+                        <th class="py-3 px-3">KIỂU</th>
+                        <th class="py-3 px-3">GIÁ BÁN</th>
+                        <th class="py-3 px-3">SL</th>
+                        <th class="py-3 px-3">THAO TÁC</th>
+                    `;
+                } else {
+                    desktopHeader.innerHTML = `
+                        <th class="py-3 px-4 text-left">TÊN MÁY</th>
+                        <th class="py-3 px-3">LINH KIỆN</th>
+                        <th class="py-3 px-3">KIỂU</th>
+                        <th class="py-3 px-3">GIÁ BÁN</th>
+                        <th class="py-3 px-3">SL</th>
+                        <th class="py-3 px-3">THAO TÁC</th>
+                        <th class="py-3 px-3">GIÁ NHẬP</th>
+                        <th class="py-3 px-3">LÃI</th>
+                    `;
+                }
+            }
+
+            if (filtered.length === 0) {
+                if (tbody) tbody.innerHTML = '';
+                if (mobileList) mobileList.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+
+            if (emptyState) emptyState.classList.add('hidden');
+
+            if (tbody) {
+                tbody.innerHTML = filtered.map((d, index) => {
+                    const realIndex = devices.indexOf(d);
+                    const priceFormatted = formatMoney(d.price);
+                    const costFormatted = formatMoney(d.cost);
+                    const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * (parseInt(d.qty) || 1);
+                    const profitFormatted = formatMoney(profitVal);
+                    const formattedNameHtml = renderDeviceNames(d.name, d.color, false);
+
+                    if (isPrivacyMode) {
+                        return `
+                            <tr class="row-hover transition">
+                                <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
+                                <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
+                                <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
+                                <td class="py-3 px-3 font-bold text-pink-500">${priceFormatted}</td>
+                                <td class="py-3 px-3 font-bold text-amber-400">${d.qty}</td>
+                                <td class="py-3 px-3">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
+                                        <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
+                                        <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+
+                    return `
+                        <tr class="row-hover transition">
+                            <td class="py-3 px-4 text-left">${formattedNameHtml}</td>
+                            <td class="py-3 px-3 font-semibold text-emerald-400">${d.part}</td>
+                            <td class="py-3 px-3 text-indigo-300 font-medium">${d.type || '---'}</td>
+                            <td class="py-3 px-3 font-bold text-pink-500">${priceFormatted}</td>
+                            <td class="py-3 px-3 font-bold text-amber-400">${d.qty}</td>
+                            <td class="py-3 px-3">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
+                                    <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
+                                    <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                                </div>
+                            </td>
+                            <td class="py-3 px-3 font-medium text-gray-300">${costFormatted}</td>
+                            <td class="py-3 px-3 font-bold text-emerald-400">${profitFormatted}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            if (mobileList) {
+                mobileList.innerHTML = filtered.map((d, index) => {
+                    const realIndex = devices.indexOf(d);
+                    const priceFormatted = formatMoney(d.price);
+                    const costFormatted = formatMoney(d.cost);
+                    const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * (parseInt(d.qty) || 1);
+                    const profitFormatted = formatMoney(profitVal);
+                    const formattedNameHtml = renderDeviceNames(d.name, d.color, true);
+
+                    if (isPrivacyMode) {
+                        return `
+                            <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40">
+                                <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        ${formattedNameHtml}
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                                        <span class="text-emerald-400 font-semibold">${d.part}</span>
+                                        ${d.type ? `<span class="text-indigo-300">• ${d.type}</span>` : ''}
+                                        <span>• SL: <strong class="text-amber-400">${d.qty}</strong></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 shrink-0">
+                                    <div class="text-right">
+                                        <div class="text-base font-bold text-pink-500">${priceFormatted}</div>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
+                                        <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-copy text-xs"></i></button>
+                                        <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40">
+                            <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+                                <div class="flex items-center gap-2">
+                                    ${formattedNameHtml}
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-400">
+                                    <span class="text-emerald-400 font-semibold">${d.part}</span>
+                                    ${d.type ? `<span class="text-indigo-300">• ${d.type}</span>` : ''}
+                                    <span>• SL: <strong class="text-amber-400">${d.qty}</strong></span>
+                                    <span>• Vốn: ${costFormatted}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="text-right">
+                                    <div class="text-base font-bold text-pink-500">${priceFormatted}</div>
+                                    <div class="text-xs font-bold text-emerald-400">+${profitFormatted}</div>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
+                                    <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-copy text-xs"></i></button>
+                                    <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function handleSearchInput(input) {
+            const val = input.value;
+            const desktopInput = document.getElementById('search-input-desktop');
+            const mobileInput = document.getElementById('search-input-mobile');
+            const clearDesktop = document.getElementById('btn-clear-search-desktop');
+            const clearMobile = document.getElementById('btn-clear-search-mobile');
+
+            if (desktopInput && desktopInput.value !== val) desktopInput.value = val;
+            if (mobileInput && mobileInput.value !== val) mobileInput.value = val;
+
             if (val) {
-                if (btnClearDesk) btnClearDesk.classList.remove('hidden');
-                if (btnClearMob) btnClearMob.classList.remove('hidden');
+                if (clearDesktop) clearDesktop.classList.remove('hidden');
+                if (clearMobile) clearMobile.classList.remove('hidden');
             } else {
-                if (btnClearDesk) btnClearDesk.classList.add('hidden');
-                if (btnClearMob) btnClearMob.classList.add('hidden');
+                if (clearDesktop) clearDesktop.classList.add('hidden');
+                if (clearMobile) clearMobile.classList.add('hidden');
             }
             renderTable();
         }
 
         function clearSearch() {
-            document.getElementById('search-input-desktop').value = '';
-            document.getElementById('search-input-mobile').value = '';
-            document.getElementById('btn-clear-search-desktop').classList.add('hidden');
-            document.getElementById('btn-clear-search-mobile').classList.add('hidden');
+            const desktopInput = document.getElementById('search-input-desktop');
+            const mobileInput = document.getElementById('search-input-mobile');
+            if (desktopInput) desktopInput.value = '';
+            if (mobileInput) mobileInput.value = '';
+            const clearDesktop = document.getElementById('btn-clear-search-desktop');
+            const clearMobile = document.getElementById('btn-clear-search-mobile');
+            if (clearDesktop) clearDesktop.classList.add('hidden');
+            if (clearMobile) clearMobile.classList.add('hidden');
             renderTable();
         }
 
-        function renderTable() {
-            const searchInput = window.innerWidth >= 1280 ? document.getElementById('search-input-desktop') : document.getElementById('search-input-mobile');
-            const searchVal = (searchInput ? searchInput.value : '').trim().toUpperCase();
-            const isIphone = currentBrand.toUpperCase() === 'IPHONE';
+        function openModal(isEdit = false) {
+            document.getElementById('device-modal').classList.remove('hidden');
+            document.getElementById('modal-title').innerText = isEdit ? 'SỬA LINH KIỆN' : 'THÊM LINH KIỆN MỚI';
             
-            let filtered = devices.filter(d => {
-                const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
-                if (!matchBrand) return false;
+            document.getElementById('brand-suggestions').innerHTML = brands.map(b => `<option value="${b}">`).join('');
+            document.getElementById('part-suggestions').innerHTML = categories.map(c => `<option value="${c}">`).join('');
+            document.getElementById('type-suggestions').innerHTML = types.map(t => `<option value="${t}">`).join('');
+            document.getElementById('name-suggestions').innerHTML = names.map(n => `<option value="${n}">`).join('');
 
-                const matchCat = getFullCategory(d.part) === getFullCategory(currentCategory);
-                if (!matchCat) return false;
-
-                if (isIphone) {
-                    const matchType = !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase();
-                    if (!matchType) return false;
-                }
-
-                if (searchVal) {
-                    const fullText = `${d.brand} ${d.name} ${d.part} ${d.type} ${d.color}`.toUpperCase();
-                    return searchVal.split(' ').every(w => fullText.includes(w));
-                }
-
-                return true;
-            });
-
-            filtered.sort((a, b) => {
-                const nameA = (a.name || '').toUpperCase();
-                const nameB = (b.name || '').toUpperCase();
-                return nameA.localeCompare(nameB, 'vi', { numeric: true });
-            });
-
-            const rowCountEl = document.getElementById('row-count');
-            if (rowCountEl) rowCountEl.innerText = filtered.length;
-
-            let totalCostVal = 0;
-            devices.forEach(d => {
-                const qty = Number(d.qty) || 0;
-                const cost = Number(d.cost) || 0;
-                totalCostVal += cost * qty;
-            });
-            document.getElementById('total-cost').innerText = formatCurrency(totalCostVal);
-
-            const headerEl = document.getElementById('desktop-table-header');
-            const typeHeaderHtml = isIphone ? `<th class="py-3 px-2 w-28">KIỂU</th>` : '';
-
-            headerEl.innerHTML = `
-                <th class="py-3 px-3 text-left">TÊN MÁY</th>
-                <th class="py-3 px-2 w-32">LINH KIỆN</th>
-                ${typeHeaderHtml}
-                <th class="py-3 px-2 w-28">GIÁ BÁN</th>
-                <th class="py-3 px-2 w-20">SL</th>
-                <th class="py-3 px-2 w-24">THAO TÁC</th>
-                <th class="py-3 px-2 w-24">GIÁ NHẬP</th>
-                <th class="py-3 px-2 w-24">LÃI</th>
-            `;
-
-            const tbody = document.getElementById('device-table-body');
-            const mobileList = document.getElementById('device-mobile-list');
-            const emptyState = document.getElementById('empty-state');
-
-            tbody.innerHTML = '';
-            mobileList.innerHTML = '';
-
-            if (filtered.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
+            if (!isEdit) {
+                document.getElementById('device-index').value = '-1';
+                document.getElementById('device-form').reset();
+                document.getElementById('device-brand').value = currentBrand;
+                document.getElementById('device-part').value = currentCategory;
+                document.getElementById('device-type').value = ''; // Không mặc định lưu kiểu cũ sang linh kiện khác
+                document.getElementById('device-qty').value = '1';
+                document.getElementById('modal-profit-preview').innerText = '0';
             }
-            emptyState.classList.add('hidden');
-
-            let desktopHtml = '';
-            let mobileHtml = '';
-
-            filtered.forEach((d, index) => {
-                const qty = Number(d.qty) || 0;
-                const price = Number(d.price) || 0;
-                const cost = Number(d.cost) || 0;
-                const profit = price - cost;
-
-                const isZeroQty = qty === 0;
-                const rowClass = isZeroQty ? 'yellow-pulse-row font-bold' : 'row-hover';
-                
-                const badgeClass = isZeroQty 
-                    ? 'yellow-pulse-badge px-2.5 py-0.5 rounded-lg text-xs font-black shadow-sm' 
-                    : 'bg-gray-800/95 text-white border border-gray-700 px-2.5 py-0.5 rounded-lg text-xs font-black shadow-sm';
-
-                const nameHtml = renderDeviceNames(d.name, d.color, false);
-                const mobileNameHtml = renderDeviceNames(d.name, d.color, true);
-
-                const hiddenValHtml = `<span class="text-amber-400 tracking-widest"><i class="fa-solid fa-eye-slash text-xs"></i> <i class="fa-solid fa-eye-slash text-xs"></i> <i class="fa-solid fa-eye-slash text-xs"></i></span>`;
-
-                const costDisplay = isPrivacyMode ? hiddenValHtml : formatCurrency(cost);
-                const profitDisplay = isPrivacyMode ? hiddenValHtml : formatCurrency(profit);
-
-                const typeTdHtml = isIphone ? `<td class="py-2.5 px-2 text-indigo-400 font-bold text-sm">${d.type || '---'}</td>` : '';
-
-                const itemKey = d.id !== undefined && d.id !== null ? d.id : index;
-
-                desktopHtml += `
-                    <tr class="${rowClass} transition">
-                        <td class="py-2.5 px-3 text-left">${nameHtml}</td>
-                        <td class="py-2.5 px-2 text-emerald-400 font-semibold text-xs md:text-sm">${d.part || '---'}</td>
-                        ${typeTdHtml}
-                        <td class="py-2.5 px-2 text-pink-400 font-extrabold text-lg md:text-xl">${formatCurrency(price)}</td>
-                        <td class="py-2.5 px-2">
-                            <span class="${badgeClass}">${qty}</span>
-                        </td>
-                        <td class="py-2.5 px-2">
-                            <div class="flex items-center justify-center gap-1">
-                                <button data-action="edit" data-key="${itemKey}" class="w-7 h-7 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition flex items-center justify-center" title="SỬA"><i class="fa-solid fa-pen text-xs pointer-events-none"></i></button>
-                                <button data-action="clone" data-key="${itemKey}" class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white transition flex items-center justify-center" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs pointer-events-none"></i></button>
-                                <button data-action="delete" data-key="${itemKey}" class="w-7 h-7 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition flex items-center justify-center" title="XÓA"><i class="fa-solid fa-trash text-xs pointer-events-none"></i></button>
-                            </div>
-                        </td>
-                        <td class="py-2.5 px-2 text-amber-400 text-sm">${costDisplay}</td>
-                        <td class="py-2.5 px-2 text-emerald-400 font-bold text-xs md:text-sm">${profitDisplay}</td>
-                    </tr>
-                `;
-
-                if (isIphone) {
-                    const mobileTypeStr = d.type ? ` - <span class="text-amber-400 font-bold text-xs">${d.type}</span>` : '';
-                    mobileHtml += `
-                        <div class="${rowClass} py-2.5 px-2 flex justify-between items-center gap-2 border-b border-gray-800/60 rounded-xl transition my-0.5">
-                            <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
-                                <div class="font-bold text-white">${mobileNameHtml}</div>
-                                <span class="text-emerald-400 font-bold text-[11px]">• ${d.part}</span>
-                                ${mobileTypeStr}
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <span class="${badgeClass}">${qty}</span>
-                                <div class="text-red-500 font-extrabold text-sm whitespace-nowrap">
-                                    ${formatCurrency(price)}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    mobileHtml += `
-                        <div class="${rowClass} py-2.5 px-2 flex justify-between items-center gap-2 border-b border-gray-800/60 rounded-xl transition my-0.5">
-                            <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
-                                <div class="font-bold text-white">${mobileNameHtml}</div>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <span class="${badgeClass}">${qty}</span>
-                                <div class="text-red-500 font-extrabold text-sm whitespace-nowrap">
-                                    ${formatCurrency(price)}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            tbody.innerHTML = desktopHtml;
-            mobileList.innerHTML = mobileHtml;
         }
 
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('button[data-action]');
-            if (!btn) return;
-            const action = btn.getAttribute('data-action');
-            const key = btn.getAttribute('data-key');
-
-            let targetDevice = devices.find(item => String(item.id) === String(key));
-            if (!targetDevice && !isNaN(key)) {
-                targetDevice = devices[Number(key)];
+        function onModalPartChange() {
+            // Khi người dùng gõ hoặc chọn thay đổi linh kiện trong modal, nếu không phải đang ở chế độ sửa thì làm trống ô kiểu để tránh giữ kiểu cũ
+            const index = parseInt(document.getElementById('device-index').value);
+            if (index === -1) {
+                document.getElementById('device-type').value = '';
             }
-
-            if (!targetDevice) return;
-
-            if (action === 'edit') {
-                openModalEdit(targetDevice);
-            } else if (action === 'clone') {
-                cloneDeviceData(targetDevice);
-            } else if (action === 'delete') {
-                deleteDeviceObj(targetDevice);
-            }
-        });
-
-        function openModal(id = null) {
-            const modal = document.getElementById('device-modal');
-            modal.classList.remove('hidden');
-            document.getElementById('device-form').reset();
-            
-            document.getElementById('modal-title').innerText = "THÊM LINH KIỆN MỚI";
-            document.getElementById('device-id').value = '';
-            document.getElementById('device-brand').value = currentBrand;
-            document.getElementById('device-part').value = currentCategory;
-            document.getElementById('device-type').value = currentType || '';
-            document.getElementById('device-qty').value = '1';
-            document.getElementById('device-color').value = '';
-            document.getElementById('device-price').value = '';
-            document.getElementById('device-cost').value = '';
-            updateModalStats();
-        }
-
-        function openModalEdit(d) {
-            const modal = document.getElementById('device-modal');
-            modal.classList.remove('hidden');
-            document.getElementById('device-form').reset();
-
-            document.getElementById('modal-title').innerText = "SỬA LINH KIỆN";
-            document.getElementById('device-id').value = d.id || '';
-            document.getElementById('device-brand').value = d.brand || currentBrand;
-            document.getElementById('device-name').value = d.name || '';
-            document.getElementById('device-part').value = d.part || currentCategory;
-            document.getElementById('device-type').value = d.type || '';
-            document.getElementById('device-price').value = formatCurrency(d.price);
-            document.getElementById('device-cost').value = formatCurrency(d.cost);
-            document.getElementById('device-qty').value = d.qty !== undefined ? d.qty : 1;
-            document.getElementById('device-color').value = d.color || '';
-            updateModalStats();
-        }
-
-        function cloneDeviceData(d) {
-            const modal = document.getElementById('device-modal');
-            modal.classList.remove('hidden');
-            document.getElementById('device-form').reset();
-
-            document.getElementById('modal-title').innerText = "THÊM LINH KIỆN MỚI (BẢN SAO)";
-            document.getElementById('device-id').value = '';
-            document.getElementById('device-brand').value = d.brand || currentBrand;
-            document.getElementById('device-name').value = d.name || '';
-            document.getElementById('device-part').value = d.part || currentCategory;
-            document.getElementById('device-type').value = d.type || '';
-            document.getElementById('device-price').value = formatCurrency(d.price);
-            document.getElementById('device-cost').value = formatCurrency(d.cost);
-            document.getElementById('device-qty').value = d.qty !== undefined ? d.qty : 1;
-            document.getElementById('device-color').value = d.color || '';
-            updateModalStats();
         }
 
         function closeModal() {
             document.getElementById('device-modal').classList.add('hidden');
         }
 
+        function adjustQty(amount) {
+            const qtyInput = document.getElementById('device-qty');
+            let val = parseInt(qtyInput.value) || 0;
+            val += amount;
+            if (val < 0) val = 0;
+            qtyInput.value = val;
+            updateModalStats();
+        }
+
+        function updateModalStats() {
+            const price = parseMoney(document.getElementById('device-price').value);
+            const cost = parseMoney(document.getElementById('device-cost').value);
+            const qty = parseInt(document.getElementById('device-qty').value) || 1;
+            const profit = (price - cost) * qty;
+            document.getElementById('modal-profit-preview').innerText = formatMoney(profit);
+        }
+
+        document.getElementById('device-price').addEventListener('input', updateModalStats);
+        document.getElementById('device-cost').addEventListener('input', updateModalStats);
+
         function saveDevice(e) {
             e.preventDefault();
-            const id = document.getElementById('device-id').value || 'dev_' + Date.now();
+            const index = parseInt(document.getElementById('device-index').value);
             const brand = document.getElementById('device-brand').value.trim().toUpperCase();
             const name = document.getElementById('device-name').value.trim().toUpperCase();
             const part = document.getElementById('device-part').value.trim().toUpperCase();
             const type = document.getElementById('device-type').value.trim().toUpperCase();
-            const price = parseCurrency(document.getElementById('device-price').value);
-            const cost = parseCurrency(document.getElementById('device-cost').value);
-            const qty = Number(document.getElementById('device-qty').value) || 0;
+            const price = document.getElementById('device-price').value.trim();
+            const cost = document.getElementById('device-cost').value.trim();
+            const qty = parseInt(document.getElementById('device-qty').value) || 1;
             const color = document.getElementById('device-color').value.trim().toUpperCase();
 
-            if (brand && !brands.includes(brand)) brands.push(brand);
-            if (part && !categories.includes(part)) categories.push(part);
+            if (!brands.includes(brand)) brands.push(brand);
+            if (!categories.includes(part)) categories.push(part);
             if (type && !types.includes(type)) types.push(type);
             if (name && !names.includes(name)) names.push(name);
 
-            const existingIndex = devices.findIndex(item => String(item.id) === String(id));
-            const deviceObj = { id, brand, name, part, type, price, cost, qty, color };
+            const deviceObj = { brand, name, part, type, price, cost, qty, color };
 
-            if (existingIndex >= 0) {
-                devices[existingIndex] = deviceObj;
-            } else {
+            if (index === -1) {
                 devices.unshift(deviceObj);
+            } else {
+                devices[index] = deviceObj;
             }
-
-            currentBrand = brand;
-            currentCategory = part;
-            if (type) currentType = type;
 
             saveAllToCloud();
             closeModal();
+            currentBrand = brand;
+            currentCategory = part;
+            currentType = type; // Cập nhật luôn kiểu hiện tại để hiển thị đúng tab
             initTabs();
             renderTable();
         }
 
-        function deleteDeviceObj(targetDevice) {
-            if (confirm("Bạn có chắc chắn muốn xóa linh kiện này không?")) {
-                devices = devices.filter(item => item !== targetDevice && String(item.id) !== String(targetDevice.id));
+        function editDevice(index) {
+            const d = devices[index];
+            document.getElementById('device-index').value = index;
+            openModal(true);
+
+            document.getElementById('device-brand').value = d.brand || '';
+            document.getElementById('device-name').value = d.name || '';
+            document.getElementById('device-part').value = d.part || '';
+            document.getElementById('device-type').value = d.type || '';
+            document.getElementById('device-price').value = d.price || '';
+            document.getElementById('device-cost').value = d.cost || '';
+            document.getElementById('device-qty').value = d.qty || 1;
+            document.getElementById('device-color').value = d.color || '';
+            updateModalStats();
+        }
+
+        function duplicateDevice(index) {
+            const d = devices[index];
+            const cloned = { ...d };
+            devices.unshift(cloned);
+            saveAllToCloud();
+            renderTable();
+        }
+
+        function deleteDevice(index) {
+            if (confirm('BẠN CÓ CHẮC MUỐN XÓA MỤC NÀY KHÔNG?')) {
+                devices.splice(index, 1);
                 saveAllToCloud();
                 renderTable();
             }
         }
 
         function handleEntity(entityType, action) {
-            let list = entityType === 'brands' ? brands :
-                       entityType === 'categories' ? categories :
-                       entityType === 'types' ? types :
-                       entityType === 'names' ? names : [];
+            let listRef, inputId, labelName;
+            if (entityType === 'brands') {
+                listRef = brands; inputId = 'device-brand'; labelName = 'HÃNG';
+            } else if (entityType === 'categories') {
+                listRef = categories; inputId = 'device-part'; labelName = 'LINH KIỆN';
+            } else if (entityType === 'types') {
+                listRef = types; inputId = 'device-type'; labelName = 'KIỂU';
+            } else if (entityType === 'names') {
+                listRef = names; inputId = 'device-name'; labelName = 'TÊN MÁY';
+            }
+
+            const val = document.getElementById(inputId).value.trim().toUpperCase();
 
             if (action === 'add') {
-                const val = prompt(`Nhập tên ${entityType === 'brands' ? 'hãng' : entityType === 'categories' ? 'linh kiện' : entityType === 'types' ? 'kiểu' : 'tên máy'} mới:`).trim().toUpperCase();
-                if (val && !list.includes(val)) {
-                    list.push(val);
+                if (!val) { alert(`VUI LÒNG NHẬP TÊN ${labelName}!`); return; }
+                if (!listRef.includes(val)) {
+                    listRef.push(val);
                     saveAllToCloud();
-                    initTabs();
-                    renderTable();
+                    alert(`ĐÃ THÊM ${labelName} MỚI THÀNH CÔNG!`);
+                    openModal(document.getElementById('device-index').value !== '-1');
+                } else {
+                    alert(`${labelName} NÀY ĐÃ TỒN TẠI!`);
                 }
             } else if (action === 'edit') {
-                const target = entityType === 'brands' ? currentBrand :
-                               entityType === 'categories' ? currentCategory :
-                               entityType === 'types' ? currentType : '';
-                if (!target) {
-                    alert("Vui lòng chọn mục cần sửa trước!");
-                    return;
-                }
-                const newVal = prompt(`Sửa tên "${target}" thành:`, target).trim().toUpperCase();
-                if (newVal && newVal !== target) {
-                    const idx = list.indexOf(target);
-                    if (idx >= 0) list[idx] = newVal;
+                if (!val) { alert(`VUI LÒNG NHẬP HOẶC CHỌN ${labelName} CẦN SỬA!`); return; }
+                const oldVal = prompt(`NHẬP TÊN MỚI THAY THẾ CHO "${val}":`);
+                if (oldVal) {
+                    const newVal = oldVal.trim().toUpperCase();
+                    const idx = listRef.indexOf(val);
+                    if (idx !== -1) listRef[idx] = newVal;
+                    else listRef.push(newVal);
+
+                    devices.forEach(d => {
+                        if (entityType === 'brands' && d.brand === val) d.brand = newVal;
+                        if (entityType === 'categories' && d.part === val) d.part = newVal;
+                        if (entityType === 'types' && d.type === val) d.type = newVal;
+                        if (entityType === 'names' && d.name === val) d.name = newVal;
+                    });
+
                     saveAllToCloud();
+                    document.getElementById(inputId).value = newVal;
                     initTabs();
                     renderTable();
+                    alert(`ĐÃ CẬP NHẬT THÀNH CÔNG!`);
                 }
             } else if (action === 'delete') {
-                const target = entityType === 'brands' ? currentBrand :
-                               entityType === 'categories' ? currentCategory :
-                               entityType === 'types' ? currentType : '';
-                if (!target) {
-                    alert("Vui lòng chọn mục cần sửa trước!");
-                    return;
-                }
-                if (confirm(`Bạn có chắc muốn xóa "${target}" không?`)) {
-                    const idx = list.indexOf(target);
-                    if (idx >= 0) list.splice(idx, 1);
+                if (!val) { alert(`VUI LÒNG NHẬP HOẶC CHỌN ${labelName} CẦN XÓA!`); return; }
+                if (confirm(`BẠN CÓ CHẮC MUỐN XÓA "${val}" KHỎI DANH SÁCH GỢI Ý?`)) {
+                    const idx = listRef.indexOf(val);
+                    if (idx !== -1) listRef.splice(idx, 1);
                     saveAllToCloud();
-                    if (entityType === 'brands' && brands.length) currentBrand = brands[0];
-                    if (entityType === 'categories' && categories.length) currentCategory = categories[0];
-                    if (entityType === 'types') currentType = '';
+                    document.getElementById(inputId).value = '';
                     initTabs();
                     renderTable();
+                    alert(`ĐÃ XÓA THÀNH CÔNG!`);
                 }
             }
         }
 
-        syncFromCloud();
+        window.onload = function() {
+            syncFromCloud();
+        };
     </script>
 </body>
 </html>
