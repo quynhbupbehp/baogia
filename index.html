@@ -54,8 +54,8 @@
 <body class="min-h-screen p-2 md:p-6 uppercase">
 
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-6 flex flex-col items-center">
-        <!-- THANH CÔNG CỤ & THỐNG KÊ -->
-        <div class="card-dark p-2.5 md:p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg w-full">
+        <!-- THANH CÔNG CỤ & THỐNG KÊ (CỐ ĐỊNH KHI CUỘN) -->
+        <div class="sticky top-2 z-40 card-dark p-2.5 md:p-4 rounded-2xl flex flex-col gap-2.5 shadow-xl w-full backdrop-blur-md bg-opacity-95">
             <div class="flex flex-col gap-2.5">
                 <!-- HÀNG 1: CÁC HÃNG & THÔNG TIN ẨN/HIỆN, VỐN -->
                 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2">
@@ -135,7 +135,7 @@
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse">
                     <thead>
-                        <tr id="desktop-table-header" class="bg-amber-600 text-white text-sm uppercase tracking-wider shadow-sm"></tr>
+                        <tr id="desktop-table-header" class="sticky top-[135px] z-30 bg-amber-600 text-white text-sm uppercase tracking-wider shadow-md"></tr>
                     </thead>
                     <tbody id="device-table-body" class="divide-y divide-gray-800/60 text-base"></tbody>
                 </table>
@@ -643,7 +643,6 @@
 
                     const zeroQtyClass = qtyVal === 0 ? 'yellow-pulse-row' : 'row-hover';
 
-                    // Web: Cỡ chữ SL tăng 20% (text-lg font-bold text-red-500)
                     if (isPrivacyMode) {
                         return `
                             <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
@@ -684,7 +683,6 @@
                 }).join('');
             }
 
-            // Mobile: Cỡ chữ SL tăng 20% (text-sm font-bold text-red-500)
             if (mobileList) {
                 mobileList.innerHTML = filtered.map((d) => {
                     const realIndex = devices.indexOf(d);
