@@ -446,7 +446,7 @@
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
                 
                 typeButtonsHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
-                typeButtonsMobileHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-[11px] font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
+                typeButtonsMobileHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
 
                 // Chỉ hiển thị các kiểu thuộc đúng linh kiện đó
                 types.forEach(t => {
@@ -456,7 +456,7 @@
                             ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
                         typeButtonsHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
-                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-[11px] font-semibold transition uppercase ${btnClass}">${t}</button>`;
+                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
                     }
                 });
             }
