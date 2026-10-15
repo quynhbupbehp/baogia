@@ -37,7 +37,7 @@
         /* Hiệu ứng tô màu xanh lá khi click vào dòng */
         .clicked-green-row {
             background-color: rgba(16, 185, 129, 0.35) !important;
-            transition: background-color 0.4s ease;
+            transition: background-color 0.3s ease;
         }
 
         @keyframes yellowBadgePulse {
@@ -294,6 +294,8 @@
         let names = [];
 
         let currentBrand = brands[0] || '', currentCategory = 'MÀN HÌNH', currentType = '', isPrivacyMode = false;
+        let activeRowElement = null;
+        let activeRowTimeout = null;
 
         function getColorHex(colorName) {
             if (!colorName) return '';
@@ -352,20 +354,28 @@
         }
 
         function handleRowClick(rowElement) {
-            // Nếu click vào nút bấm thao tác thì bỏ qua hiệu ứng tô màu hàng
             if (event.target.closest('button')) return;
             
-            // Xóa hiệu ứng cũ nếu có để reset thời gian 5s
-            rowElement.classList.remove('clicked-green-row');
-            void rowElement.offsetWidth; // Trigger reflow
-            rowElement.classList.add('clicked-green-row');
-
-            if (rowElement.timeoutId) {
-                clearTimeout(rowElement.timeoutId);
+            // Xóa hiệu ứng của hàng đang chọn trước đó (nếu có)
+            if (activeRowElement && activeRowElement !== rowElement) {
+                activeRowElement.classList.remove('clicked-green-row');
+            }
+            if (activeRowTimeout) {
+                clearTimeout(activeRowTimeout);
             }
 
-            rowElement.timeoutId = setTimeout(() => {
-                rowElement.classList.remove('clicked-green-row');
+            // Gán hiệu ứng cho hàng mới
+            activeRowElement = rowElement;
+            activeRowElement.classList.remove('clicked-green-row');
+            void activeRowElement.offsetWidth; // Trigger reflow
+            activeRowElement.classList.add('clicked-green-row');
+
+            // Thiết lập đếm ngược 5 giây tự động tắt
+            activeRowTimeout = setTimeout(() => {
+                if (activeRowElement) {
+                    activeRowElement.classList.remove('clicked-green-row');
+                    activeRowElement = null;
+                }
             }, 5000);
         }
 
@@ -483,7 +493,7 @@
                             ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400 shrink-0' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                         typeButtonsHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
-                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
+                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
                     }
                 });
             }
@@ -540,6 +550,9 @@
         }
 
         function renderTable() {
+            activeRowElement = null; // Reset trạng thái khi render lại bảng
+            if (activeRowTimeout) clearTimeout(activeRowTimeout);
+
             const tbody = document.getElementById('device-table-body');
             const mobileList = document.getElementById('device-mobile-list');
             const emptyState = document.getElementById('empty-state');
