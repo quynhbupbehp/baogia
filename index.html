@@ -18,6 +18,10 @@
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
+        /* Ẩn thanh cuộn ngang nhưng vẫn vuốt được mượt mà */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         @keyframes yellowRowPulse {
             0%, 100% {
                 background-color: rgba(234, 179, 8, 0.35);
@@ -105,9 +109,9 @@
 
                 <!-- PHẦN GIAO DIỆN MOBILE -->
                 <div class="flex xl:hidden flex-col gap-2 pt-2 border-t border-gray-800/80">
-                    <div class="flex flex-wrap items-center gap-1 relative w-full pt-1">
-                        <span class="text-xs font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
-                        <div id="main-cat-tabs-mobile" class="flex flex-wrap items-center gap-1"></div>
+                    <div class="flex items-center gap-1 relative w-full pt-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+                        <span class="text-xs font-bold text-amber-400 uppercase mr-0.5 shrink-0">LINH KIỆN:</span>
+                        <div id="main-cat-tabs-mobile" class="inline-flex items-center gap-1 shrink-0"></div>
                     </div>
 
                     <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
@@ -414,11 +418,12 @@
                 return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
 
+            // Đảm bảo tab trên mobile cho iPhone nằm trên 1 hàng duy nhất (thêm class shrink-0)
             const catHtmlMobile = displayCategories.map(c => {
                 const isSelected = c === currentCategory;
                 const btnClass = isSelected 
-                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
+                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400 shrink-0' 
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                 return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
 
@@ -442,8 +447,8 @@
 
                 const allTypeSelected = currentType === '';
                 const allTypeClass = allTypeSelected 
-                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
+                    ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400 shrink-0' 
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                 
                 typeButtonsHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
                 typeButtonsMobileHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
@@ -452,8 +457,8 @@
                     if (validTypesSet.has(t.toUpperCase())) {
                         const isSelected = currentType === t;
                         const btnClass = isSelected 
-                            ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400' 
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
+                            ? 'pink-pulse-selected text-white font-bold shadow-lg border border-pink-400 shrink-0' 
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                         typeButtonsHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
                         typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${t}</button>`;
                     }
@@ -476,7 +481,9 @@
             if (typeContainerMobile) {
                 if (isIphone && typeButtonsMobileHtml !== '') {
                     typeContainerMobile.style.display = 'flex';
-                    typeContainerMobile.innerHTML = `<span class="text-xs font-bold text-red-500 uppercase mr-0.5">KIỂU:</span>` + typeButtonsMobileHtml;
+                    // Ép phần kiểu trên mobile thành 1 hàng ngang duy nhất cuộn mượt
+                    typeContainerMobile.className = "flex items-center gap-1 w-full pt-1 overflow-x-auto no-scrollbar whitespace-nowrap";
+                    typeContainerMobile.innerHTML = `<span class="text-xs font-bold text-red-500 uppercase mr-0.5 shrink-0">KIỂU:</span>` + typeButtonsMobileHtml;
                 } else {
                     typeContainerMobile.style.display = 'none';
                     typeContainerMobile.innerHTML = '';
@@ -628,7 +635,7 @@
                 }).join('');
             }
 
-            // HIỂN THỊ MOBILE: CẬP NHẬT THEO YÊU CẦU
+            // HIỂN THỊ MOBILE
             if (mobileList) {
                 mobileList.innerHTML = filtered.map((d) => {
                     const qtyVal = parseInt(d.qty) || 0;
@@ -637,7 +644,6 @@
 
                     const zeroQtyClassMobile = qtyVal === 0 ? 'yellow-pulse-row px-2 rounded-xl' : '';
 
-                    // Kiểm tra điều kiện hiển thị linh kiện/kiểu cho mobile
                     let detailsHtml = '';
                     if (isIphone) {
                         detailsHtml = `
