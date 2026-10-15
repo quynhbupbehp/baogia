@@ -109,9 +109,10 @@
                         <span class="text-xs font-bold text-amber-400 uppercase mr-0.5">LINH KIỆN:</span>
                         <div id="main-cat-tabs-mobile" class="flex flex-wrap items-center gap-1"></div>
                     </div>
+
                     <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
 
-                    <div class="flex items-center justify-between gap-1.5 w-full pt-1">
+                    <div class="flex items-center justify-between gap-1.5 w-full">
                         <div class="relative flex-1">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -430,7 +431,6 @@
             let typeButtonsMobileHtml = '';
 
             if (isIphone) {
-                // Lấy các kiểu thực tế đã tồn tại trong devices của Hãng hiện tại và Linh kiện hiện tại
                 const validTypesSet = new Set();
                 devices.forEach(d => {
                     if ((d.brand || '').toUpperCase() === currentBrand.toUpperCase() &&
@@ -448,7 +448,6 @@
                 typeButtonsHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
                 typeButtonsMobileHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
 
-                // Chỉ hiển thị các kiểu thuộc đúng linh kiện đó
                 types.forEach(t => {
                     if (validTypesSet.has(t.toUpperCase())) {
                         const isSelected = currentType === t;
@@ -626,6 +625,7 @@
                 }).join('');
             }
 
+            // DỪNG LẠI Ở ĐÂY VÀ GIỮ NGUYÊN HOÀN TOÀN KHÔNG SỬA DANH SÁCH MOBILE GỐC
             if (mobileList) {
                 mobileList.innerHTML = filtered.map((d, index) => {
                     const realIndex = devices.indexOf(d);
@@ -738,14 +738,13 @@
                 document.getElementById('device-form').reset();
                 document.getElementById('device-brand').value = currentBrand;
                 document.getElementById('device-part').value = currentCategory;
-                document.getElementById('device-type').value = ''; // Không mặc định lưu kiểu cũ sang linh kiện khác
+                document.getElementById('device-type').value = '';
                 document.getElementById('device-qty').value = '1';
                 document.getElementById('modal-profit-preview').innerText = '0';
             }
         }
 
         function onModalPartChange() {
-            // Khi người dùng gõ hoặc chọn thay đổi linh kiện trong modal, nếu không phải đang ở chế độ sửa thì làm trống ô kiểu để tránh giữ kiểu cũ
             const index = parseInt(document.getElementById('device-index').value);
             if (index === -1) {
                 document.getElementById('device-type').value = '';
@@ -805,7 +804,7 @@
             closeModal();
             currentBrand = brand;
             currentCategory = part;
-            currentType = type; // Cập nhật luôn kiểu hiện tại để hiển thị đúng tab
+            currentType = type;
             initTabs();
             renderTable();
         }
