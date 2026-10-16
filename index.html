@@ -80,7 +80,7 @@
                         </div>
                     </div>
 
-                    <!-- HÀNG 2 (DESKTOP): LINH KIỆN + KIỂU + TÌM KIẾM + THÊM MỚI -->
+                    <!-- HÀNG 2 (DESKTOP): LINH KIỆN + KIỂU + TÌM KIẾM NHỎ GỌN + NÚT THÊM MỚI BÊN PHẢI -->
                     <div class="hidden xl:flex items-center justify-between gap-3 pt-2 border-t border-gray-800/80 w-full">
                         <div class="flex flex-col gap-2">
                             <div class="flex items-center gap-1.5 shrink-0">
@@ -90,19 +90,20 @@
                             <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
                         </div>
 
-                        <div class="relative flex-1 max-w-md">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
-                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            </span>
-                            <input type="text" id="search-input-desktop" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
-                                class="w-full pl-9 pr-9 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
-                            <button id="btn-clear-search-desktop" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
+                        <!-- Ô tìm kiếm + Nút Thêm mới nằm liền bên phải -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            <div class="relative w-64 md:w-72">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                </span>
+                                <input type="text" id="search-input-desktop" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
+                                    class="w-full pl-9 pr-9 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
+                                <button id="btn-clear-search-desktop" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
 
-                        <div class="shrink-0">
-                            <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-amber-600/35">
+                            <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-amber-600/35 shrink-0">
                                 <i class="fa-solid fa-plus text-xs"></i> THÊM MỚI
                             </button>
                         </div>
@@ -117,7 +118,7 @@
 
                         <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
 
-                        <div class="flex items-center justify-between gap-1.5 w-full">
+                        <div class="flex items-center justify-between gap-2 w-full">
                             <div class="relative flex-1">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -128,6 +129,10 @@
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
+                            
+                            <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1 shadow-lg shrink-0">
+                                <i class="fa-solid fa-plus text-[10px]"></i> THÊM MỚI
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -135,7 +140,7 @@
 
             <!-- TIÊU ĐỀ BẢNG CHO DESKTOP DÍNH NGAY PHÍA DƯỚI -->
             <div class="hidden md:block card-dark rounded-t-2xl overflow-hidden shadow-md">
-                <table class="w-full text-center border-collapse">
+                <table class="w-full text-center border-collapse table-fixed">
                     <thead>
                         <tr id="desktop-table-header" class="bg-amber-600 text-white text-sm uppercase tracking-wider"></tr>
                     </thead>
@@ -146,7 +151,7 @@
         <!-- BẢNG NỘI DUNG DỮ LIỆU CUỘN -->
         <div class="card-dark rounded-2xl md:rounded-t-none overflow-hidden shadow-xl w-full">
             <div class="hidden md:block overflow-x-auto">
-                <table class="w-full text-center border-collapse">
+                <table class="w-full text-center border-collapse table-fixed">
                     <tbody id="device-table-body" class="divide-y divide-gray-800/60 text-base"></tbody>
                 </table>
             </div>
@@ -290,7 +295,7 @@
         const db = firebase.firestore();
 
         let devices = [];
-        let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'KHÁC'];
+        let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'HÃNG KHÁC'];
         let categories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP', 'LƯNG'];
         let types = ['ZIN', 'GX', 'ZIN BÓC MÁY', 'ZIN HÃNG', 'OLED', 'LINH KIỆN'];
         let names = [];
@@ -611,23 +616,23 @@
             if (desktopHeader) {
                 if (isPrivacyMode) {
                     desktopHeader.innerHTML = `
-                        <th class="py-3 px-4 text-left w-1/4">TÊN MÁY</th>
-                        <th class="py-3 px-3 w-1/6">LINH KIỆN</th>
-                        <th class="py-3 px-3 w-1/6">KIỂU</th>
-                        <th class="py-3 px-3 w-1/6">GIÁ BÁN</th>
-                        <th class="py-3 px-3 w-1/12">SL</th>
-                        <th class="py-3 px-3 w-1/6">THAO TÁC</th>
+                        <th class="py-3 px-4 text-left w-[35%]">TÊN MÁY</th>
+                        <th class="py-3 px-3 w-[20%]">LINH KIỆN</th>
+                        <th class="py-3 px-3 w-[15%]">KIỂU</th>
+                        <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
+                        <th class="py-3 px-3 w-[5%]">SL</th>
+                        <th class="py-3 px-3 w-[10%]">THAO TÁC</th>
                     `;
                 } else {
                     desktopHeader.innerHTML = `
-                        <th class="py-3 px-4 text-left w-1/4">TÊN MÁY</th>
-                        <th class="py-3 px-3 w-1/6">LINH KIỆN</th>
-                        <th class="py-3 px-3 w-1/12">KIỂU</th>
-                        <th class="py-3 px-3 w-1/6">GIÁ BÁN</th>
-                        <th class="py-3 px-3 w-1/12">SL</th>
-                        <th class="py-3 px-3 w-1/6">THAO TÁC</th>
-                        <th class="py-3 px-3 w-1/12">GIÁ NHẬP</th>
-                        <th class="py-3 px-3 w-1/12">LÃI</th>
+                        <th class="py-3 px-4 text-left w-[28%]">TÊN MÁY</th>
+                        <th class="py-3 px-3 w-[16%]">LINH KIỆN</th>
+                        <th class="py-3 px-3 w-[10%]">KIỂU</th>
+                        <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
+                        <th class="py-3 px-3 w-[6%]">SL</th>
+                        <th class="py-3 px-3 w-[12%]">THAO TÁC</th>
+                        <th class="py-3 px-3 w-[7%]">GIÁ NHẬP</th>
+                        <th class="py-3 px-3 w-[6%]">LÃI</th>
                     `;
                 }
             }
@@ -656,12 +661,12 @@
                     if (isPrivacyMode) {
                         return `
                             <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                <td class="py-3 px-4 text-left w-1/4">${formattedNameHtml}</td>
-                                <td class="py-3 px-3 font-semibold text-emerald-400 w-1/6">${d.part}</td>
-                                <td class="py-3 px-3 text-indigo-300 font-medium w-1/6">${d.type || '---'}</td>
-                                <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500 w-1/6">${priceFormatted}</td>
-                                <td class="py-3 px-3 font-bold text-lg text-red-500 w-1/12" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                <td class="py-3 px-3 w-1/6">
+                                <td class="py-3 px-4 text-left w-[35%] overflow-hidden">${formattedNameHtml}</td>
+                                <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
+                                <td class="py-3 px-3 text-indigo-300 font-medium w-[15%]">${d.type || '---'}</td>
+                                <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500 w-[15%]">${priceFormatted}</td>
+                                <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                                <td class="py-3 px-3 w-[10%]">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                         <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -674,20 +679,20 @@
 
                     return `
                         <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                            <td class="py-3 px-4 text-left w-1/4">${formattedNameHtml}</td>
-                            <td class="py-3 px-3 font-semibold text-emerald-400 w-1/6">${d.part}</td>
-                            <td class="py-3 px-3 text-indigo-300 font-medium w-1/12">${d.type || '---'}</td>
-                            <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500 w-1/6">${priceFormatted}</td>
-                            <td class="py-3 px-3 font-bold text-lg text-red-500 w-1/12" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                            <td class="py-3 px-3 w-1/6">
+                            <td class="py-3 px-4 text-left w-[28%] overflow-hidden">${formattedNameHtml}</td>
+                            <td class="py-3 px-3 font-semibold text-emerald-400 w-[16%]">${d.part}</td>
+                            <td class="py-3 px-3 text-indigo-300 font-medium w-[10%]">${d.type || '---'}</td>
+                            <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-500 w-[15%]">${priceFormatted}</td>
+                            <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                            <td class="py-3 px-3 w-[12%]">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                     <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
                                     <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                                 </div>
                             </td>
-                            <td class="py-3 px-3 font-bold text-sm text-gray-300 w-1/12">${costFormatted}</td>
-                            <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-1/12">${profitFormatted}</td>
+                            <td class="py-3 px-3 font-bold text-sm text-gray-300 w-[7%]">${costFormatted}</td>
+                            <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[6%]">${profitFormatted}</td>
                         </tr>
                     `;
                 }).join('');
@@ -713,7 +718,7 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0 ml-auto">
-                                    <div class="text-sm text-red-500 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
+                                    <div class="text-sm text-white font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
                                     <div class="text-right shrink-0">
                                         <div class="text-base font-bold text-amber-500">${priceFormatted}</div>
                                     </div>
@@ -728,7 +733,7 @@
                                 ${formattedNameHtml}
                             </div>
                             <div class="flex items-center gap-3 shrink-0">
-                                <div class="text-sm text-red-500 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
+                                <div class="text-sm text-white font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
                                 <div class="text-right shrink-0">
                                     <div class="text-base font-bold text-amber-500">${priceFormatted}</div>
                                 </div>
@@ -874,10 +879,19 @@
 
         function duplicateDevice(index) {
             const d = devices[index];
-            const cloned = { ...d };
-            devices.unshift(cloned);
-            saveAllToCloud();
-            renderTable();
+            document.getElementById('device-index').value = '-1';
+            openModal(false);
+
+            document.getElementById('modal-title').innerText = 'THÊM BẢN SAO LINH KIỆN';
+            document.getElementById('device-brand').value = d.brand || '';
+            document.getElementById('device-name').value = d.name || '';
+            document.getElementById('device-part').value = d.part || '';
+            document.getElementById('device-type').value = d.type || '';
+            document.getElementById('device-price').value = d.price || '';
+            document.getElementById('device-cost').value = d.cost || '';
+            document.getElementById('device-qty').value = d.qty !== undefined ? d.qty : 1;
+            document.getElementById('device-color').value = d.color || '';
+            updateModalStats();
         }
 
         function deleteDevice(index) {
