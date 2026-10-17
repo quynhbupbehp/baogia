@@ -104,6 +104,21 @@
                             <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
                         </div>
 
+                        <!-- THANH BỘ LỌC RIÊNG CHO TAB NHẬP HÀNG -->
+                        <div id="import-filters-desktop" class="hidden items-center gap-4">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-bold text-emerald-400 uppercase shrink-0">NHÀ PHÂN PHỐI:</span>
+                                <select id="filter-supplier-desktop" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-44 md:w-48"></select>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-bold text-emerald-400 uppercase shrink-0">LINH KIỆN:</span>
+                                <select id="filter-import-cat-desktop" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-40 md:w-44"></select>
+                            </div>
+                            <button id="btn-delete-selected" onclick="deleteSelectedImportOrders()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition items-center gap-1 shadow shrink-0">
+                                <i class="fa-solid fa-trash text-xs"></i> XÓA ĐÃ CHỌN
+                            </button>
+                        </div>
+
                         <!-- Ô tìm kiếm + Nút Thêm mới -->
                         <div class="flex items-center gap-2 shrink-0">
                             <div class="relative w-64 md:w-72">
@@ -131,6 +146,23 @@
                         </div>
 
                         <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
+
+                        <!-- BỘ LỌC MOBILE CHO TAB NHẬP HÀNG -->
+                        <div id="import-filters-mobile" class="hidden flex-col gap-1.5 w-full pt-1">
+                            <div class="flex items-center justify-between gap-2 w-full">
+                                <div class="flex items-center gap-1 flex-1 min-w-0">
+                                    <span class="text-[10px] font-bold text-emerald-400 uppercase shrink-0">NHÀ PHÂN PHỐI:</span>
+                                    <select id="filter-supplier-mobile" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-1.5 py-1 text-[11px] font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-full min-w-0"></select>
+                                </div>
+                                <div class="flex items-center gap-1 flex-1 min-w-0">
+                                    <span class="text-[10px] font-bold text-emerald-400 uppercase shrink-0">LINH KIỆN:</span>
+                                    <select id="filter-import-cat-mobile" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-1.5 py-1 text-[11px] font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-full min-w-0"></select>
+                                </div>
+                            </div>
+                            <button id="btn-delete-selected-mobile" onclick="deleteSelectedImportOrders()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition items-center justify-center gap-1 shadow w-full">
+                                <i class="fa-solid fa-trash text-xs"></i> XÓA CÁC MỤC ĐÃ CHỌN
+                            </button>
+                        </div>
 
                         <div class="flex items-center justify-between gap-2 w-full">
                             <div class="relative flex-1">
@@ -294,7 +326,7 @@
         </div>
     </div>
 
-    <!-- MODAL NHẬP HÀNG (CÓ NÚT THÊM - SỬA - XÓA CHO NCC & LOẠI LK) -->
+    <!-- MODAL NHẬP HÀNG -->
     <div id="import-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="card-dark w-full max-w-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-gray-700 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeImportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -333,7 +365,6 @@
                     </div>
                 </div>
 
-                <!-- Danh sách tên linh kiện kèm nút + màu vàng to bên phải (Đã xóa placeholder) -->
                 <div>
                     <label class="block text-sm font-bold text-white mb-1">Tên linh kiện <span class="text-red-500">*</span></label>
                     <div id="import-items-container" class="space-y-2">
@@ -446,7 +477,7 @@
         }
 
         function handleRowClick(rowElement) {
-            if (event.target.closest('button') || event.target.closest('.qty-container')) return;
+            if (event.target.closest('button') || event.target.closest('.qty-container') || event.target.closest('input[type="checkbox"]')) return;
             
             if (activeRowElement && activeRowElement !== rowElement) {
                 activeRowElement.classList.remove('clicked-pink-row');
@@ -587,32 +618,45 @@
             const toolbarMobile = document.getElementById('toolbar-mobile-wrapper');
             const mainActionBtn = document.getElementById('main-action-btn');
             const mainActionBtnMobile = document.getElementById('main-action-btn-mobile');
+            const importFiltersDesktop = document.getElementById('import-filters-desktop');
+            const importFiltersMobile = document.getElementById('import-filters-mobile');
+            const categoriesFilterWrapper = document.getElementById('categories-filter-wrapper');
+            const mobileCatsContainer = document.getElementById('mobile-cats-container');
 
             if (isImportTab) {
-                document.getElementById('categories-filter-wrapper').style.display = 'none';
-                document.getElementById('mobile-cats-container').style.display = 'none';
+                categoriesFilterWrapper.style.display = 'none';
+                mobileCatsContainer.style.display = 'none';
                 document.getElementById('type-tabs-container-desktop').style.display = 'none';
                 document.getElementById('type-tabs-container-mobile').style.display = 'none';
                 
+                importFiltersDesktop.style.display = 'flex';
+                importFiltersMobile.style.display = 'flex';
+                updateImportFilterOptions();
+
                 if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> Nhập hàng`;
                 if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openImportModal()');
                 if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openImportModal()');
                 return;
-            } else if (currentBrand === 'HẾT HÀNG') {
-                document.getElementById('categories-filter-wrapper').style.display = 'none';
-                document.getElementById('mobile-cats-container').style.display = 'none';
-                document.getElementById('type-tabs-container-desktop').style.display = 'none';
-                document.getElementById('type-tabs-container-mobile').style.display = 'none';
-                if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> THÊM MỚI`;
-                if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openModal()');
-                if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openModal()');
-                return;
             } else {
-                document.getElementById('categories-filter-wrapper').style.display = 'flex';
-                document.getElementById('mobile-cats-container').style.display = 'flex';
-                if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> THÊM MỚI`;
-                if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openModal()');
-                if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openModal()');
+                importFiltersDesktop.style.display = 'none';
+                importFiltersMobile.style.display = 'none';
+
+                if (currentBrand === 'HẾT HÀNG') {
+                    categoriesFilterWrapper.style.display = 'none';
+                    mobileCatsContainer.style.display = 'none';
+                    document.getElementById('type-tabs-container-desktop').style.display = 'none';
+                    document.getElementById('type-tabs-container-mobile').style.display = 'none';
+                    if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> THÊM MỚI`;
+                    if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openModal()');
+                    if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openModal()');
+                    return;
+                } else {
+                    categoriesFilterWrapper.style.display = 'flex';
+                    mobileCatsContainer.style.display = 'flex';
+                    if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> THÊM MỚI`;
+                    if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openModal()');
+                    if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openModal()');
+                }
             }
 
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
@@ -703,6 +747,34 @@
                     typeContainerMobile.innerHTML = '';
                 }
             }
+        }
+
+        function updateImportFilterOptions() {
+            const supplierSelects = [document.getElementById('filter-supplier-desktop'), document.getElementById('filter-supplier-mobile')];
+            const catSelects = [document.getElementById('filter-import-cat-desktop'), document.getElementById('filter-import-cat-mobile')];
+
+            const currentSupplierVal = document.getElementById('filter-supplier-desktop')?.value || 'ALL';
+            const currentCatVal = document.getElementById('filter-import-cat-desktop')?.value || 'ALL';
+
+            const uniqueSuppliers = [...new Set(importOrders.map(o => (o.supplier || '').trim().toUpperCase()))].filter(Boolean);
+            const uniqueCats = [...new Set(importOrders.map(o => (o.category || '').trim().toUpperCase()))].filter(Boolean);
+
+            let supplierOptionsHtml = `<option value="ALL">TẤT CẢ (NHÀ PHÂN PHỐI)</option>` + uniqueSuppliers.map(s => `<option value="${s}">${s}</option>`).join('');
+            let catOptionsHtml = `<option value="ALL">TẤT CẢ (LINH KIỆN)</option>` + uniqueCats.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            supplierSelects.forEach(sel => {
+                if (sel) {
+                    sel.innerHTML = supplierOptionsHtml;
+                    sel.value = uniqueSuppliers.includes(currentSupplierVal) ? currentSupplierVal : 'ALL';
+                }
+            });
+
+            catSelects.forEach(sel => {
+                if (sel) {
+                    sel.innerHTML = catOptionsHtml;
+                    sel.value = uniqueCats.includes(currentCatVal) ? currentCatVal : 'ALL';
+                }
+            });
         }
 
         function formatMoney(amount) {
@@ -811,9 +883,16 @@
             let expandedImportRows = [];
 
             if (isImportTab) {
+                const selectedSupplier = document.getElementById('filter-supplier-desktop')?.value || 'ALL';
+                const selectedCat = document.getElementById('filter-import-cat-desktop')?.value || 'ALL';
+
                 importOrders.forEach((o, orderIdx) => {
                     const supplier = (o.supplier || '').trim().toUpperCase();
                     const category = (o.category || '').trim().toUpperCase();
+
+                    if (selectedSupplier !== 'ALL' && supplier !== selectedSupplier) return;
+                    if (selectedCat !== 'ALL' && category !== selectedCat) return;
+
                     if (o.items && o.items.length > 0) {
                         o.items.forEach(item => {
                             const itemName = (item || '').trim().toUpperCase();
@@ -829,6 +908,16 @@
                         });
                     }
                 });
+
+                const btnDelDesktop = document.getElementById('btn-delete-selected');
+                const btnDelMobile = document.getElementById('btn-delete-selected-mobile');
+                if (expandedImportRows.length > 0 && document.querySelectorAll('.import-checkbox:checked').length > 0) {
+                    if(btnDelDesktop) btnDelDesktop.style.display = 'flex';
+                    if(btnDelMobile) btnDelMobile.style.display = 'flex';
+                } else {
+                    if(btnDelDesktop) btnDelDesktop.style.display = 'none';
+                    if(btnDelMobile) btnDelMobile.style.display = 'none';
+                }
             } else {
                 filtered = devices.filter(d => {
                     const qtyVal = parseInt(d.qty) || 0;
@@ -889,10 +978,15 @@
             if (desktopHeader) {
                 if (isImportTab) {
                     desktopHeader.innerHTML = `
-                        <th class="py-3 px-4 text-left w-[35%]">NHÀ PHÂN PHỐI</th>
-                        <th class="py-3 px-3 w-[25%]">LOẠI LK</th>
-                        <th class="py-3 px-3 w-[30%] text-left">TÊN LINH KIỆN</th>
-                        <th class="py-3 px-3 w-[10%]">THAO TÁC</th>
+                        <th class="py-3 px-3 text-left w-[24%]">
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" id="select-all-import" onclick="toggleSelectAllImport(this)" class="w-4 h-4 rounded bg-gray-900 border-gray-700 text-emerald-600 focus:ring-0">
+                                <span class="text-xs">NHÀ PHÂN PHỐI</span>
+                            </label>
+                        </th>
+                        <th class="py-3 px-3 w-[26%]">LOẠI LINH KIỆN</th>
+                        <th class="py-3 px-4 w-[38%] text-left">TÊN LINH KIỆN</th>
+                        <th class="py-3 px-2 w-[12%] whitespace-nowrap text-center">THAO TÁC</th>
                     `;
                 } else if (isPrivacyMode) {
                     if (isIphone || isOutStockTab) {
@@ -902,7 +996,7 @@
                             <th class="py-3 px-3 w-[15%]">KIỂU</th>
                             <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
                             <th class="py-3 px-3 w-[5%]">SL</th>
-                            <th class="py-3 px-3 w-[10%]">THAO TÁC</th>
+                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center">THAO TÁC</th>
                         `;
                     } else {
                         desktopHeader.innerHTML = `
@@ -910,7 +1004,7 @@
                             <th class="py-3 px-3 w-[25%]">LINH KIỆN</th>
                             <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
                             <th class="py-3 px-3 w-[5%]">SL</th>
-                            <th class="py-3 px-3 w-[10%]">THAO TÁC</th>
+                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center">THAO TÁC</th>
                         `;
                     }
                 } else {
@@ -921,7 +1015,7 @@
                             <th class="py-3 px-3 w-[10%]">KIỂU</th>
                             <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
                             <th class="py-3 px-3 w-[6%]">SL</th>
-                            <th class="py-3 px-3 w-[12%]">THAO TÁC</th>
+                            <th class="py-3 px-3 w-[12%] whitespace-nowrap text-center">THAO TÁC</th>
                             <th class="py-3 px-3 w-[7%]">GIÁ NHẬP</th>
                             <th class="py-3 px-3 w-[6%]">LÃI</th>
                         `;
@@ -931,7 +1025,7 @@
                             <th class="py-3 px-3 w-[20%]">LINH KIỆN</th>
                             <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
                             <th class="py-3 px-3 w-[6%]">SL</th>
-                            <th class="py-3 px-3 w-[10%]">THAO TÁC</th>
+                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center">THAO TÁC</th>
                             <th class="py-3 px-3 w-[6%]">GIÁ NHẬP</th>
                             <th class="py-3 px-3 w-[5%]">LÃI</th>
                         `;
@@ -953,10 +1047,15 @@
                     tbody.innerHTML = expandedImportRows.map(row => {
                         return `
                             <tr class="row-hover transition">
-                                <td class="py-3 px-4 text-left font-bold text-white w-[35%]">${row.supplier}</td>
-                                <td class="py-3 px-3 text-emerald-400 font-semibold w-[25%]"><span class="px-2 py-0.5 rounded bg-gray-900 border border-gray-800">${row.category}</span></td>
-                                <td class="py-3 px-3 text-amber-400 font-bold w-[30%] text-left">${row.item}</td>
-                                <td class="py-3 px-3 w-[10%]">
+                                <td class="py-3 px-3 text-left font-bold text-white w-[24%]">
+                                    <div class="flex items-center gap-1.5 overflow-hidden">
+                                        <input type="checkbox" value="${row.realIndex}" data-item="${row.item}" onchange="handleImportCheckboxChange()" class="import-checkbox w-4 h-4 rounded bg-gray-900 border-gray-700 text-emerald-600 focus:ring-0 shrink-0">
+                                        <span class="truncate text-xs" title="${row.supplier}">${row.supplier}</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3 text-emerald-400 font-semibold w-[26%]"><span class="px-2 py-0.5 rounded bg-gray-900 border border-gray-800 text-xs">${row.category}</span></td>
+                                <td class="py-3 px-4 text-amber-400 font-bold w-[38%] text-left">${row.item}</td>
+                                <td class="py-3 px-2 w-[12%] whitespace-nowrap">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <button onclick="editImportOrder(${row.realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                         <button onclick="duplicateImportOrder(${row.realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -987,7 +1086,7 @@
                                         <td class="py-3 px-3 text-indigo-300 font-medium w-[15%]" style="font-weight: bold;">${d.type || '---'}</td>
                                         <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                         <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
-                                        <td class="py-3 px-3 w-[10%]">
+                                        <td class="py-3 px-3 w-[10%] whitespace-nowrap">
                                             <div class="flex items-center justify-center gap-1.5">
                                                 <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                                 <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -1003,7 +1102,7 @@
                                         <td class="py-3 px-3 font-semibold text-emerald-400 w-[25%]">${d.part}</td>
                                         <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                         <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                        <td class="py-3 px-3 w-[10%]">
+                                        <td class="py-3 px-3 w-[10%] whitespace-nowrap">
                                             <div class="flex items-center justify-center gap-1.5">
                                                 <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                                 <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -1023,7 +1122,7 @@
                                     <td class="py-3 px-3 text-indigo-300 font-medium w-[10%]" style="font-weight: bold;">${d.type || '---'}</td>
                                     <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                     <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
-                                    <td class="py-3 px-3 w-[12%]">
+                                    <td class="py-3 px-3 w-[12%] whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1.5">
                                             <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                             <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -1041,7 +1140,7 @@
                                     <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
                                     <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                     <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                    <td class="py-3 px-3 w-[10%]">
+                                    <td class="py-3 px-3 w-[10%] whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1.5">
                                             <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                             <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -1064,9 +1163,12 @@
                     mobileList.innerHTML = expandedImportRows.map(row => {
                         return `
                             <div class="py-3 px-2 flex items-center justify-between gap-2 row-hover rounded-xl border-b border-gray-800/40">
-                                <div class="flex flex-col min-w-0 flex-1">
-                                    <div class="text-sm font-bold text-white">${row.supplier} - <span class="text-emerald-400">${row.category}</span></div>
-                                    <div class="text-xs text-amber-400 font-bold mt-0.5">${row.item}</div>
+                                <div class="flex items-center gap-2 min-w-0 flex-1">
+                                    <input type="checkbox" value="${row.realIndex}" data-item="${row.item}" onchange="handleImportCheckboxChange()" class="import-checkbox w-4 h-4 rounded bg-gray-900 border-gray-700 text-emerald-600 focus:ring-0 shrink-0">
+                                    <div class="flex flex-col min-w-0 flex-1">
+                                        <div class="text-sm font-bold text-white">${row.supplier} - <span class="text-emerald-400">${row.category}</span></div>
+                                        <div class="text-xs text-amber-400 font-bold mt-0.5">${row.item}</div>
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-1.5 shrink-0">
                                     <button onclick="editImportOrder(${row.realIndex})" class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs"><i class="fa-solid fa-pen"></i></button>
@@ -1119,6 +1221,65 @@
                         }
                     }).join('');
                 }
+            }
+        }
+
+        function toggleSelectAllImport(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.import-checkbox');
+            checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+            handleImportCheckboxChange();
+        }
+
+        function handleImportCheckboxChange() {
+            const checkedBoxes = document.querySelectorAll('.import-checkbox:checked');
+            const btnDelDesktop = document.getElementById('btn-delete-selected');
+            const btnDelMobile = document.getElementById('btn-delete-selected-mobile');
+            if (checkedBoxes.length > 0) {
+                if(btnDelDesktop) btnDelDesktop.style.display = 'flex';
+                if(btnDelMobile) btnDelMobile.style.display = 'flex';
+            } else {
+                if(btnDelDesktop) btnDelDesktop.style.display = 'none';
+                if(btnDelMobile) btnDelMobile.style.display = 'none';
+            }
+        }
+
+        function deleteSelectedImportOrders() {
+            const checkedBoxes = document.querySelectorAll('.import-checkbox:checked');
+            if (checkedBoxes.length === 0) return;
+
+            if (confirm(`BẠN CÓ CHẮC MUỐN XÓA ${checkedBoxes.length} MỤC ĐÃ CHỌN KHÔNG?`)) {
+                const ordersToUpdateMap = {}; 
+                const ordersToDeleteCompletely = new Set();
+
+                checkedBoxes.forEach(cb => {
+                    const orderIdx = parseInt(cb.value);
+                    const itemName = cb.getAttribute('data-item');
+                    if (!importOrders[orderIdx]) return;
+
+                    if (!ordersToUpdateMap[orderIdx]) {
+                        ordersToUpdateMap[orderIdx] = new Set(importOrders[orderIdx].items);
+                    }
+                    ordersToUpdateMap[orderIdx].delete(itemName);
+
+                    if (ordersToUpdateMap[orderIdx].size === 0) {
+                        ordersToDeleteCompletely.add(orderIdx);
+                    }
+                });
+
+                const newImportOrders = [];
+                importOrders.forEach((order, idx) => {
+                    if (ordersToDeleteCompletely.has(idx)) {
+                        return; 
+                    }
+                    if (ordersToUpdateMap[idx]) {
+                        order.items = Array.from(ordersToUpdateMap[idx]);
+                    }
+                    newImportOrders.push(order);
+                });
+
+                importOrders = newImportOrders;
+                saveAllToCloud();
+                renderTable();
             }
         }
 
