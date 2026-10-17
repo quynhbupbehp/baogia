@@ -675,7 +675,7 @@
                             ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400 shrink-0' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                         typeButtonsHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${btnClass}">${t}</button>`;
-                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${btnClass}">${btnClass}">${t}</button>`;
+                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${btnClass}">${t}</button>`;
                     }
                 });
             }
@@ -808,7 +808,7 @@
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
 
             let filtered = [];
-            let expandedImportRows = []; // Dùng riêng cho tab Nhập hàng (mỗi linh kiện 1 hàng)
+            let expandedImportRows = [];
 
             if (isImportTab) {
                 importOrders.forEach((o, orderIdx) => {
