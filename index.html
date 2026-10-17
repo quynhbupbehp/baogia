@@ -318,7 +318,8 @@
             if (!colorName) return '';
             const c = colorName.trim().toUpperCase();
             if (c.includes('ĐEN') || c.includes('BLACK')) return '#111827; border: 1px solid #4b5563';
-            if (c.includes('TRẮNG') || c.includes('WHITE')) return '#f9fafb';
+            // Khắc phục màu trắng cho rõ nét trên nền tối của web: thêm border xám rõ ràng
+            if (c.includes('TRẮNG') || c.includes('WHITE')) return '#ffffff; border: 2px solid #9ca3af';
             if (c.includes('ĐỎ') || c.includes('RED')) return '#ef4444';
             if (c.includes('VÀNG') || c.includes('GOLD') || c.includes('YELLOW')) return '#eab308';
             if (c.includes('XANH') || c.includes('BLUE') || c.includes('GREEN')) return '#3b82f6';
@@ -589,74 +590,61 @@
             renderTable();
         }
 
-        // HÀM SẮP XẾP CHUẨN RIÊNG CHO IPHONE THEO ĐÚNG THỨ TỰ THỰC TẾ
         function getIphoneSortWeight(name) {
             const clean = name.replace(/\s+/g, '').toUpperCase();
             
-            // Thứ tự ưu tiên dòng 5
             if (clean.includes('5G')) return 50;
             if (clean.includes('5S')) return 51;
             if (clean.includes('5SE') || (clean.includes('SE') && clean.includes('5'))) return 52;
 
-            // Thứ tự ưu tiên dòng 6
             if (clean.includes('6PLUS')) return 62;
             if (clean.includes('6SPLUS')) return 64;
             if (clean.includes('6S')) return 63;
             if (clean.includes('6G') || clean === '6') return 61;
 
-            // Thứ tự ưu tiên dòng 7
             if (clean.includes('7PLUS')) return 72;
             if (clean.includes('7')) return 71;
 
-            // Thứ tự ưu tiên dòng 8
             if (clean.includes('8PLUS')) return 82;
             if (clean.includes('8')) return 81;
 
-            // Dòng SE (2020 trở đi)
             if (clean.includes('SE')) return 85;
 
-            // Dòng X series
             if (clean.includes('XSMAX')) return 93;
             if (clean.includes('XS')) return 92;
             if (clean.includes('XR')) return 91;
             if (clean === 'X' || clean.startsWith('X-')) return 90;
 
-            // Dòng 11 series
             if (clean.includes('11PROMAX')) return 113;
             if (clean.includes('11PRO')) return 112;
             if (clean.includes('11')) return 111;
 
-            // Dòng 12 series
             if (clean.includes('12PROMAX')) return 124;
             if (clean.includes('12PRO')) return 123;
             if (clean.includes('12MINI')) return 122;
             if (clean.includes('12')) return 121;
 
-            // Dòng 13 series
             if (clean.includes('13PROMAX')) return 134;
             if (clean.includes('13PRO')) return 133;
             if (clean.includes('13MINI')) return 132;
             if (clean.includes('13')) return 131;
 
-            // Dòng 14 series
             if (clean.includes('14PROMAX')) return 144;
             if (clean.includes('14PRO')) return 143;
             if (clean.includes('14PLUS')) return 142;
             if (clean.includes('14')) return 141;
 
-            // Dòng 15 series
             if (clean.includes('15PROMAX')) return 154;
             if (clean.includes('15PRO')) return 153;
             if (clean.includes('15PLUS')) return 152;
             if (clean.includes('15')) return 151;
 
-            // Dòng 16 series
             if (clean.includes('16PROMAX')) return 164;
             if (clean.includes('16PRO')) return 163;
             if (clean.includes('16PLUS')) return 162;
             if (clean.includes('16')) return 161;
 
-            return 999; // Các dòng khác đẩy xuống cuối
+            return 999;
         }
 
         function renderTable() {
@@ -687,7 +675,6 @@
                 return matchBrand && matchCategory && matchType && matchKeyword;
             });
 
-            // SẮP XẾP: NẾU LÀ TAB IPHONE SẼ DÙNG THỨ TỰ CHUẨN, CÁC TAB KHÁC SẮP XẾP A-Z
             filtered.sort((a, b) => {
                 const nameA = (a.name || '').trim();
                 const nameB = (b.name || '').trim();
@@ -1086,7 +1073,7 @@
                 }
             } else if (action === 'edit') {
                 if (!val) { alert(`VUI LÒNG NHẬP HOẶC CHỌN ${labelName} CẦN SỬA!`); return; }
-                const oldVal = prompt(`NHẬP TÊN MỚI THAY THẾ CHO "${val}":`);
+                const oldVal = prompt(`NHẬP TÊN MỚI THAY THẾ CHO "${val}":`, val);
                 if (oldVal) {
                     const newVal = oldVal.trim().toUpperCase();
                     const idx = listRef.indexOf(val);
