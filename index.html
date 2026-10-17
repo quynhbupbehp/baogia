@@ -303,14 +303,13 @@
         let currentBrand = brands[0] || '', currentCategory = 'MÀN HÌNH', currentType = '', isPrivacyMode = false;
         let activeRowElement = null;
         let activeRowTimeout = null;
-        let activeInlineQtyIndex = null; // Lưu vị trí đang mở chỉnh sửa số lượng
+        let activeInlineQtyIndex = null;
 
-        // Đóng hộp chỉnh sửa số lượng nhanh khi bấm ra ngoài bảng
         document.addEventListener('click', function(event) {
             if (activeInlineQtyIndex !== null) {
                 const container = document.getElementById(`inline-qty-container-${activeInlineQtyIndex}`);
                 if (container && !container.contains(event.target)) {
-                    renderTable(); // Tải lại bảng để đóng hộp chỉnh sửa
+                    renderTable();
                 }
             }
         });
@@ -590,6 +589,76 @@
             renderTable();
         }
 
+        // HÀM SẮP XẾP CHUẨN RIÊNG CHO IPHONE THEO ĐÚNG THỨ TỰ THỰC TẾ
+        function getIphoneSortWeight(name) {
+            const clean = name.replace(/\s+/g, '').toUpperCase();
+            
+            // Thứ tự ưu tiên dòng 5
+            if (clean.includes('5G')) return 50;
+            if (clean.includes('5S')) return 51;
+            if (clean.includes('5SE') || (clean.includes('SE') && clean.includes('5'))) return 52;
+
+            // Thứ tự ưu tiên dòng 6
+            if (clean.includes('6PLUS')) return 62;
+            if (clean.includes('6SPLUS')) return 64;
+            if (clean.includes('6S')) return 63;
+            if (clean.includes('6G') || clean === '6') return 61;
+
+            // Thứ tự ưu tiên dòng 7
+            if (clean.includes('7PLUS')) return 72;
+            if (clean.includes('7')) return 71;
+
+            // Thứ tự ưu tiên dòng 8
+            if (clean.includes('8PLUS')) return 82;
+            if (clean.includes('8')) return 81;
+
+            // Dòng SE (2020 trở đi)
+            if (clean.includes('SE')) return 85;
+
+            // Dòng X series
+            if (clean.includes('XSMAX')) return 93;
+            if (clean.includes('XS')) return 92;
+            if (clean.includes('XR')) return 91;
+            if (clean === 'X' || clean.startsWith('X-')) return 90;
+
+            // Dòng 11 series
+            if (clean.includes('11PROMAX')) return 113;
+            if (clean.includes('11PRO')) return 112;
+            if (clean.includes('11')) return 111;
+
+            // Dòng 12 series
+            if (clean.includes('12PROMAX')) return 124;
+            if (clean.includes('12PRO')) return 123;
+            if (clean.includes('12MINI')) return 122;
+            if (clean.includes('12')) return 121;
+
+            // Dòng 13 series
+            if (clean.includes('13PROMAX')) return 134;
+            if (clean.includes('13PRO')) return 133;
+            if (clean.includes('13MINI')) return 132;
+            if (clean.includes('13')) return 131;
+
+            // Dòng 14 series
+            if (clean.includes('14PROMAX')) return 144;
+            if (clean.includes('14PRO')) return 143;
+            if (clean.includes('14PLUS')) return 142;
+            if (clean.includes('14')) return 141;
+
+            // Dòng 15 series
+            if (clean.includes('15PROMAX')) return 154;
+            if (clean.includes('15PRO')) return 153;
+            if (clean.includes('15PLUS')) return 152;
+            if (clean.includes('15')) return 151;
+
+            // Dòng 16 series
+            if (clean.includes('16PROMAX')) return 164;
+            if (clean.includes('16PRO')) return 163;
+            if (clean.includes('16PLUS')) return 162;
+            if (clean.includes('16')) return 161;
+
+            return 999; // Các dòng khác đẩy xuống cuối
+        }
+
         function renderTable() {
             activeRowElement = null;
             activeInlineQtyIndex = null;
@@ -616,6 +685,21 @@
                 const matchKeyword = !keyword || keyword.split(' ').every(k => fullSearchStr.includes(k));
 
                 return matchBrand && matchCategory && matchType && matchKeyword;
+            });
+
+            // SẮP XẾP: NẾU LÀ TAB IPHONE SẼ DÙNG THỨ TỰ CHUẨN, CÁC TAB KHÁC SẮP XẾP A-Z
+            filtered.sort((a, b) => {
+                const nameA = (a.name || '').trim();
+                const nameB = (b.name || '').trim();
+
+                if (isIphone) {
+                    const weightA = getIphoneSortWeight(nameA);
+                    const weightB = getIphoneSortWeight(nameB);
+                    if (weightA !== weightB) {
+                        return weightA - weightB;
+                    }
+                }
+                return nameA.localeCompare(nameB, 'vi', { numeric: true });
             });
 
             if (rowCountEl) rowCountEl.innerText = filtered.length;
@@ -804,9 +888,6 @@
                             <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}" onclick="handleRowClick(this)">
                                 <div class="flex items-center gap-2 min-w-0 flex-1">
                                     ${formattedNameHtml}
-                                    <div class="flex items-center gap-1 text-xs text-gray-400 shrink-0">
-                                        <span class="text-emerald-400 font-semibold">${d.part}</span>
-                                    </div>
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0 ml-auto">
                                     <div class="text-sm text-red-500 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
