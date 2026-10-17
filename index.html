@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="color-scheme" content="dark">
-    <title>BÁO GIÁ SỬA CHỮA</title>
+    <title>BÁO GIÁ SỬA CHỮA & NHẬP HÀNG</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -50,18 +50,31 @@
             }
         }
         .yellow-pulse-selected { animation: yellowSelectionPulse 1.6s ease-in-out infinite; color: #000 !important; font-weight: bold; }
+
+        /* Animation nháy nháy màu tím cho HẾT HÀNG & NHẬP HÀNG */
+        @keyframes purpleSelectionPulse {
+            0%, 100% {
+                background-color: rgba(168, 85, 247, 0.95);
+                box-shadow: 0 0 14px rgba(168, 85, 247, 0.7);
+            }
+            50% {
+                background-color: rgba(168, 85, 247, 0.4);
+                box-shadow: 0 0 4px rgba(168, 85, 247, 0.2);
+            }
+        }
+        .purple-pulse-selected { animation: purpleSelectionPulse 1.6s ease-in-out infinite; color: #fff !important; font-weight: bold; }
     </style>
 </head>
 <body class="min-h-screen p-2 md:p-6 uppercase">
 
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4 flex flex-col items-center">
         
-        <!-- CỤM CỐ ĐỊNH KHI CUỘN (GỒM CẢ THANH CÔNG CỤ + TIÊU ĐỀ BẢNG) -->
+        <!-- CỤM CỐ ĐỊNH KHI CUỘN -->
         <div class="sticky top-0 z-40 w-full flex flex-col gap-2 pt-2 bg-[#0b0f19]">
             <!-- THANH CÔNG CỤ & THỐNG KÊ -->
             <div class="card-dark p-2.5 md:p-4 rounded-2xl flex flex-col gap-2.5 shadow-xl w-full">
                 <div class="flex flex-col gap-2.5">
-                    <!-- HÀNG 1: CÁC HÃNG & THÔNG TIN ẨN/HIỆN, VỐN -->
+                    <!-- HÀNG 1: CÁC HÃNG, TAB HẾT HÀNG, NHẬP HÀNG -->
                     <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2">
                         <div class="flex flex-wrap items-center gap-1 overflow-x-auto pb-1 xl:pb-0" id="brand-tabs"></div>
 
@@ -70,7 +83,7 @@
                                 <i class="fa-solid fa-eye text-xs" id="privacy-icon"></i>
                             </button>
                             <div id="cloud-status" class="flex w-8 h-8 bg-gray-800 rounded-xl border border-gray-700 items-center justify-center shrink-0" title="Đang kết nối...">
-                                <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-xs"></i>
+                                <i class="fa-solid fa-cloud text-amber-400 text-xs"></i>
                             </div>
                             <div class="flex items-center gap-1 bg-gray-900 px-2 py-1 rounded-xl border border-gray-800 shrink-0">
                                 <div>
@@ -81,9 +94,9 @@
                         </div>
                     </div>
 
-                    <!-- HÀNG 2 (DESKTOP): LINH KIỆN + KIỂU + TÌM KIẾM NHỎ GỌN + NÚT THÊM MỚI BÊN PHẢI -->
-                    <div class="hidden xl:flex items-center justify-between gap-3 pt-2 border-t border-gray-800/80 w-full">
-                        <div class="flex flex-col gap-2">
+                    <!-- HÀNG 2 (DESKTOP): BỘ LỌC LINH KIỆN & TÌM KIẾM / THÊM MỚI -->
+                    <div class="hidden xl:flex items-center justify-between gap-3 pt-2 border-t border-gray-800/80 w-full" id="toolbar-row-2">
+                        <div class="flex flex-col gap-2" id="categories-filter-wrapper">
                             <div class="flex items-center gap-1.5 shrink-0">
                                 <span class="text-sm font-bold text-amber-400 uppercase mr-1">LINH KIỆN:</span>
                                 <div id="main-cat-tabs-desktop" class="flex items-center gap-1"></div>
@@ -91,7 +104,7 @@
                             <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
                         </div>
 
-                        <!-- Ô tìm kiếm + Nút Thêm mới nằm liền bên phải -->
+                        <!-- Ô tìm kiếm + Nút Thêm mới -->
                         <div class="flex items-center gap-2 shrink-0">
                             <div class="relative w-64 md:w-72">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
@@ -104,15 +117,15 @@
                                 </button>
                             </div>
 
-                            <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-amber-600/35 shrink-0">
+                            <button id="main-action-btn" onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-amber-600/35 shrink-0">
                                 <i class="fa-solid fa-plus text-xs"></i> THÊM MỚI
                             </button>
                         </div>
                     </div>
 
                     <!-- PHẦN GIAO DIỆN MOBILE -->
-                    <div class="flex xl:hidden flex-col gap-2 pt-2 border-t border-gray-800/80">
-                        <div class="flex items-center gap-1 relative w-full pt-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+                    <div class="flex xl:hidden flex-col gap-2 pt-2 border-t border-gray-800/80" id="toolbar-mobile-wrapper">
+                        <div id="mobile-cats-container" class="flex items-center gap-1 relative w-full pt-1 overflow-x-auto no-scrollbar whitespace-nowrap">
                             <span class="text-xs font-bold text-amber-400 uppercase mr-0.5 shrink-0">LINH KIỆN:</span>
                             <div id="main-cat-tabs-mobile" class="inline-flex items-center gap-1 shrink-0"></div>
                         </div>
@@ -131,7 +144,7 @@
                                 </button>
                             </div>
                             
-                            <button onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white w-9 h-8 rounded-xl text-xs font-medium transition flex items-center justify-center shadow-lg shrink-0" title="THÊM MỚI">
+                            <button id="main-action-btn-mobile" onclick="openModal()" class="bg-amber-600 hover:bg-amber-500 text-white w-9 h-8 rounded-xl text-xs font-medium transition flex items-center justify-center shadow-lg shrink-0" title="THÊM MỚI">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                         </div>
@@ -139,7 +152,7 @@
                 </div>
             </div>
 
-            <!-- TIÊU ĐỀ BẢNG CHO DESKTOP DÍNH NGAY PHÍA DƯỚI -->
+            <!-- TIÊU ĐỀ BẢNG CHO DESKTOP -->
             <div class="hidden md:block card-dark rounded-t-2xl overflow-hidden shadow-md">
                 <table class="w-full text-center border-collapse table-fixed">
                     <thead>
@@ -153,18 +166,18 @@
         <div class="card-dark rounded-2xl md:rounded-t-none overflow-hidden shadow-xl w-full">
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-center border-collapse table-fixed">
-                    <tbody id="device-table-body" class="divide-y divide-gray-800/60 text-base"></tbody>
+                    <tbody id="device-table-body" class="text-base"></tbody>
                 </table>
             </div>
 
-            <div class="md:hidden divide-y divide-gray-800/40 px-2" id="device-mobile-list"></div>
+            <div class="md:hidden px-2" id="device-mobile-list"></div>
 
             <div id="empty-state" class="hidden text-center py-12 text-gray-500">
                 <i class="fa-solid fa-box-open text-3xl mb-2"></i>
-                <p class="text-sm">KHÔNG TÌM THẤY THIẾT BỊ NÀO PHÙ HỢP.</p>
+                <p class="text-sm">KHÔNG TÌM THẤY DỮ LIỆU NÀO PHÙ HỢP.</p>
             </div>
 
-            <!-- PHẦN HIỂN THỊ SỐ LƯỢNG DÒNG Ở CUỐI TRANG -->
+            <!-- PHẦN HIỂN THỊ SỐ LƯỢNG DÒNG -->
             <div class="px-4 py-3 bg-gray-900/60 border-t border-gray-800 flex justify-between items-center text-xs md:text-sm text-gray-400">
                 <span>TỔNG SỐ DÒNG: <strong id="row-count" class="text-amber-400 font-bold">0</strong></span>
                 <span class="text-[11px] text-gray-500">KIM CHI MOBILE</span>
@@ -172,7 +185,7 @@
         </div>
     </div>
 
-    <!-- MODAL THÊM / SỬA -->
+    <!-- MODAL THÊM / SỬA BÁO GIÁ LINH KIỆN -->
     <div id="device-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="card-dark w-full max-w-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-gray-700 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3">
@@ -181,7 +194,6 @@
             </div>
             <form id="device-form" onsubmit="saveDevice(event)" class="space-y-3">
                 <input type="hidden" id="device-index" value="-1">
-                <input type="hidden" id="device-id">
 
                 <div>
                     <label class="block text-sm font-bold text-amber-400 uppercase mb-1">HÃNG</label>
@@ -282,6 +294,66 @@
         </div>
     </div>
 
+    <!-- MODAL NHẬP HÀNG (CÓ NÚT THÊM - SỬA - XÓA CHO NCC & LOẠI LK) -->
+    <div id="import-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="card-dark w-full max-w-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-gray-700 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeImportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="mb-4">
+                <h3 class="text-lg md:text-xl font-bold text-white uppercase">Nhập hàng</h3>
+            </div>
+            
+            <form id="import-form" onsubmit="saveImportOrder(event)" class="space-y-4">
+                <input type="hidden" id="import-index" value="-1">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-white mb-1">Nhà phân phối <span class="text-red-500">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" id="import-supplier" required list="supplier-suggestions" placeholder="" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase">
+                            <datalist id="supplier-suggestions"></datalist>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="handleImportEntity('suppliers', 'add')" class="w-6 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="THÊM NHÀ PHÂN PHỐI"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleImportEntity('suppliers', 'edit')" class="w-6 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="SỬA NHÀ PHÂN PHỐI"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                <button type="button" onclick="handleImportEntity('suppliers', 'delete')" class="w-6 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="XÓA NHÀ PHÂN PHỐI"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-white mb-1">Loại linh kiện <span class="text-red-500">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" id="import-category" required list="import-category-suggestions" placeholder="" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase">
+                            <datalist id="import-category-suggestions"></datalist>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="handleImportEntity('categories', 'add')" class="w-6 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="THÊM LOẠI LINH KIỆN"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" onclick="handleImportEntity('categories', 'edit')" class="w-6 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="SỬA LOẠI LINH KIỆN"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                <button type="button" onclick="handleImportEntity('categories', 'delete')" class="w-6 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center font-bold text-xs shadow" title="XÓA LOẠI LINH KIỆN"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danh sách tên linh kiện kèm nút + màu vàng to bên phải -->
+                <div>
+                    <label class="block text-sm font-bold text-white mb-1">Tên linh kiện <span class="text-red-500">*</span></label>
+                    <div id="import-items-container" class="space-y-2">
+                        <div class="flex items-center gap-2 item-row">
+                            <input type="text" required placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                            <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-800 pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeImportModal()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700 transition">Hủy</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/35 flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus text-xs"></i> <span id="import-modal-submit-text">Lưu phiếu nhập</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBLC4dPLEP84yj6vkvf--DM8u_dN9YPJEs",
@@ -296,15 +368,18 @@
         const db = firebase.firestore();
 
         let devices = [];
+        let importOrders = []; 
         let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'HÃNG KHÁC'];
         let categories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP', 'LƯNG'];
         let types = ['ZIN', 'GX', 'ZIN BÓC MÁY', 'ZIN HÃNG', 'OLED', 'LINH KIỆN'];
         let names = [];
+        let suppliers = [];
 
         let currentBrand = brands[0] || '', currentCategory = 'MÀN HÌNH', currentType = '', isPrivacyMode = false;
         let activeRowElement = null;
         let activeRowTimeout = null;
         let activeInlineQtyIndex = null;
+        let hasCleanedImportOrders = false;
 
         document.addEventListener('click', function(event) {
             if (activeInlineQtyIndex !== null) {
@@ -331,7 +406,8 @@
 
         function renderDeviceNames(nameStr, colorStr, isMobile = false) {
             if (!nameStr) return '';
-            const isIphone = currentBrand.toUpperCase() === 'IPHONE';
+            const isSpecialTab = (currentBrand === 'HẾT HÀNG' || currentBrand === 'NHẬP HÀNG');
+            const isIphone = isSpecialTab ? true : (currentBrand.toUpperCase() === 'IPHONE');
             
             let processedName = nameStr;
             if (!isIphone) {
@@ -393,6 +469,9 @@
         }
 
         function enableInlineQtyEdit(containerEl, realIndex) {
+            const isSpecialTab = (currentBrand === 'HẾT HÀNG' || currentBrand === 'NHẬP HÀNG');
+            if (isSpecialTab) return;
+
             activeInlineQtyIndex = realIndex;
             const currentQty = parseInt(devices[realIndex].qty) || 0;
             containerEl.innerHTML = `
@@ -435,6 +514,15 @@
                     if (data.categories) categories = data.categories;
                     if (data.types) types = data.types;
                     if (data.names) names = data.names;
+                    if (data.suppliers) suppliers = data.suppliers;
+
+                    if (!hasCleanedImportOrders) {
+                        importOrders = [];
+                        hasCleanedImportOrders = true;
+                        saveAllToCloud();
+                    } else {
+                        importOrders = data.importOrders || [];
+                    }
                 } else {
                     saveAllToCloud();
                 }
@@ -449,7 +537,7 @@
             }, (err) => {
                 console.error("Lỗi Firestore:", err);
                 if(statusEl) {
-                    statusEl.setAttribute('title', 'Lỗi quyền Firebase');
+                    statusEl.setAttribute('title', 'Lỗi kết nối');
                     statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>`;
                 }
             });
@@ -458,7 +546,7 @@
         async function saveAllToCloud() {
             try {
                 await db.collection("store_data").doc("main").set({
-                    devices, brands, categories, types, names
+                    devices, importOrders, brands, categories, types, names, suppliers
                 });
             } catch (e) {
                 console.error("Lỗi lưu Cloud:", e);
@@ -466,13 +554,66 @@
         }
 
         function initTabs() {
-            document.getElementById('brand-tabs').innerHTML = brands.map(b => {
+            const isImportTab = currentBrand === 'NHẬP HÀNG';
+            const allBrandsToShow = [...brands, 'HẾT HÀNG', 'NHẬP HÀNG'];
+
+            document.getElementById('brand-tabs').innerHTML = allBrandsToShow.map(b => {
                 const isSelected = b === currentBrand;
-                const btnClass = isSelected 
-                    ? 'yellow-pulse-selected text-black font-bold shadow-lg' 
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
-                return `<button onclick="currentBrand='${b}'; currentCategory='MÀN HÌNH'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${b === 'KHÁC' ? 'HÃNG KHÁC' : b}</button>`;
+                let btnClass = '';
+                
+                if (b === 'HẾT HÀNG') {
+                    if (isSelected) {
+                        btnClass = 'purple-pulse-selected text-white font-bold shadow-lg border border-purple-400';
+                    } else {
+                        btnClass = 'bg-gray-800 text-red-500 hover:bg-gray-700 border border-red-700/50 font-bold';
+                    }
+                } else if (b === 'NHẬP HÀNG') {
+                    if (isSelected) {
+                        btnClass = 'purple-pulse-selected text-white font-bold shadow-lg border border-purple-400';
+                    } else {
+                        btnClass = 'bg-gray-800 text-emerald-400 hover:bg-gray-700 border border-emerald-700/50 font-bold';
+                    }
+                } else {
+                    btnClass = isSelected 
+                        ? 'yellow-pulse-selected text-black font-bold shadow-lg' 
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
+                }
+
+                const displayName = b === 'KHÁC' ? 'HÃNG KHÁC' : b;
+                return `<button onclick="currentBrand='${b}'; currentCategory='MÀN HÌNH'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${displayName}</button>`;
             }).join('');
+
+            const toolbarRow2 = document.getElementById('toolbar-row-2');
+            const toolbarMobile = document.getElementById('toolbar-mobile-wrapper');
+            const mainActionBtn = document.getElementById('main-action-btn');
+            const mainActionBtnMobile = document.getElementById('main-action-btn-mobile');
+
+            if (isImportTab) {
+                document.getElementById('categories-filter-wrapper').style.display = 'none';
+                document.getElementById('mobile-cats-container').style.display = 'none';
+                document.getElementById('type-tabs-container-desktop').style.display = 'none';
+                document.getElementById('type-tabs-container-mobile').style.display = 'none';
+                
+                if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> Nhập hàng`;
+                if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openImportModal()');
+                if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openImportModal()');
+                return;
+            } else if (currentBrand === 'HẾT HÀNG') {
+                document.getElementById('categories-filter-wrapper').style.display = 'none';
+                document.getElementById('mobile-cats-container').style.display = 'none';
+                document.getElementById('type-tabs-container-desktop').style.display = 'none';
+                document.getElementById('type-tabs-container-mobile').style.display = 'none';
+                if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> THÊM MỚI`;
+                if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openModal()');
+                if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openModal()');
+                return;
+            } else {
+                document.getElementById('categories-filter-wrapper').style.display = 'flex';
+                document.getElementById('mobile-cats-container').style.display = 'flex';
+                if(mainActionBtn) mainActionBtn.innerHTML = `<i class="fa-solid fa-plus text-xs"></i> THÊM MỚI`;
+                if(mainActionBtn) mainActionBtn.setAttribute('onclick', 'openModal()');
+                if(mainActionBtnMobile) mainActionBtnMobile.setAttribute('onclick', 'openModal()');
+            }
 
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
 
@@ -534,7 +675,7 @@
                             ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400 shrink-0' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                         typeButtonsHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${btnClass}">${t}</button>`;
-                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${btnClass}">${t}</button>`;
+                        typeButtonsMobileHtml += `<button onclick="currentType='${t}'; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${btnClass}">${btnClass}">${t}</button>`;
                     }
                 });
             }
@@ -662,45 +803,99 @@
             const searchInputMobile = document.getElementById('search-input-mobile');
             const keyword = (searchInputDesktop?.value || searchInputMobile?.value || '').trim().toUpperCase();
 
+            const isOutStockTab = currentBrand === 'HẾT HÀNG';
+            const isImportTab = currentBrand === 'NHẬP HÀNG';
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
 
-            const filtered = devices.filter(d => {
-                const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
-                const matchCategory = (d.part || '').toUpperCase() === currentCategory.toUpperCase();
-                const matchType = (!isIphone || !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase());
+            let filtered = [];
+            let expandedImportRows = []; // Dùng riêng cho tab Nhập hàng (mỗi linh kiện 1 hàng)
 
-                const fullSearchStr = `${d.brand} ${d.name} ${d.part} ${d.type} ${d.color}`.toUpperCase();
-                const matchKeyword = !keyword || keyword.split(' ').every(k => fullSearchStr.includes(k));
-
-                return matchBrand && matchCategory && matchType && matchKeyword;
-            });
-
-            filtered.sort((a, b) => {
-                const nameA = (a.name || '').trim();
-                const nameB = (b.name || '').trim();
-
-                if (isIphone) {
-                    const weightA = getIphoneSortWeight(nameA);
-                    const weightB = getIphoneSortWeight(nameB);
-                    if (weightA !== weightB) {
-                        return weightA - weightB;
+            if (isImportTab) {
+                importOrders.forEach((o, orderIdx) => {
+                    const supplier = (o.supplier || '').trim().toUpperCase();
+                    const category = (o.category || '').trim().toUpperCase();
+                    if (o.items && o.items.length > 0) {
+                        o.items.forEach(item => {
+                            const itemName = (item || '').trim().toUpperCase();
+                            const fullStr = `${supplier} ${category} ${itemName}`;
+                            if (!keyword || keyword.split(' ').every(k => fullStr.includes(k))) {
+                                expandedImportRows.push({
+                                    supplier,
+                                    category,
+                                    item: itemName,
+                                    realIndex: orderIdx
+                                });
+                            }
+                        });
                     }
-                }
-                return nameA.localeCompare(nameB, 'vi', { numeric: true });
-            });
+                });
+            } else {
+                filtered = devices.filter(d => {
+                    const qtyVal = parseInt(d.qty) || 0;
 
-            if (rowCountEl) rowCountEl.innerText = filtered.length;
+                    if (isOutStockTab) {
+                        if (qtyVal !== 0) return false;
+                    } else {
+                        const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
+                        const matchCategory = (d.part || '').toUpperCase() === currentCategory.toUpperCase();
+                        const matchType = (!isIphone || !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase());
+                        if (!matchBrand || !matchCategory || !matchType) return false;
+                    }
+
+                    const fullSearchStr = `${d.brand} ${d.name} ${d.part} ${d.type} ${d.color}`.toUpperCase();
+                    const matchKeyword = !keyword || keyword.split(' ').every(k => fullSearchStr.includes(k));
+
+                    return matchKeyword;
+                });
+
+                filtered.sort((a, b) => {
+                    if (isOutStockTab) {
+                        const partA = (a.part || '').trim();
+                        const partB = (b.part || '').trim();
+                        const compPart = partA.localeCompare(partB, 'vi', { numeric: true });
+                        if (compPart !== 0) return compPart;
+
+                        const nameA = (a.name || '').trim();
+                        const nameB = (b.name || '').trim();
+                        return nameA.localeCompare(nameB, 'vi', { numeric: true });
+                    }
+
+                    const nameA = (a.name || '').trim();
+                    const nameB = (b.name || '').trim();
+
+                    if (isIphone) {
+                        const weightA = getIphoneSortWeight(nameA);
+                        const weightB = getIphoneSortWeight(nameB);
+                        if (weightA !== weightB) {
+                            return weightA - weightB;
+                        }
+                    }
+                    return nameA.localeCompare(nameB, 'vi', { numeric: true });
+                });
+            }
+
+            const totalDisplayCount = isImportTab ? expandedImportRows.length : filtered.length;
+            if (rowCountEl) rowCountEl.innerText = totalDisplayCount;
 
             let totalCostSum = 0;
-            filtered.forEach(d => {
-                totalCostSum += (parseMoney(d.cost) * (parseInt(d.qty) || 0));
-            });
+            if (!isImportTab) {
+                filtered.forEach(d => {
+                    totalCostSum += (parseMoney(d.cost) * (parseInt(d.qty) || 0));
+                });
+            }
             if (totalCostEl) totalCostEl.innerText = isPrivacyMode ? '***' : formatMoney(totalCostSum);
 
             const desktopHeader = document.getElementById('desktop-table-header');
             if (desktopHeader) {
-                if (isPrivacyMode) {
-                    if (isIphone) {
+                if (isImportTab) {
+                    desktopHeader.innerHTML = `
+                        <th class="py-3 px-4 text-left w-[35%]">NHÀ PHÂN PHỐI</th>
+                        <th class="py-3 px-3 w-[25%]">LOẠI LK</th>
+                        <th class="py-3 px-3 w-[30%] text-left">TÊN LINH KIỆN</th>
+                        <th class="py-3 px-3 w-[10%]">THAO TÁC</th>
+                    `;
+                } else if (isPrivacyMode) {
+                    if (isIphone || isOutStockTab) {
                         desktopHeader.innerHTML = `
                             <th class="py-3 px-4 text-left w-[35%]">TÊN MÁY</th>
                             <th class="py-3 px-3 w-[20%]">LINH KIỆN</th>
@@ -719,7 +914,7 @@
                         `;
                     }
                 } else {
-                    if (isIphone) {
+                    if (isIphone || isOutStockTab) {
                         desktopHeader.innerHTML = `
                             <th class="py-3 px-4 text-left w-[28%]">TÊN MÁY</th>
                             <th class="py-3 px-3 w-[16%]">LINH KIỆN</th>
@@ -744,7 +939,7 @@
                 }
             }
 
-            if (filtered.length === 0) {
+            if (totalDisplayCount === 0) {
                 if (tbody) tbody.innerHTML = '';
                 if (mobileList) mobileList.innerHTML = '';
                 if (emptyState) emptyState.classList.remove('hidden');
@@ -754,42 +949,98 @@
             if (emptyState) emptyState.classList.add('hidden');
 
             if (tbody) {
-                tbody.innerHTML = filtered.map((d, index) => {
-                    const realIndex = devices.indexOf(d);
-                    const qtyVal = parseInt(d.qty) || 0;
-                    const priceFormatted = formatMoney(d.price);
-                    const costFormatted = formatMoney(d.cost);
-                    const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * qtyVal;
-                    const profitFormatted = formatMoney(profitVal);
-                    const formattedNameHtml = renderDeviceNames(d.name, d.color, false);
+                if (isImportTab) {
+                    tbody.innerHTML = expandedImportRows.map(row => {
+                        return `
+                            <tr class="row-hover transition">
+                                <td class="py-3 px-4 text-left font-bold text-white w-[35%]">${row.supplier}</td>
+                                <td class="py-3 px-3 text-emerald-400 font-semibold w-[25%]"><span class="px-2 py-0.5 rounded bg-gray-900 border border-gray-800">${row.category}</span></td>
+                                <td class="py-3 px-3 text-amber-400 font-bold w-[30%] text-left">${row.item}</td>
+                                <td class="py-3 px-3 w-[10%]">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <button onclick="editImportOrder(${row.realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
+                                        <button onclick="duplicateImportOrder(${row.realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
+                                        <button onclick="deleteImportOrder(${row.realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = filtered.map((d, index) => {
+                        const realIndex = devices.indexOf(d);
+                        const qtyVal = parseInt(d.qty) || 0;
+                        const priceFormatted = formatMoney(d.price);
+                        const costFormatted = formatMoney(d.cost);
+                        const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * qtyVal;
+                        const profitFormatted = formatMoney(profitVal);
+                        const formattedNameHtml = renderDeviceNames(d.name, d.color, false);
 
-                    const zeroQtyClass = qtyVal === 0 ? 'yellow-pulse-row' : 'row-hover';
+                        const zeroQtyClass = isOutStockTab ? 'row-hover' : (qtyVal === 0 ? 'yellow-pulse-row' : 'row-hover');
 
-                    if (isPrivacyMode) {
-                        if (isIphone) {
+                        if (isPrivacyMode) {
+                            if (isIphone || isOutStockTab) {
+                                return `
+                                    <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
+                                        <td class="py-3 px-4 text-left w-[35%]">${formattedNameHtml}</td>
+                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
+                                        <td class="py-3 px-3 text-indigo-300 font-medium w-[15%]" style="font-weight: bold;">${d.type || '---'}</td>
+                                        <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
+                                        <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
+                                        <td class="py-3 px-3 w-[10%]">
+                                            <div class="flex items-center justify-center gap-1.5">
+                                                <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
+                                                <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
+                                                <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            } else {
+                                return `
+                                    <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
+                                        <td class="py-3 px-4 text-left w-[45%]">${formattedNameHtml}</td>
+                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[25%]">${d.part}</td>
+                                        <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
+                                        <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                                        <td class="py-3 px-3 w-[10%]">
+                                            <div class="flex items-center justify-center gap-1.5">
+                                                <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
+                                                <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
+                                                <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }
+                        }
+
+                        if (isIphone || isOutStockTab) {
                             return `
                                 <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                    <td class="py-3 px-4 text-left w-[35%]">${formattedNameHtml}</td>
-                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
-                                    <td class="py-3 px-3 text-indigo-300 font-medium w-[15%]" style="font-weight: bold;">${d.type || '---'}</td>
+                                    <td class="py-3 px-4 text-left w-[28%]">${formattedNameHtml}</td>
+                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[16%]">${d.part}</td>
+                                    <td class="py-3 px-3 text-indigo-300 font-medium w-[10%]" style="font-weight: bold;">${d.type || '---'}</td>
                                     <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                    <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                    <td class="py-3 px-3 w-[10%]">
+                                    <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
+                                    <td class="py-3 px-3 w-[12%]">
                                         <div class="flex items-center justify-center gap-1.5">
                                             <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                             <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
                                             <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                                         </div>
                                     </td>
+                                    <td class="py-3 px-3 font-bold text-sm text-gray-300 w-[7%]">${costFormatted}</td>
+                                    <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[6%]">${profitFormatted}</td>
                                 </tr>
                             `;
                         } else {
                             return `
                                 <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                    <td class="py-3 px-4 text-left w-[45%]">${formattedNameHtml}</td>
-                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[25%]">${d.part}</td>
+                                    <td class="py-3 px-4 text-left w-[38%]">${formattedNameHtml}</td>
+                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
                                     <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                    <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                                    <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
                                     <td class="py-3 px-3 w-[10%]">
                                         <div class="flex items-center justify-center gap-1.5">
                                             <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -797,95 +1048,77 @@
                                             <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
                                         </div>
                                     </td>
+                                    <td class="py-3 px-3 font-bold text-sm text-gray-300 w-[6%]">${costFormatted}</td>
+                                    <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[5%]" style="color: #34d399 !important;">${profitFormatted}</td>
                                 </tr>
                             `;
                         }
-                    }
-
-                    if (isIphone) {
-                        return `
-                            <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                <td class="py-3 px-4 text-left w-[28%]">${formattedNameHtml}</td>
-                                <td class="py-3 px-3 font-semibold text-emerald-400 w-[16%]">${d.part}</td>
-                                <td class="py-3 px-3 text-indigo-300 font-medium w-[10%]" style="font-weight: bold;">${d.type || '---'}</td>
-                                <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                <td class="py-3 px-3 w-[12%]">
-                                    <div class="flex items-center justify-center gap-1.5">
-                                        <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
-                                        <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
-                                        <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-3 font-bold text-sm text-gray-300 w-[7%]">${costFormatted}</td>
-                                <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[6%]">${profitFormatted}</td>
-                            </tr>
-                        `;
-                    } else {
-                        return `
-                            <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                <td class="py-3 px-4 text-left w-[38%]">${formattedNameHtml}</td>
-                                <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
-                                <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                <td class="py-3 px-3 w-[10%]">
-                                    <div class="flex items-center justify-center gap-1.5">
-                                        <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
-                                        <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
-                                        <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-3 font-bold text-sm text-gray-300 w-[6%]">${costFormatted}</td>
-                                <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[5%]" style="color: #34d399 !important;">${profitFormatted}</td>
-                            </tr>
-                        `;
-                    }
-                }).join('');
+                    }).join('');
+                }
             }
 
             if (mobileList) {
-                mobileList.innerHTML = filtered.map((d) => {
-                    const realIndex = devices.indexOf(d);
-                    const qtyVal = parseInt(d.qty) || 0;
-                    const priceFormatted = formatMoney(d.price);
-                    const formattedNameHtml = renderDeviceNames(d.name, d.color, true);
+                const mobileItemBorderClass = isOutStockTab ? 'border-b-0' : 'border-b border-gray-800/40';
 
-                    const zeroQtyClassMobile = qtyVal === 0 ? 'yellow-pulse-row px-2 rounded-xl' : 'row-hover px-2 rounded-xl';
-
-                    if (isIphone) {
+                if (isImportTab) {
+                    mobileList.innerHTML = expandedImportRows.map(row => {
                         return `
-                            <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}" onclick="handleRowClick(this)">
-                                <div class="flex items-center gap-2 min-w-0 flex-1">
-                                    ${formattedNameHtml}
-                                    <div class="flex items-center gap-1 text-xs text-gray-400 shrink-0">
-                                        <span class="text-emerald-400 font-semibold">${d.part}</span>
-                                        ${d.type ? `<span class="text-indigo-300 font-bold">• ${d.type}</span>` : ''}
-                                    </div>
+                            <div class="py-3 px-2 flex items-center justify-between gap-2 row-hover rounded-xl border-b border-gray-800/40">
+                                <div class="flex flex-col min-w-0 flex-1">
+                                    <div class="text-sm font-bold text-white">${row.supplier} - <span class="text-emerald-400">${row.category}</span></div>
+                                    <div class="text-xs text-amber-400 font-bold mt-0.5">${row.item}</div>
                                 </div>
-                                <div class="flex items-center gap-3 shrink-0 ml-auto">
-                                    <div class="text-sm text-red-500 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
-                                    <div class="text-right shrink-0">
-                                        <div class="text-base font-bold text-amber-400" style="color: #fbbf24 !important;">${priceFormatted}</div>
-                                    </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button onclick="editImportOrder(${row.realIndex})" class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteImportOrder(${row.realIndex})" class="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-xs"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                         `;
-                    } else {
-                        return `
-                            <div class="py-2.5 flex items-center justify-between gap-2 border-b border-gray-800/40 ${zeroQtyClassMobile}" onclick="handleRowClick(this)">
-                                <div class="flex items-center gap-2 min-w-0 flex-1">
-                                    ${formattedNameHtml}
-                                </div>
-                                <div class="flex items-center gap-3 shrink-0 ml-auto">
-                                    <div class="text-sm text-red-500 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
-                                    <div class="text-right shrink-0">
-                                        <div class="text-base font-bold text-amber-400" style="color: #fbbf24 !important;">${priceFormatted}</div>
+                    }).join('');
+                } else {
+                    mobileList.innerHTML = filtered.map((d) => {
+                        const realIndex = devices.indexOf(d);
+                        const qtyVal = parseInt(d.qty) || 0;
+                        const priceFormatted = formatMoney(d.price);
+                        const formattedNameHtml = renderDeviceNames(d.name, d.color, true);
+
+                        const zeroQtyClassMobile = isOutStockTab ? 'row-hover px-2 rounded-xl' : (qtyVal === 0 ? 'yellow-pulse-row px-2 rounded-xl' : 'row-hover px-2 rounded-xl');
+
+                        if (isIphone || isOutStockTab) {
+                            return `
+                                <div class="py-2.5 flex items-center justify-between gap-2 ${mobileItemBorderClass} ${zeroQtyClassMobile}" onclick="handleRowClick(this)">
+                                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                                        ${formattedNameHtml}
+                                        <div class="flex items-center gap-1 text-xs text-gray-400 shrink-0">
+                                            <span class="text-emerald-400 font-semibold">${d.part}</span>
+                                            ${d.type ? `<span class="text-indigo-300 font-bold">• ${d.type}</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 shrink-0 ml-auto">
+                                        <div class="text-sm text-red-500 font-bold" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</div>
+                                        <div class="text-right shrink-0">
+                                            <div class="text-base font-bold text-amber-400" style="color: #fbbf24 !important;">${priceFormatted}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
-                    }
-                }).join('');
+                            `;
+                        } else {
+                            return `
+                                <div class="py-2.5 flex items-center justify-between gap-2 ${mobileItemBorderClass} ${zeroQtyClassMobile}" onclick="handleRowClick(this)">
+                                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                                        ${formattedNameHtml}
+                                    </div>
+                                    <div class="flex items-center gap-3 shrink-0 ml-auto">
+                                        <div class="text-sm text-red-500 font-bold" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</div>
+                                        <div class="text-right shrink-0">
+                                            <div class="text-base font-bold text-amber-400" style="color: #fbbf24 !important;">${priceFormatted}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }).join('');
+                }
             }
         }
 
@@ -933,11 +1166,208 @@
             if (!isEdit) {
                 document.getElementById('device-index').value = '-1';
                 document.getElementById('device-form').reset();
-                document.getElementById('device-brand').value = currentBrand;
+                document.getElementById('device-brand').value = (currentBrand === 'HẾT HÀNG' || currentBrand === 'NHẬP HÀNG') ? 'IPHONE' : currentBrand;
                 document.getElementById('device-part').value = currentCategory;
                 document.getElementById('device-type').value = '';
                 document.getElementById('device-qty').value = '1';
                 document.getElementById('modal-profit-preview').innerText = '0';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('device-modal').classList.add('hidden');
+        }
+
+        // --- QUẢN LÝ POPUP NHẬP HÀNG ---
+        function openImportModal(isEdit = false) {
+            document.getElementById('import-modal').classList.remove('hidden');
+            
+            document.getElementById('supplier-suggestions').innerHTML = suppliers.map(s => `<option value="${s}">`).join('');
+            document.getElementById('import-category-suggestions').innerHTML = categories.map(c => `<option value="${c}">`).join('');
+
+            if (!isEdit) {
+                document.getElementById('import-index').value = '-1';
+                document.getElementById('import-form').reset();
+                document.getElementById('import-modal-submit-text').innerText = 'Lưu phiếu nhập';
+                document.getElementById('import-items-container').innerHTML = `
+                    <div class="flex items-center gap-2 item-row">
+                        <input type="text" required placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                        <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                `;
+            }
+        }
+
+        function addImportItemRow(value = '') {
+            const container = document.getElementById('import-items-container');
+            const row = document.createElement('div');
+            row.className = "flex items-center gap-2 item-row mt-2";
+            row.innerHTML = `
+                <input type="text" required value="${value}" placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                <button type="button" onclick="this.closest('.item-row').remove()" class="w-11 h-11 bg-red-600 hover:bg-red-500 text-white font-extrabold text-lg rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Xóa dòng này"><i class="fa-solid fa-trash text-xs"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+        }
+
+        function handleImportEntity(entityType, action) {
+            let listRef, inputId, labelName, datalistId;
+            if (entityType === 'suppliers') {
+                listRef = suppliers; inputId = 'import-supplier'; labelName = 'NHÀ PHÂN PHỐI'; datalistId = 'supplier-suggestions';
+            } else if (entityType === 'categories') {
+                listRef = categories; inputId = 'import-category'; labelName = 'LOẠI LINH KIỆN'; datalistId = 'import-category-suggestions';
+            }
+
+            const val = document.getElementById(inputId).value.trim().toUpperCase();
+
+            if (action === 'add') {
+                if (!val) { alert(`VUI LÒNG NHẬP TÊN ${labelName}!`); return; }
+                if (!listRef.includes(val)) {
+                    listRef.push(val);
+                    saveAllToCloud();
+                    document.getElementById(datalistId).innerHTML = listRef.map(item => `<option value="${item}">`).join('');
+                    alert(`ĐÃ THÊM ${labelName} MỚI THÀNH CÔNG!`);
+                } else {
+                    alert(`${labelName} NÀY ĐÃ TỒN TẠI!`);
+                }
+            } else if (action === 'edit') {
+                if (!val) { alert(`VUI LÒNG NHẬP HOẶC CHỌN ${labelName} CẦN SỬA!`); return; }
+                const oldVal = prompt(`NHẬP TÊN MỚI THAY THẾ CHO "${val}":`, val);
+                if (oldVal) {
+                    const newVal = oldVal.trim().toUpperCase();
+                    const idx = listRef.indexOf(val);
+                    if (idx !== -1) listRef[idx] = newVal;
+                    else listRef.push(newVal);
+
+                    importOrders.forEach(o => {
+                        if (entityType === 'suppliers' && o.supplier === val) o.supplier = newVal;
+                        if (entityType === 'categories' && o.category === val) o.category = newVal;
+                    });
+
+                    if (entityType === 'categories') {
+                        devices.forEach(d => {
+                            if (d.part === val) d.part = newVal;
+                        });
+                    }
+
+                    saveAllToCloud();
+                    document.getElementById(inputId).value = newVal;
+                    document.getElementById(datalistId).innerHTML = listRef.map(item => `<option value="${item}">`).join('');
+                    initTabs();
+                    renderTable();
+                    alert(`ĐÃ CẬP NHẬT THÀNH CÔNG!`);
+                }
+            } else if (action === 'delete') {
+                if (!val) { alert(`VUI LÒNG NHẬP HOẶC CHỌN ${labelName} CẦN XÓA!`); return; }
+                if (confirm(`BẠN CÓ CHẮC MUỐN XÓA "${val}" KHỎI DANH SÁCH?`)) {
+                    const idx = listRef.indexOf(val);
+                    if (idx !== -1) listRef.splice(idx, 1);
+                    saveAllToCloud();
+                    document.getElementById(inputId).value = '';
+                    document.getElementById(datalistId).innerHTML = listRef.map(item => `<option value="${item}">`).join('');
+                    initTabs();
+                    renderTable();
+                    alert(`ĐÃ XÓA THÀNH CÔNG!`);
+                }
+            }
+        }
+
+        function saveImportOrder(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('import-index').value);
+            const supplier = document.getElementById('import-supplier').value.trim().toUpperCase();
+            const category = document.getElementById('import-category').value.trim().toUpperCase();
+            
+            const itemInputs = document.querySelectorAll('.item-name-input');
+            const items = [];
+            itemInputs.forEach(input => {
+                const val = input.value.trim().toUpperCase();
+                if (val) items.push(val);
+            });
+
+            if (items.length === 0) {
+                alert('VUI LÒNG NHẬP ÍT NHẤT MỘT TÊN LINH KIỆN!');
+                return;
+            }
+
+            if (!suppliers.includes(supplier)) suppliers.push(supplier);
+            if (!categories.includes(category)) categories.push(category);
+
+            const orderObj = { supplier, category, items };
+
+            if (index === -1) {
+                importOrders.unshift(orderObj);
+            } else {
+                importOrders[index] = orderObj;
+            }
+
+            saveAllToCloud();
+            closeImportModal();
+            renderTable();
+        }
+
+        function editImportOrder(index) {
+            const o = importOrders[index];
+            document.getElementById('import-index').value = index;
+            openImportModal(true);
+
+            document.getElementById('import-supplier').value = o.supplier || '';
+            document.getElementById('import-category').value = o.category || '';
+            
+            const container = document.getElementById('import-items-container');
+            container.innerHTML = '';
+            if (o.items && o.items.length > 0) {
+                o.items.forEach((it, idx) => {
+                    if (idx === 0) {
+                        container.innerHTML = `
+                            <div class="flex items-center gap-2 item-row">
+                                <input type="text" required value="${it}" placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                                <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        `;
+                    } else {
+                        addImportItemRow(it);
+                    }
+                });
+            }
+            document.getElementById('import-modal-submit-text').innerText = 'Cập nhật phiếu';
+        }
+
+        function duplicateImportOrder(index) {
+            const o = importOrders[index];
+            document.getElementById('import-index').value = '-1';
+            openImportModal(false);
+
+            document.getElementById('import-supplier').value = o.supplier || '';
+            document.getElementById('import-category').value = o.category || '';
+            
+            const container = document.getElementById('import-items-container');
+            container.innerHTML = '';
+            if (o.items && o.items.length > 0) {
+                o.items.forEach((it, idx) => {
+                    if (idx === 0) {
+                        container.innerHTML = `
+                            <div class="flex items-center gap-2 item-row">
+                                <input type="text" required value="${it}" placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                                <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        `;
+                    } else {
+                        addImportItemRow(it);
+                    }
+                });
+            }
+            document.getElementById('import-modal-submit-text').innerText = 'Lưu phiếu nhập';
+        }
+
+        function deleteImportOrder(index) {
+            if (confirm('BẠN CÓ CHẮC MUỐN XÓA PHIẾU NHẬP NÀY KHÔNG?')) {
+                importOrders.splice(index, 1);
+                saveAllToCloud();
+                renderTable();
             }
         }
 
@@ -1032,8 +1462,8 @@
             document.getElementById('device-name').value = d.name || '';
             document.getElementById('device-part').value = d.part || '';
             document.getElementById('device-type').value = d.type || '';
-            document.getElementById('device-price').value = d.price || '';
-            document.getElementById('device-cost').value = d.cost || '';
+            document.getElementById('device-price').value = formatMoney(d.price);
+            document.getElementById('device-cost').value = formatMoney(d.cost);
             document.getElementById('device-qty').value = d.qty !== undefined ? d.qty : 1;
             document.getElementById('device-color').value = d.color || '';
             updateModalStats();
