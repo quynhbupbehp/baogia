@@ -333,12 +333,12 @@
                     </div>
                 </div>
 
-                <!-- Danh sách tên linh kiện kèm nút + màu vàng to bên phải -->
+                <!-- Danh sách tên linh kiện kèm nút + màu vàng to bên phải (Đã xóa placeholder) -->
                 <div>
                     <label class="block text-sm font-bold text-white mb-1">Tên linh kiện <span class="text-red-500">*</span></label>
                     <div id="import-items-container" class="space-y-2">
                         <div class="flex items-center gap-2 item-row">
-                            <input type="text" required placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                            <input type="text" required placeholder="" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
                             <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
@@ -1191,7 +1191,7 @@
                 document.getElementById('import-modal-submit-text').innerText = 'Lưu phiếu nhập';
                 document.getElementById('import-items-container').innerHTML = `
                     <div class="flex items-center gap-2 item-row">
-                        <input type="text" required placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                        <input type="text" required placeholder="" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
                         <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 `;
@@ -1203,7 +1203,7 @@
             const row = document.createElement('div');
             row.className = "flex items-center gap-2 item-row mt-2";
             row.innerHTML = `
-                <input type="text" required value="${value}" placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                <input type="text" required value="${value}" placeholder="" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
                 <button type="button" onclick="this.closest('.item-row').remove()" class="w-11 h-11 bg-red-600 hover:bg-red-500 text-white font-extrabold text-lg rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Xóa dòng này"><i class="fa-solid fa-trash text-xs"></i></button>
             `;
             container.appendChild(row);
@@ -1324,7 +1324,7 @@
                     if (idx === 0) {
                         container.innerHTML = `
                             <div class="flex items-center gap-2 item-row">
-                                <input type="text" required value="${it}" placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                                <input type="text" required value="${it}" placeholder="" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
                                 <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
                             </div>
                         `;
@@ -1351,7 +1351,7 @@
                     if (idx === 0) {
                         container.innerHTML = `
                             <div class="flex items-center gap-2 item-row">
-                                <input type="text" required value="${it}" placeholder="TÊN / MODEL LINH KIỆN" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
+                                <input type="text" required value="${it}" placeholder="" class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 uppercase item-name-input">
                                 <button type="button" onclick="addImportItemRow()" class="w-11 h-11 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xl rounded-xl transition flex items-center justify-center shadow-lg shrink-0" title="Thêm dòng linh kiện"><i class="fa-solid fa-plus"></i></button>
                             </div>
                         `;
