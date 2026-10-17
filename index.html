@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="color-scheme" content="dark">
     <title>BÁO GIÁ SỬA CHỮA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -318,7 +319,6 @@
             if (!colorName) return '';
             const c = colorName.trim().toUpperCase();
             if (c.includes('ĐEN') || c.includes('BLACK')) return '#111827; border: 1px solid #4b5563';
-            // Khắc phục màu trắng cho rõ nét trên nền tối của web: thêm border xám rõ ràng
             if (c.includes('TRẮNG') || c.includes('WHITE')) return '#ffffff; border: 2px solid #9ca3af';
             if (c.includes('ĐỎ') || c.includes('RED')) return '#ef4444';
             if (c.includes('VÀNG') || c.includes('GOLD') || c.includes('YELLOW')) return '#eab308';
@@ -525,7 +525,7 @@
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
                 
                 typeButtonsHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
-                typeButtonsMobileHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-bold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
+                typeButtonsMobileHtml += `<button onclick="currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 rounded-lg text-xs font-bold transition uppercase ${allTypeClass}">TẤT CẢ</button>`;
 
                 types.forEach(t => {
                     if (validTypesSet.has(t.toUpperCase())) {
