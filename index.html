@@ -406,11 +406,15 @@
         let names = [];
         let suppliers = [];
 
-        let currentBrand = brands[0] || '', currentCategory = 'MÀN HÌNH', currentType = '', isPrivacyMode = false;
+        // Tự động tải lại tab người dùng đã chọn trước khi F5
+        let currentBrand = localStorage.getItem('active_brand_tab') || brands[0] || '';
+        let currentCategory = localStorage.getItem('active_cat_tab') || 'MÀN HÌNH';
+        let currentType = '';
+        let isPrivacyMode = false;
+
         let activeRowElement = null;
         let activeRowTimeout = null;
         let activeInlineQtyIndex = null;
-        let hasCleanedImportOrders = false;
 
         document.addEventListener('click', function(event) {
             if (activeInlineQtyIndex !== null) {
@@ -546,14 +550,7 @@
                     if (data.types) types = data.types;
                     if (data.names) names = data.names;
                     if (data.suppliers) suppliers = data.suppliers;
-
-                    if (!hasCleanedImportOrders) {
-                        importOrders = [];
-                        hasCleanedImportOrders = true;
-                        saveAllToCloud();
-                    } else {
-                        importOrders = data.importOrders || [];
-                    }
+                    if (data.importOrders) importOrders = data.importOrders;
                 } else {
                     saveAllToCloud();
                 }
@@ -584,6 +581,26 @@
             }
         }
 
+        function switchBrand(b) {
+            currentBrand = b;
+            localStorage.setItem('active_brand_tab', b);
+            if (b !== 'NHẬP HÀNG' && b !== 'HẾT HÀNG') {
+                currentCategory = 'MÀN HÌNH';
+                localStorage.setItem('active_cat_tab', 'MÀN HÌNH');
+            }
+            currentType = '';
+            initTabs();
+            renderTable();
+        }
+
+        function switchCategory(c) {
+            currentCategory = c;
+            localStorage.setItem('active_cat_tab', c);
+            currentType = '';
+            initTabs();
+            renderTable();
+        }
+
         function initTabs() {
             const isImportTab = currentBrand === 'NHẬP HÀNG';
             const allBrandsToShow = [...brands, 'HẾT HÀNG', 'NHẬP HÀNG'];
@@ -611,7 +628,7 @@
                 }
 
                 const displayName = b === 'KHÁC' ? 'HÃNG KHÁC' : b;
-                return `<button onclick="currentBrand='${b}'; currentCategory='MÀN HÌNH'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${displayName}</button>`;
+                return `<button onclick="switchBrand('${b}')" class="px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs md:text-sm font-semibold transition uppercase ${btnClass}">${displayName}</button>`;
             }).join('');
 
             const toolbarRow2 = document.getElementById('toolbar-row-2');
@@ -675,7 +692,7 @@
                 const btnClass = isSelected 
                     ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700';
-                return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
+                return `<button onclick="switchCategory('${c}')" class="px-2.5 py-1.5 rounded-lg text-sm font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
 
             const catHtmlMobile = displayCategories.map(c => {
@@ -683,7 +700,7 @@
                 const btnClass = isSelected 
                     ? 'yellow-pulse-selected text-black font-bold shadow-lg border border-amber-400 shrink-0' 
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shrink-0';
-                return `<button onclick="currentCategory='${c}'; currentType=''; initTabs(); renderTable();" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${c}</button>`;
+                return `<button onclick="switchCategory('${c}')" class="px-2 py-1 rounded-lg text-xs font-semibold transition uppercase ${btnClass}">${c}</button>`;
             }).join('');
 
             document.getElementById('main-cat-tabs-desktop').innerHTML = catHtmlDesktop;
