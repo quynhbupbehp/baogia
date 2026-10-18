@@ -51,7 +51,6 @@
         }
         .yellow-pulse-selected { animation: yellowSelectionPulse 1.6s ease-in-out infinite; color: #000 !important; font-weight: bold; }
 
-        /* Animation nháy nháy màu tím cho HẾT HÀNG & NHẬP HÀNG */
         @keyframes purpleSelectionPulse {
             0%, 100% {
                 background-color: rgba(168, 85, 247, 0.95);
@@ -377,7 +376,7 @@
 
                 <div class="border-t border-gray-800 pt-3 flex justify-end gap-2">
                     <button type="button" onclick="closeImportModal()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700 transition">Hủy</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/35 flex items-center gap-1.5">
+                    <button type="submit" id="btn-save-import-submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/35 flex items-center gap-1.5">
                         <i class="fa-solid fa-plus text-xs"></i> <span id="import-modal-submit-text">Lưu phiếu nhập</span>
                     </button>
                 </div>
@@ -399,14 +398,14 @@
         const db = firebase.firestore();
 
         let devices = [];
-        let importOrders = []; 
+        // Ưu tiên nạp ngay từ bộ nhớ cục bộ để không bao giờ bị mất khi F5
+        let importOrders = JSON.parse(localStorage.getItem('local_import_orders') || '[]'); 
         let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'HÃNG KHÁC'];
         let categories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP', 'LƯNG'];
         let types = ['ZIN', 'GX', 'ZIN BÓC MÁY', 'ZIN HÃNG', 'OLED', 'LINH KIỆN'];
         let names = [];
-        let suppliers = [];
+        let suppliers = JSON.parse(localStorage.getItem('local_suppliers') || '[]');
 
-        // Tự động tải lại tab người dùng đã chọn trước khi F5
         let currentBrand = localStorage.getItem('active_brand_tab') || brands[0] || '';
         let currentCategory = localStorage.getItem('active_cat_tab') || 'MÀN HÌNH';
         let currentType = '';
@@ -549,8 +548,14 @@
                     if (data.categories) categories = data.categories;
                     if (data.types) types = data.types;
                     if (data.names) names = data.names;
-                    if (data.suppliers) suppliers = data.suppliers;
-                    if (data.importOrders) importOrders = data.importOrders;
+                    if (data.suppliers) {
+                        suppliers = data.suppliers;
+                        localStorage.setItem('local_suppliers', JSON.stringify(suppliers));
+                    }
+                    if (data.importOrders) {
+                        importOrders = data.importOrders;
+                        localStorage.setItem('local_import_orders', JSON.stringify(importOrders));
+                    }
                 } else {
                     saveAllToCloud();
                 }
@@ -558,26 +563,35 @@
                     statusEl.setAttribute('title', 'Online Realtime');
                     statusEl.innerHTML = `<i class="fa-solid fa-cloud text-amber-400 text-xs"></i>`;
                 }
-                if (!currentBrand && brands.length) currentBrand = brands[0];
-                if (!currentCategory) currentCategory = 'MÀN HÌNH';
                 initTabs();
                 renderTable();
             }, (err) => {
                 console.error("Lỗi Firestore:", err);
                 if(statusEl) {
-                    statusEl.setAttribute('title', 'Lỗi kết nối');
-                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>`;
+                    statusEl.setAttribute('title', 'Offline / LocalStorage');
+                    statusEl.innerHTML = `<i class="fa-solid fa-hard-drive text-emerald-400 text-xs"></i>`;
                 }
+                initTabs();
+                renderTable();
             });
         }
 
         async function saveAllToCloud() {
+            const statusEl = document.getElementById('cloud-status');
+            if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-arrows-rotate animate-spin text-amber-400 text-xs"></i>`;
+            
+            // Luôn lưu phòng hờ ngay lập tức vào localStorage
+            localStorage.setItem('local_import_orders', JSON.stringify(importOrders));
+            localStorage.setItem('local_suppliers', JSON.stringify(suppliers));
+
             try {
                 await db.collection("store_data").doc("main").set({
                     devices, importOrders, brands, categories, types, names, suppliers
                 });
+                if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-cloud text-amber-400 text-xs"></i>`;
             } catch (e) {
                 console.error("Lỗi lưu Cloud:", e);
+                if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>`;
             }
         }
 
@@ -1260,7 +1274,7 @@
             }
         }
 
-        function deleteSelectedImportOrders() {
+        async function deleteSelectedImportOrders() {
             const checkedBoxes = document.querySelectorAll('.import-checkbox:checked');
             if (checkedBoxes.length === 0) return;
 
@@ -1295,7 +1309,7 @@
                 });
 
                 importOrders = newImportOrders;
-                saveAllToCloud();
+                await saveAllToCloud();
                 renderTable();
             }
         }
@@ -1453,8 +1467,14 @@
             }
         }
 
-        function saveImportOrder(e) {
+        async function saveImportOrder(e) {
             e.preventDefault();
+            const btnSubmit = document.getElementById('btn-save-import-submit');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.classList.add('opacity-50');
+            }
+
             const index = parseInt(document.getElementById('import-index').value);
             const supplier = document.getElementById('import-supplier').value.trim().toUpperCase();
             const category = document.getElementById('import-category').value.trim().toUpperCase();
@@ -1468,6 +1488,10 @@
 
             if (items.length === 0) {
                 alert('VUI LÒNG NHẬP ÍT NHẤT MỘT TÊN LINH KIỆN!');
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.classList.remove('opacity-50');
+                }
                 return;
             }
 
@@ -1482,7 +1506,13 @@
                 importOrders[index] = orderObj;
             }
 
-            saveAllToCloud();
+            // Lưu tức thì vào local và đồng bộ Firebase
+            await saveAllToCloud();
+            
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-50');
+            }
             closeImportModal();
             renderTable();
         }
@@ -1541,10 +1571,10 @@
             document.getElementById('import-modal-submit-text').innerText = 'Lưu phiếu nhập';
         }
 
-        function deleteImportOrder(index) {
+        async function deleteImportOrder(index) {
             if (confirm('BẠN CÓ CHẮC MUỐN XÓA PHIẾU NHẬP NÀY KHÔNG?')) {
                 importOrders.splice(index, 1);
-                saveAllToCloud();
+                await saveAllToCloud();
                 renderTable();
             }
         }
