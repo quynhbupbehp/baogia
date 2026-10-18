@@ -51,7 +51,6 @@
         }
         .yellow-pulse-selected { animation: yellowSelectionPulse 1.6s ease-in-out infinite; color: #000 !important; font-weight: bold; }
 
-        /* Animation nháy nháy màu tím cho HẾT HÀNG & NHẬP HÀNG */
         @keyframes purpleSelectionPulse {
             0%, 100% {
                 background-color: rgba(168, 85, 247, 0.95);
@@ -104,7 +103,7 @@
                             <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
                         </div>
 
-                        <!-- THANH BỘ LỌC RIÊNG CHO TAB NHẬP HÀNG (DESKTOP GIỮ NGUYÊN ĐẦY ĐỦ) -->
+                        <!-- THANH BỘ LỌC RIÊNG CHO TAB NHẬP HÀNG -->
                         <div id="import-filters-desktop" class="hidden items-center gap-4">
                             <div class="flex items-center gap-1.5">
                                 <span class="text-xs font-bold text-emerald-400 uppercase shrink-0">NHÀ PHÂN PHỐI:</span>
@@ -147,7 +146,7 @@
 
                         <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
 
-                        <!-- BỘ LỌC MOBILE CHO TAB NHẬP HÀNG (VIẾT TẮT NPP VÀ LK) -->
+                        <!-- BỘ LỌC MOBILE CHO TAB NHẬP HÀNG -->
                         <div id="import-filters-mobile" class="hidden flex-col gap-1.5 w-full pt-1">
                             <div class="flex items-center justify-between gap-2 w-full">
                                 <div class="flex items-center gap-1 flex-1 min-w-0">
@@ -304,14 +303,23 @@
 
                     <div class="flex flex-col items-center">
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">MÀU</label>
-                        <input type="text" id="device-color" list="color-suggestions" placeholder="" class="w-24 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500 uppercase h-10">
+                        <input type="text" id="device-color" list="color-suggestions" placeholder="" class="w-32 bg-gray-900 border border-gray-700 rounded-xl px-2 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500 uppercase h-10">
                         <datalist id="color-suggestions">
-                            <option value="ĐEN"><option value="TRẮNG"><option value="ĐỎ"><option value="VÀNG"><option value="XANH">
+                            <option value="ĐEN">
+                            <option value="TRẮNG">
+                            <option value="ĐỎ">
+                            <option value="VÀNG">
+                            <option value="XANH DƯƠNG">
+                            <option value="XANH LÁ">
+                            <option value="CAM SAN HÔ">
+                            <option value="HỒNG">
+                            <option value="TÍM">
+                            <option value="XÁM">
                         </datalist>
                     </div>
 
                     <div class="flex-1 flex flex-col items-center min-w-0">
-                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">LÃI</label>
+                        <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center w-full">LÃI / SP</label>
                         <div class="w-full bg-gray-900/90 border border-gray-800 px-2 rounded-xl h-10 flex items-center justify-center">
                             <div id="modal-profit-preview" class="text-xs font-bold text-emerald-400 leading-none truncate text-center w-full">0</div>
                         </div>
@@ -431,7 +439,10 @@
             if (c.includes('TRẮNG') || c.includes('WHITE')) return '#ffffff; border: 2px solid #9ca3af';
             if (c.includes('ĐỎ') || c.includes('RED')) return '#ef4444';
             if (c.includes('VÀNG') || c.includes('GOLD') || c.includes('YELLOW')) return '#eab308';
-            if (c.includes('XANH') || c.includes('BLUE') || c.includes('GREEN')) return '#3b82f6';
+            if (c.includes('CAM SAN HÔ') || c.includes('SAN HÔ') || c.includes('CORAL')) return '#ff6f61';
+            if (c.includes('XANH DƯƠNG') || c.includes('BLUE') || c.includes('DƯƠNG')) return '#3b82f6';
+            if (c.includes('XANH LÁ') || c.includes('LÁ') || c.includes('GREEN')) return '#22c55e';
+            if (c.includes('XANH')) return '#3b82f6'; // Mặc định xanh là xanh dương
             if (c.includes('HỒNG') || c.includes('PINK')) return '#ec4899';
             if (c.includes('TÍM') || c.includes('PURPLE')) return '#a855f7';
             if (c.includes('XÁM') || c.includes('GRAY') || c.includes('GREY')) return '#6b7280';
@@ -1131,7 +1142,8 @@
                         const qtyVal = parseInt(d.qty) || 0;
                         const priceFormatted = formatMoney(d.price);
                         const costFormatted = formatMoney(d.cost);
-                        const profitVal = (parseMoney(d.price) - parseMoney(d.cost)) * qtyVal;
+                        // Chỉ tính lãi trên 1 sản phẩm = Giá bán - Giá nhập
+                        const profitVal = parseMoney(d.price) - parseMoney(d.cost);
                         const profitFormatted = formatMoney(profitVal);
                         const formattedNameHtml = renderDeviceNames(d.name, d.color, false);
 
@@ -1630,8 +1642,8 @@
         function updateModalStats() {
             const price = parseMoney(document.getElementById('device-price').value);
             const cost = parseMoney(document.getElementById('device-cost').value);
-            const qty = parseInt(document.getElementById('device-qty').value) || 0;
-            const profit = (price - cost) * qty;
+            // Lãi xem trước chỉ tính trên 1 sản phẩm
+            const profit = price - cost;
             document.getElementById('modal-profit-preview').innerText = formatMoney(profit);
         }
 
