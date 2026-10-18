@@ -51,6 +51,7 @@
         }
         .yellow-pulse-selected { animation: yellowSelectionPulse 1.6s ease-in-out infinite; color: #000 !important; font-weight: bold; }
 
+        /* Animation nháy nháy màu tím cho HẾT HÀNG & NHẬP HÀNG */
         @keyframes purpleSelectionPulse {
             0%, 100% {
                 background-color: rgba(168, 85, 247, 0.95);
@@ -118,15 +119,15 @@
                             </button>
                         </div>
 
-                        <!-- Ô tìm kiếm + Nút Thêm mới -->
+                        <!-- Ô tìm kiếm Desktop (Nút X to và màu đỏ) -->
                         <div class="flex items-center gap-2 shrink-0">
                             <div class="relative w-64 md:w-72">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                                 </span>
                                 <input type="text" id="search-input-desktop" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
-                                    class="w-full pl-9 pr-9 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
-                                <button id="btn-clear-search-desktop" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
+                                    class="w-full pl-9 pr-10 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
+                                <button id="btn-clear-search-desktop" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-3 flex items-center text-red-500 hover:text-red-400 transition text-lg font-bold cursor-pointer" title="XÓA TÌM KIẾM">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
@@ -163,14 +164,15 @@
                             </button>
                         </div>
 
+                        <!-- Ô tìm kiếm Mobile (Nút X to và màu đỏ) -->
                         <div class="flex items-center justify-between gap-2 w-full">
                             <div class="relative flex-1">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-gray-500">
                                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                                 </span>
                                 <input type="text" id="search-input-mobile" oninput="handleSearchInput(this)" placeholder="TÌM KIẾM..." 
-                                    class="w-full pl-8 pr-8 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
-                                <button id="btn-clear-search-mobile" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-2.5 flex items-center text-gray-400 hover:text-white transition text-sm" title="XÓA TÌM KIẾM">
+                                    class="w-full pl-8 pr-9 py-1.5 bg-gray-900 border border-gray-700 rounded-xl text-xs focus:outline-none focus:border-amber-500 text-white placeholder-gray-500 uppercase">
+                                <button id="btn-clear-search-mobile" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 px-2.5 flex items-center text-red-500 hover:text-red-400 transition text-base font-bold cursor-pointer" title="XÓA TÌM KIẾM">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
@@ -442,7 +444,7 @@
             if (c.includes('CAM SAN HÔ') || c.includes('SAN HÔ') || c.includes('CORAL')) return '#ff6f61';
             if (c.includes('XANH DƯƠNG') || c.includes('BLUE') || c.includes('DƯƠNG')) return '#3b82f6';
             if (c.includes('XANH LÁ') || c.includes('LÁ') || c.includes('GREEN')) return '#22c55e';
-            if (c.includes('XANH')) return '#3b82f6'; // Mặc định xanh là xanh dương
+            if (c.includes('XANH')) return '#3b82f6';
             if (c.includes('HỒNG') || c.includes('PINK')) return '#ec4899';
             if (c.includes('TÍM') || c.includes('PURPLE')) return '#a855f7';
             if (c.includes('XÁM') || c.includes('GRAY') || c.includes('GREY')) return '#6b7280';
@@ -1142,7 +1144,6 @@
                         const qtyVal = parseInt(d.qty) || 0;
                         const priceFormatted = formatMoney(d.price);
                         const costFormatted = formatMoney(d.cost);
-                        // Chỉ tính lãi trên 1 sản phẩm = Giá bán - Giá nhập
                         const profitVal = parseMoney(d.price) - parseMoney(d.cost);
                         const profitFormatted = formatMoney(profitVal);
                         const formattedNameHtml = renderDeviceNames(d.name, d.color, false);
@@ -1642,7 +1643,6 @@
         function updateModalStats() {
             const price = parseMoney(document.getElementById('device-price').value);
             const cost = parseMoney(document.getElementById('device-cost').value);
-            // Lãi xem trước chỉ tính trên 1 sản phẩm
             const profit = price - cost;
             document.getElementById('modal-profit-preview').innerText = formatMoney(profit);
         }
