@@ -51,6 +51,7 @@
         }
         .yellow-pulse-selected { animation: yellowSelectionPulse 1.6s ease-in-out infinite; color: #000 !important; font-weight: bold; }
 
+        /* Animation nháy nháy màu tím cho HẾT HÀNG & NHẬP HÀNG */
         @keyframes purpleSelectionPulse {
             0%, 100% {
                 background-color: rgba(168, 85, 247, 0.95);
@@ -103,15 +104,15 @@
                             <div id="type-tabs-container-desktop" class="flex items-center gap-1.5 shrink-0"></div>
                         </div>
 
-                        <!-- THANH BỘ LỌC RIÊNG CHO TAB NHẬP HÀNG -->
+                        <!-- THANH BỘ LỌC RIÊNG CHO TAB NHẬP HÀNG (DESKTOP GIỮ NGUYÊN ĐẦY ĐỦ) -->
                         <div id="import-filters-desktop" class="hidden items-center gap-4">
                             <div class="flex items-center gap-1.5">
                                 <span class="text-xs font-bold text-emerald-400 uppercase shrink-0">NHÀ PHÂN PHỐI:</span>
-                                <select id="filter-supplier-desktop" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-44 md:w-48"></select>
+                                <select id="filter-supplier-desktop" onchange="handleSupplierFilterChange(this.value)" class="bg-gray-900 border border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-44 md:w-48"></select>
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <span class="text-xs font-bold text-emerald-400 uppercase shrink-0">LINH KIỆN:</span>
-                                <select id="filter-import-cat-desktop" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-40 md:w-44"></select>
+                                <select id="filter-import-cat-desktop" onchange="handleCategoryFilterChange(this.value)" class="bg-gray-900 border border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-40 md:w-44"></select>
                             </div>
                             <button id="btn-delete-selected" onclick="deleteSelectedImportOrders()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition items-center gap-1 shadow shrink-0">
                                 <i class="fa-solid fa-trash text-xs"></i> XÓA ĐÃ CHỌN
@@ -146,16 +147,16 @@
 
                         <div id="type-tabs-container-mobile" class="flex flex-wrap items-center gap-1 w-full pt-1"></div>
 
-                        <!-- BỘ LỌC MOBILE CHO TAB NHẬP HÀNG -->
+                        <!-- BỘ LỌC MOBILE CHO TAB NHẬP HÀNG (VIẾT TẮT NPP VÀ LK) -->
                         <div id="import-filters-mobile" class="hidden flex-col gap-1.5 w-full pt-1">
                             <div class="flex items-center justify-between gap-2 w-full">
                                 <div class="flex items-center gap-1 flex-1 min-w-0">
-                                    <span class="text-[10px] font-bold text-emerald-400 uppercase shrink-0">NHÀ PHÂN PHỐI:</span>
-                                    <select id="filter-supplier-mobile" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-1.5 py-1 text-[11px] font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-full min-w-0"></select>
+                                    <span class="text-[11px] font-bold text-emerald-400 uppercase shrink-0">NPP:</span>
+                                    <select id="filter-supplier-mobile" onchange="handleSupplierFilterChange(this.value)" class="bg-gray-900 border border-gray-700 rounded-xl px-1.5 py-1 text-[11px] font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-full min-w-0"></select>
                                 </div>
                                 <div class="flex items-center gap-1 flex-1 min-w-0">
-                                    <span class="text-[10px] font-bold text-emerald-400 uppercase shrink-0">LINH KIỆN:</span>
-                                    <select id="filter-import-cat-mobile" onchange="renderTable()" class="bg-gray-900 border border-gray-700 rounded-xl px-1.5 py-1 text-[11px] font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-full min-w-0"></select>
+                                    <span class="text-[11px] font-bold text-emerald-400 uppercase shrink-0">LK:</span>
+                                    <select id="filter-import-cat-mobile" onchange="handleCategoryFilterChange(this.value)" class="bg-gray-900 border border-gray-700 rounded-xl px-1.5 py-1 text-[11px] font-bold text-white uppercase focus:outline-none focus:border-emerald-500 w-full min-w-0"></select>
                                 </div>
                             </div>
                             <button id="btn-delete-selected-mobile" onclick="deleteSelectedImportOrders()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition items-center justify-center gap-1 shadow w-full">
@@ -398,7 +399,6 @@
         const db = firebase.firestore();
 
         let devices = [];
-        // Ưu tiên nạp ngay từ bộ nhớ cục bộ để không bao giờ bị mất khi F5
         let importOrders = JSON.parse(localStorage.getItem('local_import_orders') || '[]'); 
         let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'HÃNG KHÁC'];
         let categories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP', 'LƯNG'];
@@ -580,7 +580,6 @@
             const statusEl = document.getElementById('cloud-status');
             if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-arrows-rotate animate-spin text-amber-400 text-xs"></i>`;
             
-            // Luôn lưu phòng hờ ngay lập tức vào localStorage
             localStorage.setItem('local_import_orders', JSON.stringify(importOrders));
             localStorage.setItem('local_suppliers', JSON.stringify(suppliers));
 
@@ -612,6 +611,22 @@
             localStorage.setItem('active_cat_tab', c);
             currentType = '';
             initTabs();
+            renderTable();
+        }
+
+        function handleSupplierFilterChange(val) {
+            const desktopSel = document.getElementById('filter-supplier-desktop');
+            const mobileSel = document.getElementById('filter-supplier-mobile');
+            if (desktopSel) desktopSel.value = val;
+            if (mobileSel) mobileSel.value = val;
+            renderTable();
+        }
+
+        function handleCategoryFilterChange(val) {
+            const desktopSel = document.getElementById('filter-import-cat-desktop');
+            const mobileSel = document.getElementById('filter-import-cat-mobile');
+            if (desktopSel) desktopSel.value = val;
+            if (mobileSel) mobileSel.value = val;
             renderTable();
         }
 
@@ -781,31 +796,40 @@
         }
 
         function updateImportFilterOptions() {
-            const supplierSelects = [document.getElementById('filter-supplier-desktop'), document.getElementById('filter-supplier-mobile')];
-            const catSelects = [document.getElementById('filter-import-cat-desktop'), document.getElementById('filter-import-cat-mobile')];
+            const supplierSelectDesktop = document.getElementById('filter-supplier-desktop');
+            const supplierSelectMobile = document.getElementById('filter-supplier-mobile');
+            const catSelectDesktop = document.getElementById('filter-import-cat-desktop');
+            const catSelectMobile = document.getElementById('filter-import-cat-mobile');
 
-            const currentSupplierVal = document.getElementById('filter-supplier-desktop')?.value || 'ALL';
-            const currentCatVal = document.getElementById('filter-import-cat-desktop')?.value || 'ALL';
+            const currentSupplierVal = (supplierSelectDesktop?.value || supplierSelectMobile?.value || 'ALL').trim().toUpperCase();
+            const currentCatVal = (catSelectDesktop?.value || catSelectMobile?.value || 'ALL').trim().toUpperCase();
 
             const uniqueSuppliers = [...new Set(importOrders.map(o => (o.supplier || '').trim().toUpperCase()))].filter(Boolean);
             const uniqueCats = [...new Set(importOrders.map(o => (o.category || '').trim().toUpperCase()))].filter(Boolean);
 
-            let supplierOptionsHtml = `<option value="ALL">TẤT CẢ (NHÀ PHÂN PHỐI)</option>` + uniqueSuppliers.map(s => `<option value="${s}">${s}</option>`).join('');
-            let catOptionsHtml = `<option value="ALL">TẤT CẢ (LINH KIỆN)</option>` + uniqueCats.map(c => `<option value="${c}">${c}</option>`).join('');
+            const supplierOptionsDesktop = `<option value="ALL">TẤT CẢ (NHÀ PHÂN PHỐI)</option>` + uniqueSuppliers.map(s => `<option value="${s}">${s}</option>`).join('');
+            const supplierOptionsMobile = `<option value="ALL">TẤT CẢ (NPP)</option>` + uniqueSuppliers.map(s => `<option value="${s}">${s}</option>`).join('');
 
-            supplierSelects.forEach(sel => {
-                if (sel) {
-                    sel.innerHTML = supplierOptionsHtml;
-                    sel.value = uniqueSuppliers.includes(currentSupplierVal) ? currentSupplierVal : 'ALL';
-                }
-            });
+            const catOptionsDesktop = `<option value="ALL">TẤT CẢ (LINH KIỆN)</option>` + uniqueCats.map(c => `<option value="${c}">${c}</option>`).join('');
+            const catOptionsMobile = `<option value="ALL">TẤT CẢ (LK)</option>` + uniqueCats.map(c => `<option value="${c}">${c}</option>`).join('');
 
-            catSelects.forEach(sel => {
-                if (sel) {
-                    sel.innerHTML = catOptionsHtml;
-                    sel.value = uniqueCats.includes(currentCatVal) ? currentCatVal : 'ALL';
-                }
-            });
+            if (supplierSelectDesktop) {
+                supplierSelectDesktop.innerHTML = supplierOptionsDesktop;
+                supplierSelectDesktop.value = uniqueSuppliers.includes(currentSupplierVal) ? currentSupplierVal : 'ALL';
+            }
+            if (supplierSelectMobile) {
+                supplierSelectMobile.innerHTML = supplierOptionsMobile;
+                supplierSelectMobile.value = uniqueSuppliers.includes(currentSupplierVal) ? currentSupplierVal : 'ALL';
+            }
+
+            if (catSelectDesktop) {
+                catSelectDesktop.innerHTML = catOptionsDesktop;
+                catSelectDesktop.value = uniqueCats.includes(currentCatVal) ? currentCatVal : 'ALL';
+            }
+            if (catSelectMobile) {
+                catSelectMobile.innerHTML = catOptionsMobile;
+                catSelectMobile.value = uniqueCats.includes(currentCatVal) ? currentCatVal : 'ALL';
+            }
         }
 
         function formatMoney(amount) {
@@ -914,15 +938,20 @@
             let expandedImportRows = [];
 
             if (isImportTab) {
-                const selectedSupplier = document.getElementById('filter-supplier-desktop')?.value || 'ALL';
-                const selectedCat = document.getElementById('filter-import-cat-desktop')?.value || 'ALL';
+                const selSupDesktop = document.getElementById('filter-supplier-desktop')?.value;
+                const selSupMobile = document.getElementById('filter-supplier-mobile')?.value;
+                const selectedSupplier = (selSupDesktop !== undefined && selSupDesktop !== '') ? selSupDesktop : (selSupMobile || 'ALL');
+
+                const selCatDesktop = document.getElementById('filter-import-cat-desktop')?.value;
+                const selCatMobile = document.getElementById('filter-import-cat-mobile')?.value;
+                const selectedCat = (selCatDesktop !== undefined && selCatDesktop !== '') ? selCatDesktop : (selCatMobile || 'ALL');
 
                 importOrders.forEach((o, orderIdx) => {
                     const supplier = (o.supplier || '').trim().toUpperCase();
                     const category = (o.category || '').trim().toUpperCase();
 
-                    if (selectedSupplier !== 'ALL' && supplier !== selectedSupplier) return;
-                    if (selectedCat !== 'ALL' && category !== selectedCat) return;
+                    if (selectedSupplier !== 'ALL' && supplier !== selectedSupplier.trim().toUpperCase()) return;
+                    if (selectedCat !== 'ALL' && category !== selectedCat.trim().toUpperCase()) return;
 
                     if (o.items && o.items.length > 0) {
                         o.items.forEach(item => {
@@ -1506,7 +1535,6 @@
                 importOrders[index] = orderObj;
             }
 
-            // Lưu tức thì vào local và đồng bộ Firebase
             await saveAllToCloud();
             
             if (btnSubmit) {
