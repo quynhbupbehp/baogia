@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="color-scheme" content="dark">
-    <title>BÁO GIÁ SỬA CHỮA</title>
+    <title>BÁO GIÁ SỬA CHỮA & NHẬP HÀNG</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -410,7 +410,7 @@
         let devices = [];
         let importOrders = JSON.parse(localStorage.getItem('local_import_orders') || '[]'); 
         let brands = ['IPHONE', 'SAMSUNG', 'OPPO - REALME', 'MI - POCO', 'VIVO', 'HÃNG KHÁC'];
-        let categories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP', 'LƯNG'];
+        let categories = ['MÀN HÌNH', 'PIN', 'CÁP SẠC', 'KÍNH ÉP', 'LƯNG', 'CÁP NỐI'];
         let types = ['ZIN', 'GX', 'ZIN BÓC MÁY', 'ZIN HÃNG', 'OLED', 'LINH KIỆN'];
         let names = [];
         let suppliers = JSON.parse(localStorage.getItem('local_suppliers') || '[]');
@@ -433,21 +433,30 @@
             }
         });
 
-        function getColorHex(colorName) {
+        function getColorStyle(colorName, isMobile = false) {
             if (!colorName) return '';
             const c = colorName.trim().toUpperCase();
-            if (c.includes('ĐEN') || c.includes('BLACK')) return '#111827; border: 1px solid #4b5563';
-            if (c.includes('TRẮNG') || c.includes('WHITE')) return '#ffffff; border: 2px solid #9ca3af';
-            if (c.includes('ĐỎ') || c.includes('RED')) return '#ef4444';
-            if (c.includes('VÀNG') || c.includes('GOLD') || c.includes('YELLOW')) return '#eab308';
-            if (c.includes('CAM SAN HÔ') || c.includes('SAN HÔ') || c.includes('CORAL')) return '#ff6f61';
-            if (c.includes('XANH DƯƠNG') || c.includes('BLUE') || c.includes('DƯƠNG')) return '#3b82f6';
-            if (c.includes('XANH LÁ') || c.includes('LÁ') || c.includes('GREEN')) return '#22c55e';
-            if (c.includes('XANH')) return '#3b82f6';
-            if (c.includes('HỒNG') || c.includes('PINK')) return '#ec4899';
-            if (c.includes('TÍM') || c.includes('PURPLE')) return '#a855f7';
-            if (c.includes('XÁM') || c.includes('GRAY') || c.includes('GREY')) return '#6b7280';
-            return '#9ca3af';
+            const sizeClass = isMobile ? 'w-4 h-4' : 'w-5 h-5';
+            
+            if (c.includes('ĐEN') || c.includes('BLACK')) {
+                return `<span class="inline-block ${sizeClass} rounded-full ml-1.5 mr-1 shrink-0 align-middle shadow-md" style="background-color: #000000; border: 2px solid #ffffff;" title="MÀU: ${colorName}"></span>`;
+            }
+
+            let hex = '#9ca3af';
+            let borderStyle = 'border: 1px solid rgba(255,255,255,0.2)';
+
+            if (c.includes('TRẮNG') || c.includes('WHITE')) { hex = '#ffffff'; borderStyle = 'border: 2px solid #9ca3af'; }
+            else if (c.includes('ĐỎ') || c.includes('RED')) { hex = '#ef4444'; }
+            else if (c.includes('VÀNG') || c.includes('GOLD') || c.includes('YELLOW')) { hex = '#eab308'; }
+            else if (c.includes('CAM SAN HÔ') || c.includes('SAN HÔ') || c.includes('CORAL')) { hex = '#ff6f61'; }
+            else if (c.includes('XANH DƯƠNG') || c.includes('BLUE') || c.includes('DƯƠNG')) { hex = '#3b82f6'; }
+            else if (c.includes('XANH LÁ') || c.includes('LÁ') || c.includes('GREEN')) { hex = '#22c55e'; }
+            else if (c.includes('XANH')) { hex = '#3b82f6'; }
+            else if (c.includes('HỒNG') || c.includes('PINK')) { hex = '#ec4899'; }
+            else if (c.includes('TÍM') || c.includes('PURPLE')) { hex = '#a855f7'; }
+            else if (c.includes('XÁM') || c.includes('GRAY') || c.includes('GREY')) { hex = '#6b7280'; }
+
+            return `<span class="inline-block ${sizeClass} rounded-full ml-1.5 mr-1 shrink-0 align-middle shadow-sm" style="background-color: ${hex}; ${borderStyle};" title="MÀU: ${colorName}"></span>`;
         }
 
         function renderDeviceNames(nameStr, colorStr, isMobile = false) {
@@ -465,9 +474,7 @@
 
             let colorDotHtml = '';
             if (colorStr && colorStr.trim()) {
-                const hexStyle = getColorHex(colorStr);
-                const dotSize = isMobile ? 'w-4 h-4' : 'w-5 h-5';
-                colorDotHtml = `<span class="inline-block ${dotSize} rounded-full ml-1.5 mr-1 shrink-0 align-middle shadow-sm" style="background-color: ${hexStyle};" title="MÀU: ${colorStr}"></span>`;
+                colorDotHtml = getColorStyle(colorStr, isMobile);
             }
 
             const dashCount = (processedName.match(/-/g) || []).length;
@@ -557,7 +564,10 @@
                     const data = doc.data();
                     if (data.devices) devices = data.devices;
                     if (data.brands) brands = data.brands;
-                    if (data.categories) categories = data.categories;
+                    if (data.categories) {
+                        categories = data.categories;
+                        categories = categories.map(c => c === 'BO SẠC' ? 'CÁP SẠC' : c);
+                    }
                     if (data.types) types = data.types;
                     if (data.names) names = data.names;
                     if (data.suppliers) {
@@ -568,6 +578,9 @@
                         importOrders = data.importOrders;
                         localStorage.setItem('local_import_orders', JSON.stringify(importOrders));
                     }
+                    devices.forEach(d => {
+                        if (d.part === 'BO SẠC') d.part = 'CÁP SẠC';
+                    });
                 } else {
                     saveAllToCloud();
                 }
@@ -719,9 +732,9 @@
 
             const isIphone = currentBrand.toUpperCase() === 'IPHONE';
 
-            let displayCategories = ['MÀN HÌNH', 'PIN', 'BO SẠC', 'KÍNH ÉP'];
-            if (isIphone) {
-                displayCategories.push('LƯNG');
+            let displayCategories = ['MÀN HÌNH', 'PIN', 'CÁP SẠC', 'KÍNH ÉP', 'LƯNG'];
+            if (!isIphone) {
+                displayCategories.push('CÁP NỐI');
             }
 
             if (!displayCategories.includes(currentCategory)) {
@@ -975,7 +988,8 @@
 
                 importOrders.forEach((o, orderIdx) => {
                     const supplier = (o.supplier || '').trim().toUpperCase();
-                    const category = (o.category || '').trim().toUpperCase();
+                    let category = (o.category || '').trim().toUpperCase();
+                    if (category === 'BO SẠC') category = 'CÁP SẠC';
 
                     if (selectedSupplier !== 'ALL' && supplier !== selectedSupplier.trim().toUpperCase()) return;
                     if (selectedCat !== 'ALL' && category !== selectedCat.trim().toUpperCase()) return;
@@ -1013,7 +1027,9 @@
                         if (qtyVal !== 0) return false;
                     } else {
                         const matchBrand = (d.brand || '').toUpperCase() === currentBrand.toUpperCase();
-                        const matchCategory = (d.part || '').toUpperCase() === currentCategory.toUpperCase();
+                        let dPart = (d.part || '').toUpperCase();
+                        if (dPart === 'BO SẠC') dPart = 'CÁP SẠC';
+                        const matchCategory = dPart === currentCategory.toUpperCase();
                         const matchType = (!isIphone || !currentType || (d.type || '').toUpperCase() === currentType.toUpperCase());
                         if (!matchBrand || !matchCategory || !matchType) return false;
                     }
@@ -1161,6 +1177,7 @@
                         const profitVal = parseMoney(d.price) - parseMoney(d.cost);
                         const profitFormatted = formatMoney(profitVal);
                         const formattedNameHtml = renderDeviceNames(d.name, d.color, false);
+                        const displayPart = (d.part === 'BO SẠC') ? 'CÁP SẠC' : d.part;
 
                         const zeroQtyClass = isOutStockTab ? 'row-hover' : (qtyVal === 0 ? 'yellow-pulse-row' : 'row-hover');
 
@@ -1169,7 +1186,7 @@
                                 return `
                                     <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
                                         <td class="py-3 px-4 text-left w-[35%] whitespace-nowrap truncate">${formattedNameHtml}</td>
-                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%] whitespace-nowrap truncate">${d.part}</td>
+                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%] whitespace-nowrap truncate">${displayPart}</td>
                                         <td class="py-3 px-3 text-indigo-300 font-medium w-[15%] whitespace-nowrap truncate" style="font-weight: bold;">${d.type || '---'}</td>
                                         <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                         <td class="py-3 px-3 font-bold text-lg text-white w-[5%] whitespace-nowrap truncate" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
@@ -1186,7 +1203,7 @@
                                 return `
                                     <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
                                         <td class="py-3 px-4 text-left w-[45%] whitespace-nowrap truncate">${formattedNameHtml}</td>
-                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[25%] whitespace-nowrap truncate">${d.part}</td>
+                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[25%] whitespace-nowrap truncate">${displayPart}</td>
                                         <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                         <td class="py-3 px-3 font-bold text-lg text-white w-[5%] whitespace-nowrap truncate" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
                                         <td class="py-3 px-3 w-[10%] whitespace-nowrap truncate">
@@ -1205,7 +1222,7 @@
                             return `
                                 <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
                                     <td class="py-3 px-3 text-left w-[26%] whitespace-nowrap truncate">${formattedNameHtml}</td>
-                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[15%] whitespace-nowrap truncate">${d.part}</td>
+                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[15%] whitespace-nowrap truncate">${displayPart}</td>
                                     <td class="py-3 px-3 text-indigo-300 font-medium w-[11%] whitespace-nowrap truncate" style="font-weight: bold;">${d.type || '---'}</td>
                                     <td class="py-3 px-3 font-black text-lg md:text-xl text-amber-400 w-[13%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                     <td class="py-3 px-3 font-bold text-base text-white w-[5%] whitespace-nowrap truncate" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
@@ -1224,7 +1241,7 @@
                             return `
                                 <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
                                     <td class="py-3 px-4 text-left w-[34%] whitespace-nowrap truncate">${formattedNameHtml}</td>
-                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[18%] whitespace-nowrap truncate">${d.part}</td>
+                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[18%] whitespace-nowrap truncate">${displayPart}</td>
                                     <td class="py-3 px-3 font-black text-lg md:text-xl text-amber-400 w-[14%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
                                     <td class="py-3 px-3 font-bold text-base text-white w-[5%] whitespace-nowrap truncate" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
                                     <td class="py-3 px-3 w-[11%] whitespace-nowrap truncate">
@@ -1270,6 +1287,7 @@
                         const qtyVal = parseInt(d.qty) || 0;
                         const priceFormatted = formatMoney(d.price);
                         const formattedNameHtml = renderDeviceNames(d.name, d.color, true);
+                        const displayPart = (d.part === 'BO SẠC') ? 'CÁP SẠC' : d.part;
 
                         const zeroQtyClassMobile = isOutStockTab ? 'row-hover px-2 rounded-xl' : (qtyVal === 0 ? 'yellow-pulse-row px-2 rounded-xl' : 'row-hover px-2 rounded-xl');
 
@@ -1279,7 +1297,7 @@
                                     <div class="flex items-center gap-2 min-w-0 flex-1">
                                         ${formattedNameHtml}
                                         <div class="flex items-center gap-1 text-xs text-gray-400 shrink-0">
-                                            <span class="text-emerald-400 font-semibold">${d.part}</span>
+                                            <span class="text-emerald-400 font-semibold">${displayPart}</span>
                                             ${d.type ? `<span class="text-indigo-300 font-bold">• ${d.type}</span>` : ''}
                                         </div>
                                     </div>
@@ -1468,7 +1486,8 @@
                 listRef = categories; inputId = 'import-category'; labelName = 'LOẠI LINH KIỆN'; datalistId = 'import-category-suggestions';
             }
 
-            const val = document.getElementById(inputId).value.trim().toUpperCase();
+            let val = document.getElementById(inputId).value.trim().toUpperCase();
+            if (val === 'BO SẠC') val = 'CÁP SẠC';
 
             if (action === 'add') {
                 if (!val) { alert(`VUI LÒNG NHẬP TÊN ${labelName}!`); return; }
@@ -1484,19 +1503,26 @@
                 if (!val) { alert(`VUI LÒNG NHẬP HOẶC CHỌN ${labelName} CẦN SỬA!`); return; }
                 const oldVal = prompt(`NHẬP TÊN MỚI THAY THẾ CHO "${val}":`, val);
                 if (oldVal) {
-                    const newVal = oldVal.trim().toUpperCase();
+                    let newVal = oldVal.trim().toUpperCase();
+                    if (newVal === 'BO SẠC') newVal = 'CÁP SẠC';
                     const idx = listRef.indexOf(val);
                     if (idx !== -1) listRef[idx] = newVal;
                     else listRef.push(newVal);
 
                     importOrders.forEach(o => {
                         if (entityType === 'suppliers' && o.supplier === val) o.supplier = newVal;
-                        if (entityType === 'categories' && o.category === val) o.category = newVal;
+                        if (entityType === 'categories') {
+                            let oCat = (o.category || '').toUpperCase();
+                            if (oCat === 'BO SẠC') oCat = 'CÁP SẠC';
+                            if (oCat === val) o.category = newVal;
+                        }
                     });
 
                     if (entityType === 'categories') {
                         devices.forEach(d => {
-                            if (d.part === val) d.part = newVal;
+                            let dPart = (d.part || '').toUpperCase();
+                            if (dPart === 'BO SẠC') dPart = 'CÁP SẠC';
+                            if (dPart === val) d.part = newVal;
                         });
                     }
 
@@ -1532,7 +1558,8 @@
 
             const index = parseInt(document.getElementById('import-index').value);
             const supplier = document.getElementById('import-supplier').value.trim().toUpperCase();
-            const category = document.getElementById('import-category').value.trim().toUpperCase();
+            let category = document.getElementById('import-category').value.trim().toUpperCase();
+            if (category === 'BO SẠC') category = 'CÁP SẠC';
             
             const itemInputs = document.querySelectorAll('.item-name-input');
             const items = [];
@@ -1577,7 +1604,9 @@
             openImportModal(true);
 
             document.getElementById('import-supplier').value = o.supplier || '';
-            document.getElementById('import-category').value = o.category || '';
+            let oCat = (o.category || '').toUpperCase();
+            if (oCat === 'BO SẠC') oCat = 'CÁP SẠC';
+            document.getElementById('import-category').value = oCat;
             
             const container = document.getElementById('import-items-container');
             container.innerHTML = '';
@@ -1604,7 +1633,9 @@
             openImportModal(false);
 
             document.getElementById('import-supplier').value = o.supplier || '';
-            document.getElementById('import-category').value = o.category || '';
+            let oCat = (o.category || '').toUpperCase();
+            if (oCat === 'BO SẠC') oCat = 'CÁP SẠC';
+            document.getElementById('import-category').value = oCat;
             
             const container = document.getElementById('import-items-container');
             container.innerHTML = '';
@@ -1661,7 +1692,8 @@
             const index = parseInt(document.getElementById('device-index').value);
             const brand = document.getElementById('device-brand').value.trim().toUpperCase();
             const name = document.getElementById('device-name').value.trim().toUpperCase();
-            const part = document.getElementById('device-part').value.trim().toUpperCase();
+            let part = document.getElementById('device-part').value.trim().toUpperCase();
+            if (part === 'BO SẠC') part = 'CÁP SẠC';
             const type = document.getElementById('device-type').value.trim().toUpperCase();
             const price = document.getElementById('device-price').value.trim();
             const cost = document.getElementById('device-cost').value.trim();
@@ -1697,7 +1729,9 @@
 
             document.getElementById('device-brand').value = d.brand || '';
             document.getElementById('device-name').value = d.name || '';
-            document.getElementById('device-part').value = d.part || '';
+            let dPart = (d.part || '').toUpperCase();
+            if (dPart === 'BO SẠC') dPart = 'CÁP SẠC';
+            document.getElementById('device-part').value = dPart;
             document.getElementById('device-type').value = d.type || '';
             document.getElementById('device-price').value = formatMoney(d.price);
             document.getElementById('device-cost').value = formatMoney(d.cost);
@@ -1714,7 +1748,9 @@
             document.getElementById('modal-title').innerText = 'THÊM BẢN SAO LINH KIỆN';
             document.getElementById('device-brand').value = d.brand || '';
             document.getElementById('device-name').value = d.name || '';
-            document.getElementById('device-part').value = d.part || '';
+            let dPart = (d.part || '').toUpperCase();
+            if (dPart === 'BO SẠC') dPart = 'CÁP SẠC';
+            document.getElementById('device-part').value = dPart;
             document.getElementById('device-type').value = d.type || '';
             document.getElementById('device-price').value = formatMoney(d.price);
             document.getElementById('device-cost').value = formatMoney(d.cost);
@@ -1743,7 +1779,8 @@
                 listRef = names; inputId = 'device-name'; labelName = 'TÊN MÁY';
             }
 
-            const val = document.getElementById(inputId).value.trim().toUpperCase();
+            let val = document.getElementById(inputId).value.trim().toUpperCase();
+            if (val === 'BO SẠC') val = 'CÁP SẠC';
 
             if (action === 'add') {
                 if (!val) { alert(`VUI LÒNG NHẬP TÊN ${labelName}!`); return; }
@@ -1759,14 +1796,19 @@
                 if (!val) { alert(`VUI LÒNG NHẬP HOẶC CHỌN ${labelName} CẦN SỬA!`); return; }
                 const oldVal = prompt(`NHẬP TÊN MỚI THAY THẾ CHO "${val}":`, val);
                 if (oldVal) {
-                    const newVal = oldVal.trim().toUpperCase();
+                    let newVal = oldVal.trim().toUpperCase();
+                    if (newVal === 'BO SẠC') newVal = 'CÁP SẠC';
                     const idx = listRef.indexOf(val);
                     if (idx !== -1) listRef[idx] = newVal;
                     else listRef.push(newVal);
 
                     devices.forEach(d => {
                         if (entityType === 'brands' && d.brand === val) d.brand = newVal;
-                        if (entityType === 'categories' && d.part === val) d.part = newVal;
+                        if (entityType === 'categories') {
+                            let dPart = (d.part || '').toUpperCase();
+                            if (dPart === 'BO SẠC') dPart = 'CÁP SẠC';
+                            if (dPart === val) d.part = newVal;
+                        }
                         if (entityType === 'types' && d.type === val) d.type = newVal;
                         if (entityType === 'names' && d.name === val) d.name = newVal;
                     });
