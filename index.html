@@ -285,11 +285,11 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ BÁN</label>
-                        <input type="text" id="device-price" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500">
+                        <input type="text" id="device-price" required maxlength="12" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-amber-400 uppercase mb-1 text-center">GIÁ NHẬP</label>
-                        <input type="text" id="device-cost" required maxlength="6" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500">
+                        <input type="text" id="device-cost" required maxlength="12" oninput="formatCurrencyInput(this)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
 
@@ -845,13 +845,32 @@
             }
         }
 
+        // HÀM ĐỊNH DẠNG TIỀN TỆ TUYỆT ĐỐI CHUẨN (HỖ TRỢ CẢ SỐ LỚN HOẶC SỐ NHỎ DẠNG K)
         function formatMoney(amount) {
-            return Number(amount).toLocaleString('vi-VN');
+            if (amount === null || amount === undefined || amount === '') return "0";
+            let cleanStr = amount.toString().replace(/\./g, '').replace(/,/g, '.').trim();
+            let num = parseFloat(cleanStr);
+            if (isNaN(num)) return amount.toString();
+            
+            // Xử lý thông minh: Nếu người dùng lỡ nhập kiểu 1.1 hay 1.5 (nghĩa là triệu/nghìn nhỏ), tự nhân lên đúng chuẩn VNĐ nếu cần, hoặc hiển thị định dạng chuẩn
+            if (num < 10 && cleanStr.includes('.')) {
+                num = num * 1000; // ví dụ 1.1 thành 1100
+            } else if (num < 1000 && !cleanStr.includes('.') && num > 0 && num < 50) {
+                // Trường hợp nhập 500 hoặc 900 giữ nguyên, còn nhập 1.1 hoặc 1.6 kiểu ngắn
+            }
+
+            return Math.round(num).toLocaleString('vi-VN');
         }
 
         function parseMoney(str) {
             if (!str) return 0;
-            return parseInt(str.toString().replace(/\./g, ''), 10) || 0;
+            let cleanStr = str.toString().replace(/\./g, '').replace(/,/g, '.').trim();
+            let num = parseFloat(cleanStr);
+            if (isNaN(num)) return 0;
+            if (num < 10 && cleanStr.includes('.')) {
+                num = num * 1000;
+            }
+            return Math.round(num);
         }
 
         function formatCurrencyInput(input) {
@@ -1412,7 +1431,6 @@
             document.getElementById('device-modal').classList.add('hidden');
         }
 
-        // --- QUẢN LÝ POPUP NHẬP HÀNG ---
         function openImportModal(isEdit = false) {
             document.getElementById('import-modal').classList.remove('hidden');
             
@@ -1627,10 +1645,6 @@
             }
         }
 
-        function closeModal() {
-            document.getElementById('device-modal').classList.add('hidden');
-        }
-
         function adjustQty(amount) {
             const qtyInput = document.getElementById('device-qty');
             let val = parseInt(qtyInput.value) || 0;
@@ -1646,9 +1660,6 @@
             const profit = price - cost;
             document.getElementById('modal-profit-preview').innerText = formatMoney(profit);
         }
-
-        document.getElementById('device-price').addEventListener('input', updateModalStats);
-        document.getElementById('device-cost').addEventListener('input', updateModalStats);
 
         function saveDevice(e) {
             e.preventDefault();
@@ -1693,8 +1704,8 @@
             document.getElementById('device-name').value = d.name || '';
             document.getElementById('device-part').value = d.part || '';
             document.getElementById('device-type').value = d.type || '';
-            document.getElementById('device-price').value = d.price || '';
-            document.getElementById('device-cost').value = d.cost || '';
+            document.getElementById('device-price').value = formatMoney(d.price);
+            document.getElementById('device-cost').value = formatMoney(d.cost);
             document.getElementById('device-qty').value = d.qty !== undefined ? d.qty : 1;
             document.getElementById('device-color').value = d.color || '';
             updateModalStats();
