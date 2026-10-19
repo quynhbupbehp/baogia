@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="color-scheme" content="dark">
-    <title>BÁO GIÁ SỬA CHỮA & NHẬP HÀNG</title>
+    <title>BÁO GIÁ SỬA CHỮA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -51,7 +51,6 @@
         }
         .yellow-pulse-selected { animation: yellowSelectionPulse 1.6s ease-in-out infinite; color: #000 !important; font-weight: bold; }
 
-        /* Animation nháy nháy màu tím cho HẾT HÀNG & NHẬP HÀNG */
         @keyframes purpleSelectionPulse {
             0%, 100% {
                 background-color: rgba(168, 85, 247, 0.95);
@@ -189,7 +188,7 @@
             <div class="hidden md:block card-dark rounded-t-2xl overflow-hidden shadow-md">
                 <table class="w-full text-center border-collapse table-fixed">
                     <thead>
-                        <tr id="desktop-table-header" class="bg-amber-600 text-white text-sm uppercase tracking-wider"></tr>
+                        <tr id="desktop-table-header" class="bg-amber-600 text-white text-xs md:text-sm uppercase tracking-wider whitespace-nowrap"></tr>
                     </thead>
                 </table>
             </div>
@@ -845,18 +844,14 @@
             }
         }
 
-        // HÀM ĐỊNH DẠNG TIỀN TỆ TUYỆT ĐỐI CHUẨN (HỖ TRỢ CẢ SỐ LỚN HOẶC SỐ NHỎ DẠNG K)
         function formatMoney(amount) {
             if (amount === null || amount === undefined || amount === '') return "0";
             let cleanStr = amount.toString().replace(/\./g, '').replace(/,/g, '.').trim();
             let num = parseFloat(cleanStr);
             if (isNaN(num)) return amount.toString();
             
-            // Xử lý thông minh: Nếu người dùng lỡ nhập kiểu 1.1 hay 1.5 (nghĩa là triệu/nghìn nhỏ), tự nhân lên đúng chuẩn VNĐ nếu cần, hoặc hiển thị định dạng chuẩn
             if (num < 10 && cleanStr.includes('.')) {
-                num = num * 1000; // ví dụ 1.1 thành 1100
-            } else if (num < 1000 && !cleanStr.includes('.') && num > 0 && num < 50) {
-                // Trường hợp nhập 500 hoặc 900 giữ nguyên, còn nhập 1.1 hoặc 1.6 kiểu ngắn
+                num = num * 1000;
             }
 
             return Math.round(num).toLocaleString('vi-VN');
@@ -1070,56 +1065,56 @@
             if (desktopHeader) {
                 if (isImportTab) {
                     desktopHeader.innerHTML = `
-                        <th class="py-3 px-3 text-left w-[24%]">
+                        <th class="py-3 px-3 text-left w-[24%] whitespace-nowrap truncate">
                             <label class="flex items-center gap-1.5 cursor-pointer">
                                 <input type="checkbox" id="select-all-import" onclick="toggleSelectAllImport(this)" class="w-4 h-4 rounded bg-gray-900 border-gray-700 text-emerald-600 focus:ring-0">
                                 <span class="text-xs">NHÀ PHÂN PHỐI</span>
                             </label>
                         </th>
-                        <th class="py-3 px-3 w-[26%]">LOẠI LINH KIỆN</th>
-                        <th class="py-3 px-4 w-[38%] text-left">TÊN LINH KIỆN</th>
-                        <th class="py-3 px-2 w-[12%] whitespace-nowrap text-center">THAO TÁC</th>
+                        <th class="py-3 px-3 w-[26%] whitespace-nowrap truncate">LOẠI LINH KIỆN</th>
+                        <th class="py-3 px-4 w-[38%] text-left whitespace-nowrap truncate">TÊN LINH KIỆN</th>
+                        <th class="py-3 px-2 w-[12%] whitespace-nowrap text-center truncate">THAO TÁC</th>
                     `;
                 } else if (isPrivacyMode) {
                     if (isIphone || isOutStockTab) {
                         desktopHeader.innerHTML = `
-                            <th class="py-3 px-4 text-left w-[35%]">TÊN MÁY</th>
-                            <th class="py-3 px-3 w-[20%]">LINH KIỆN</th>
-                            <th class="py-3 px-3 w-[15%]">KIỂU</th>
-                            <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
-                            <th class="py-3 px-3 w-[5%]">SL</th>
-                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center">THAO TÁC</th>
+                            <th class="py-3 px-4 text-left w-[35%] whitespace-nowrap truncate">TÊN MÁY</th>
+                            <th class="py-3 px-3 w-[20%] whitespace-nowrap truncate">LINH KIỆN</th>
+                            <th class="py-3 px-3 w-[15%] whitespace-nowrap truncate">KIỂU</th>
+                            <th class="py-3 px-3 w-[15%] whitespace-nowrap truncate">GIÁ BÁN</th>
+                            <th class="py-3 px-3 w-[5%] whitespace-nowrap truncate">SL</th>
+                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center truncate">THAO TÁC</th>
                         `;
                     } else {
                         desktopHeader.innerHTML = `
-                            <th class="py-3 px-4 text-left w-[45%]">TÊN MÁY</th>
-                            <th class="py-3 px-3 w-[25%]">LINH KIỆN</th>
-                            <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
-                            <th class="py-3 px-3 w-[5%]">SL</th>
-                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center">THAO TÁC</th>
+                            <th class="py-3 px-4 text-left w-[45%] whitespace-nowrap truncate">TÊN MÁY</th>
+                            <th class="py-3 px-3 w-[25%] whitespace-nowrap truncate">LINH KIỆN</th>
+                            <th class="py-3 px-3 w-[15%] whitespace-nowrap truncate">GIÁ BÁN</th>
+                            <th class="py-3 px-3 w-[5%] whitespace-nowrap truncate">SL</th>
+                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center truncate">THAO TÁC</th>
                         `;
                     }
                 } else {
                     if (isIphone || isOutStockTab) {
                         desktopHeader.innerHTML = `
-                            <th class="py-3 px-4 text-left w-[28%]">TÊN MÁY</th>
-                            <th class="py-3 px-3 w-[16%]">LINH KIỆN</th>
-                            <th class="py-3 px-3 w-[10%]">KIỂU</th>
-                            <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
-                            <th class="py-3 px-3 w-[6%]">SL</th>
-                            <th class="py-3 px-3 w-[12%] whitespace-nowrap text-center">THAO TÁC</th>
-                            <th class="py-3 px-3 w-[7%]">GIÁ NHẬP</th>
-                            <th class="py-3 px-3 w-[6%]">LÃI</th>
+                            <th class="py-3 px-3 text-left w-[26%] whitespace-nowrap truncate">TÊN MÁY</th>
+                            <th class="py-3 px-3 w-[15%] whitespace-nowrap truncate">LINH KIỆN</th>
+                            <th class="py-3 px-3 w-[11%] whitespace-nowrap truncate">KIỂU</th>
+                            <th class="py-3 px-3 w-[13%] whitespace-nowrap truncate">GIÁ BÁN</th>
+                            <th class="py-3 px-3 w-[5%] whitespace-nowrap truncate">SL</th>
+                            <th class="py-3 px-3 w-[11%] whitespace-nowrap text-center truncate">THAO TÁC</th>
+                            <th class="py-3 px-3 w-[10%] whitespace-nowrap truncate">GIÁ NHẬP</th>
+                            <th class="py-3 px-3 w-[9%] whitespace-nowrap truncate">LÃI</th>
                         `;
                     } else {
                         desktopHeader.innerHTML = `
-                            <th class="py-3 px-4 text-left w-[38%]">TÊN MÁY</th>
-                            <th class="py-3 px-3 w-[20%]">LINH KIỆN</th>
-                            <th class="py-3 px-3 w-[15%]">GIÁ BÁN</th>
-                            <th class="py-3 px-3 w-[6%]">SL</th>
-                            <th class="py-3 px-3 w-[10%] whitespace-nowrap text-center">THAO TÁC</th>
-                            <th class="py-3 px-3 w-[6%]">GIÁ NHẬP</th>
-                            <th class="py-3 px-3 w-[5%]">LÃI</th>
+                            <th class="py-3 px-4 text-left w-[34%] whitespace-nowrap truncate">TÊN MÁY</th>
+                            <th class="py-3 px-3 w-[18%] whitespace-nowrap truncate">LINH KIỆN</th>
+                            <th class="py-3 px-3 w-[14%] whitespace-nowrap truncate">GIÁ BÁN</th>
+                            <th class="py-3 px-3 w-[5%] whitespace-nowrap truncate">SL</th>
+                            <th class="py-3 px-3 w-[11%] whitespace-nowrap text-center truncate">THAO TÁC</th>
+                            <th class="py-3 px-3 w-[10%] whitespace-nowrap truncate">GIÁ NHẬP</th>
+                            <th class="py-3 px-3 w-[8%] whitespace-nowrap truncate">LÃI</th>
                         `;
                     }
                 }
@@ -1139,15 +1134,15 @@
                     tbody.innerHTML = expandedImportRows.map(row => {
                         return `
                             <tr class="row-hover transition">
-                                <td class="py-3 px-3 text-left font-bold text-white w-[24%]">
+                                <td class="py-3 px-3 text-left font-bold text-white w-[24%] whitespace-nowrap truncate">
                                     <div class="flex items-center gap-1.5 overflow-hidden">
                                         <input type="checkbox" value="${row.realIndex}" data-item="${row.item}" onchange="handleImportCheckboxChange()" class="import-checkbox w-4 h-4 rounded bg-gray-900 border-gray-700 text-emerald-600 focus:ring-0 shrink-0">
                                         <span class="truncate text-xs" title="${row.supplier}">${row.supplier}</span>
                                     </div>
                                 </td>
-                                <td class="py-3 px-3 text-emerald-400 font-semibold w-[26%]"><span class="px-2 py-0.5 rounded bg-gray-900 border border-gray-800 text-xs">${row.category}</span></td>
-                                <td class="py-3 px-4 text-amber-400 font-bold w-[38%] text-left">${row.item}</td>
-                                <td class="py-3 px-2 w-[12%] whitespace-nowrap">
+                                <td class="py-3 px-3 text-emerald-400 font-semibold w-[26%] whitespace-nowrap truncate"><span class="px-2 py-0.5 rounded bg-gray-900 border border-gray-800 text-xs">${row.category}</span></td>
+                                <td class="py-3 px-4 text-amber-400 font-bold w-[38%] text-left whitespace-nowrap truncate">${row.item}</td>
+                                <td class="py-3 px-2 w-[12%] whitespace-nowrap truncate">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <button onclick="editImportOrder(${row.realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                         <button onclick="duplicateImportOrder(${row.realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -1173,12 +1168,12 @@
                             if (isIphone || isOutStockTab) {
                                 return `
                                     <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                        <td class="py-3 px-4 text-left w-[35%]">${formattedNameHtml}</td>
-                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
-                                        <td class="py-3 px-3 text-indigo-300 font-medium w-[15%]" style="font-weight: bold;">${d.type || '---'}</td>
-                                        <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                        <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
-                                        <td class="py-3 px-3 w-[10%] whitespace-nowrap">
+                                        <td class="py-3 px-4 text-left w-[35%] whitespace-nowrap truncate">${formattedNameHtml}</td>
+                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%] whitespace-nowrap truncate">${d.part}</td>
+                                        <td class="py-3 px-3 text-indigo-300 font-medium w-[15%] whitespace-nowrap truncate" style="font-weight: bold;">${d.type || '---'}</td>
+                                        <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
+                                        <td class="py-3 px-3 font-bold text-lg text-white w-[5%] whitespace-nowrap truncate" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
+                                        <td class="py-3 px-3 w-[10%] whitespace-nowrap truncate">
                                             <div class="flex items-center justify-center gap-1.5">
                                                 <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                                 <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -1190,11 +1185,11 @@
                             } else {
                                 return `
                                     <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                        <td class="py-3 px-4 text-left w-[45%]">${formattedNameHtml}</td>
-                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[25%]">${d.part}</td>
-                                        <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                        <td class="py-3 px-3 font-bold text-lg text-white w-[5%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                        <td class="py-3 px-3 w-[10%] whitespace-nowrap">
+                                        <td class="py-3 px-4 text-left w-[45%] whitespace-nowrap truncate">${formattedNameHtml}</td>
+                                        <td class="py-3 px-3 font-semibold text-emerald-400 w-[25%] whitespace-nowrap truncate">${d.part}</td>
+                                        <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
+                                        <td class="py-3 px-3 font-bold text-lg text-white w-[5%] whitespace-nowrap truncate" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                                        <td class="py-3 px-3 w-[10%] whitespace-nowrap truncate">
                                             <div class="flex items-center justify-center gap-1.5">
                                                 <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
                                                 <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
@@ -1209,38 +1204,38 @@
                         if (isIphone || isOutStockTab) {
                             return `
                                 <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                    <td class="py-3 px-4 text-left w-[28%]">${formattedNameHtml}</td>
-                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[16%]">${d.part}</td>
-                                    <td class="py-3 px-3 text-indigo-300 font-medium w-[10%]" style="font-weight: bold;">${d.type || '---'}</td>
-                                    <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                    <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
-                                    <td class="py-3 px-3 w-[12%] whitespace-nowrap">
-                                        <div class="flex items-center justify-center gap-1.5">
-                                            <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
-                                            <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
-                                            <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                                    <td class="py-3 px-3 text-left w-[26%] whitespace-nowrap truncate">${formattedNameHtml}</td>
+                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[15%] whitespace-nowrap truncate">${d.part}</td>
+                                    <td class="py-3 px-3 text-indigo-300 font-medium w-[11%] whitespace-nowrap truncate" style="font-weight: bold;">${d.type || '---'}</td>
+                                    <td class="py-3 px-3 font-black text-lg md:text-xl text-amber-400 w-[13%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
+                                    <td class="py-3 px-3 font-bold text-base text-white w-[5%] whitespace-nowrap truncate" ${!isOutStockTab ? `ondblclick="enableInlineQtyEdit(this, ${realIndex})"` : ''} data-qty="${d.qty}">${d.qty}</td>
+                                    <td class="py-3 px-3 w-[11%] whitespace-nowrap truncate">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <button onclick="editDevice(${realIndex})" class="w-6 h-6 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                            <button onclick="duplicateDevice(${realIndex})" class="w-6 h-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-[10px]"></i></button>
+                                            <button onclick="deleteDevice(${realIndex})" class="w-6 h-6 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-[10px]"></i></button>
                                         </div>
                                     </td>
-                                    <td class="py-3 px-3 font-bold text-sm text-gray-300 w-[7%]">${costFormatted}</td>
-                                    <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[6%]">${profitFormatted}</td>
+                                    <td class="py-3 px-3 font-bold text-xs md:text-sm text-gray-300 w-[10%] whitespace-nowrap truncate">${costFormatted}</td>
+                                    <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[9%] whitespace-nowrap truncate">${profitFormatted}</td>
                                 </tr>
                             `;
                         } else {
                             return `
                                 <tr class="${zeroQtyClass} transition" onclick="handleRowClick(this)">
-                                    <td class="py-3 px-4 text-left w-[38%]">${formattedNameHtml}</td>
-                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[20%]">${d.part}</td>
-                                    <td class="py-3 px-3 font-black text-xl md:text-2xl text-amber-400 w-[15%]" style="color: #fbbf24 !important;">${priceFormatted}</td>
-                                    <td class="py-3 px-3 font-bold text-lg text-white w-[6%]" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
-                                    <td class="py-3 px-3 w-[10%] whitespace-nowrap">
-                                        <div class="flex items-center justify-center gap-1.5">
-                                            <button onclick="editDevice(${realIndex})" class="w-7 h-7 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-xs"></i></button>
-                                            <button onclick="duplicateDevice(${realIndex})" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-xs"></i></button>
-                                            <button onclick="deleteDevice(${realIndex})" class="w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-xs"></i></button>
+                                    <td class="py-3 px-4 text-left w-[34%] whitespace-nowrap truncate">${formattedNameHtml}</td>
+                                    <td class="py-3 px-3 font-semibold text-emerald-400 w-[18%] whitespace-nowrap truncate">${d.part}</td>
+                                    <td class="py-3 px-3 font-black text-lg md:text-xl text-amber-400 w-[14%] whitespace-nowrap truncate" style="color: #fbbf24 !important;">${priceFormatted}</td>
+                                    <td class="py-3 px-3 font-bold text-base text-white w-[5%] whitespace-nowrap truncate" ondblclick="enableInlineQtyEdit(this, ${realIndex})" data-qty="${d.qty}">${d.qty}</td>
+                                    <td class="py-3 px-3 w-[11%] whitespace-nowrap truncate">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <button onclick="editDevice(${realIndex})" class="w-6 h-6 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center justify-center shadow" title="SỬA"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                            <button onclick="duplicateDevice(${realIndex})" class="w-6 h-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition flex items-center justify-center shadow" title="NHÂN BẢN"><i class="fa-solid fa-copy text-[10px]"></i></button>
+                                            <button onclick="deleteDevice(${realIndex})" class="w-6 h-6 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center justify-center shadow" title="XÓA"><i class="fa-solid fa-trash text-[10px]"></i></button>
                                         </div>
                                     </td>
-                                    <td class="py-3 px-3 font-bold text-sm text-gray-300 w-[6%]">${costFormatted}</td>
-                                    <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[5%]" style="color: #34d399 !important;">${profitFormatted}</td>
+                                    <td class="py-3 px-3 font-bold text-xs md:text-sm text-gray-300 w-[10%] whitespace-nowrap truncate">${costFormatted}</td>
+                                    <td class="py-3 px-3 font-semibold text-xs text-emerald-400 w-[8%] whitespace-nowrap truncate" style="color: #34d399 !important;">${profitFormatted}</td>
                                 </tr>
                             `;
                         }
